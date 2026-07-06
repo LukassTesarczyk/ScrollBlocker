@@ -20,13 +20,16 @@ jobs:
         cache: gradle
 
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: chmod +x ReelsBlocker/gradlew
 
     - name: Build with Gradle
-      run: ./gradlew assembleDebug
+      run: |
+        cd ReelsBlocker
+        ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: ReelsBlocker/app/build/outputs/apk/debug/app-debug.apk
+        
