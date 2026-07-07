@@ -1,6 +1,8 @@
 package com.example.reelsblocker
 
 import android.Manifest
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -108,6 +110,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnOpenOtherPermissions).setOnClickListener {
             openAppInfo()
         }
+        findViewById<Button>(R.id.btnRestartApp).setOnClickListener { restartApp() }
 
         findViewById<Button>(R.id.btnRun).setOnClickListener {
             ensureNotificationPermission()
@@ -214,6 +217,25 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = android.net.Uri.parse("package:$packageName")
         startActivity(intent)
+    }
+
+    // Full app restart -- kills this process (which the accessibility
+    // service also runs in, so it goes down too) and schedules the app
+    // to relaunch itself moments later. Android brings the accessibility
+    // service back once the app process restarts and the service is
+    // still enabled in Settings, same as after any other process kill.
+    private fun restartApp() {
+        val restartIntent = Intent(this, MainActivity::class.java).apply {
+            action = ACTION_OPEN_HOME
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, restartIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pendingIntent)
+        android.os.Process.killProcess(android.os.Process.myPid())
     }
 
     private val hubSlotIds = listOf(R.id.hubInstagram, R.id.hubTiktok, R.id.hubSnapchat)
@@ -591,8 +613,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             val barHeightDp = if (count == 0) 4 else (10 + (count.toFloat() / maxCount) * maxBarHeightDp).toInt()
+            val barRadius = 7f * density
             val bar = View(this).apply {
-                setBackgroundColor(Color.parseColor(if (count == 0) "#2E2E2E" else "#26A69A"))
+                background = GradientDrawable().apply {
+                    setColor(Color.parseColor(if (count == 0) "#2E2E2E" else "#26A69A"))
+                    cornerRadii = floatArrayOf(
+                        barRadius, barRadius, barRadius, barRadius, 0f, 0f, 0f, 0f
+                    )
+                }
                 layoutParams = LinearLayout.LayoutParams(
                     (26 * density).toInt(),
                     (barHeightDp * density).toInt()

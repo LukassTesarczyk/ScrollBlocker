@@ -36,4 +36,5 @@
     <string name="notification_channel_name">Блокування активне</string>
     <string name="notification_title">Reels Blocker активний</string>
     <string name="notification_text">Блокування Instagram Reels. Натисніть «Зупинити» в застосунку, щоб призупинити.</string>
+    <string name="restart_app">Перезапустити застосунок</string>
 </resources>

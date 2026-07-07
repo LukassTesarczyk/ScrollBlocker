@@ -119,6 +119,27 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.12 -- restart appky, hezčí graf, serif font
+
+Díky za potvrzení, že scrollování/vyhazování z Reels už funguje --
+opravdu to vypadá, že to byla ta samá chyba se sebe-nulující session
+(v1.10). Swipe do Reels ze strany necháno, jak jsi napsal, na
+dosledování.
+
+- **Nové tlačítko "Restart App"** úplně dole v Settings, červené.
+  Tvrdě ukončí celý proces appky (včetně accessibility služby, co v
+  něm běží) a appka se sama za chvíli znovu spustí -- rychlejší
+  alternativa k restartu celého telefonu, kdyby appka zase přestala
+  reagovat.
+- **Zaoblené rohy sloupců** v grafu "Last 7 days".
+- **Font appky přepnut na serif** (Android bohužel nemá skutečné Times
+  New Roman zabalené -- je to komerční font od Monotype, ne součást
+  Androidu -- takže appka používá vestavěný "serif" font, který má
+  hodně podobný klasický vzhled).
+- Ikonka appky s mozkem zatím čeká -- obrázek přišel jen jako náhled
+  v chatu, ne jako příloha, takže se k němu nedostanu. Pošli ho prosím
+  znovu jako soubor (stejně jako logy) a přidám ho hned příště.
+
 ## v1.11 -- oznámení doopravdy vyskočí, méně manuálního klikání
 
 - **Oznámení o zapnutém blokování teď doopravdy vyskočí** (heads-up),

@@ -36,4 +36,5 @@
     <string name="notification_channel_name">Aktivní blokování</string>
     <string name="notification_title">Reels Blocker je aktivní</string>
     <string name="notification_text">Blokuje Instagram Reels. Zastavíš to tlačítkem Stop v appce.</string>
+    <string name="restart_app">Restartovat appku</string>
 </resources>

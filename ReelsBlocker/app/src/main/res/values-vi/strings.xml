@@ -36,4 +36,5 @@
     <string name="notification_channel_name">Đang chặn</string>
     <string name="notification_title">Reels Blocker đang hoạt động</string>
     <string name="notification_text">Đang chặn Instagram Reels. Nhấn Dừng trong ứng dụng để tạm dừng.</string>
+    <string name="restart_app">Khởi động lại ứng dụng</string>
 </resources>

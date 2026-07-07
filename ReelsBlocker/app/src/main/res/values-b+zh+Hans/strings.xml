@@ -36,4 +36,5 @@
     <string name="notification_channel_name">屏蔽已启用</string>
     <string name="notification_title">Reels Blocker 正在运行</string>
     <string name="notification_text">正在屏蔽 Instagram Reels。在应用中点击停止即可暂停。</string>
+    <string name="restart_app">重启应用</string>
 </resources>

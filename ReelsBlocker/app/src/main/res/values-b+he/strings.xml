@@ -36,4 +36,5 @@
     <string name="notification_channel_name">חסימה פעילה</string>
     <string name="notification_title">Reels Blocker פעיל</string>
     <string name="notification_text">חוסם את Instagram Reels. הקש על עצור באפליקציה כדי להשהות.</string>
+    <string name="restart_app">הפעל מחדש את האפליקציה</string>
 </resources>

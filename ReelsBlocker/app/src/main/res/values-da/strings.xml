@@ -36,4 +36,5 @@
     <string name="notification_channel_name">Blokering aktiv</string>
     <string name="notification_title">Reels Blocker er aktiv</string>
     <string name="notification_text">Blokerer Instagram Reels. Tryk på Stop i appen for at sætte på pause.</string>
+    <string name="restart_app">Genstart appen</string>
 </resources>

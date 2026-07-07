@@ -1,9 +1,15 @@
 <resources>
+    <!-- Android doesn't bundle actual Times New Roman (it's a Monotype
+         font, not part of AOSP): "serif" is the closest built-in stand-in
+         and gives the whole app that classic serif look everywhere text
+         inherits the theme's default font, including views built in code. -->
     <style name="Theme.ReelsBlocker" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:windowBackground">#121212</item>
         <item name="colorPrimary">#26A69A</item>
         <item name="colorAccent">#26A69A</item>
         <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="fontFamily">serif</item>
     </style>
 
     <!-- Flatter, rounder, lower-case buttons: swaps the default
@@ -14,5 +20,7 @@
         <item name="android:letterSpacing">0</item>
         <item name="android:elevation">0dp</item>
         <item name="rippleColor">#33FFFFFF</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="fontFamily">serif</item>
     </style>
 </resources>

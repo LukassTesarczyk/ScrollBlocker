@@ -36,4 +36,5 @@
     <string name="notification_channel_name">Engelleme etkin</string>
     <string name="notification_title">Reels Blocker etkin</string>
     <string name="notification_text">Instagram Reels engelleniyor. Duraklatmak için uygulamada Durdur\'a dokun.</string>
+    <string name="restart_app">Uygulamayı yeniden başlat</string>
 </resources>

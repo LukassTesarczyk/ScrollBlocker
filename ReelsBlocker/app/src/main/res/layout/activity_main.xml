@@ -256,7 +256,16 @@
                         android:layout_height="wrap_content"
                         android:text="@string/setup_open_other_permissions"
                         android:textColor="#FFFFFF"
-                        android:backgroundTint="#2E2E2E" />
+                        android:backgroundTint="#2E2E2E"
+                        android:layout_marginBottom="28dp" />
+
+                    <Button
+                        android:id="@+id/btnRestartApp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/restart_app"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#C62828" />
 
                 </LinearLayout>
 

@@ -36,4 +36,5 @@
     <string name="notification_channel_name">Bloqueio ativo</string>
     <string name="notification_title">Reels Blocker está ativo</string>
     <string name="notification_text">Bloqueando o Instagram Reels. Toque em Parar no app para pausar.</string>
+    <string name="restart_app">Reiniciar o app</string>
 </resources>

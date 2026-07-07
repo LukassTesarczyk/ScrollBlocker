@@ -36,4 +36,5 @@
     <string name="notification_channel_name">Esto käytössä</string>
     <string name="notification_title">Reels Blocker on aktiivinen</string>
     <string name="notification_text">Estää Instagram Reelsiä. Napauta Pysäytä sovelluksessa keskeyttääksesi.</string>
+    <string name="restart_app">Käynnistä sovellus uudelleen</string>
 </resources>
