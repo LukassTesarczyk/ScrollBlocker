@@ -1,6 +1,7 @@
 package com.example.reelsblocker
 
 import android.accessibilityservice.AccessibilityService
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PixelFormat
@@ -13,7 +14,8 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 
 /**
- * Two independent behaviors:
+ * Two independent behaviors, both togglable at runtime via
+ * PREFS_NAME/KEY_ENABLED (set from MainActivity's Run/Stop switch):
  *
  * 1. "One reel per session" -- lets you watch a single reel (however you
  *    got to it: DM share, tab, profile) then bounces you back the moment
@@ -21,9 +23,14 @@ import android.view.accessibility.AccessibilityNodeInfo
  *
  * 2. Bottom-nav Reels icon covering -- draws a small overlay in the same
  *    color as the nav bar over the Reels tab icon whenever it's visible,
- *    so it's not visible or tappable. This is a visual patch, not a real
- *    removal -- a third-party app cannot edit Instagram's own rendered
- *    UI tree, only draw on top of it.
+ *    so it's not visible or tappable.
+ *
+ * NOTE: Android does not let an app enable/disable its own Accessibility
+ * Service (that's blocked for security reasons -- otherwise malware
+ * could silently re-enable itself). The in-app switch only pauses the
+ * *logic* below; the service itself stays registered with the system.
+ * To fully turn the service off, the user has to do it from
+ * Settings > Accessibility, same as enabling it.
  */
 class ReelsAccessibilityService : AccessibilityService() {
 
@@ -31,13 +38,11 @@ class ReelsAccessibilityService : AccessibilityService() {
         private const val TAG = "ReelsBlocker"
         private const val INSTAGRAM_PACKAGE = "com.instagram.android"
 
-        // Full-screen reel viewer (used for the "one reel per session" rule).
         private val VIEWER_RESOURCE_ID_CANDIDATES = listOf(
             "clips_viewer_view_pager",
             "reel_viewer_root"
         )
 
-        // Bottom tab bar Reels icon (used for the overlay-cover rule).
         private val TAB_ICON_RESOURCE_ID_CANDIDATES = listOf(
             "clips_tab",
             "reels_tab",
@@ -53,38 +58,53 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var allowedReelConsumed = false
     private var lastActionTime = 0L
 
-    private lateinit var windowManager: WindowManager
-    private lateinit var overlayView: View
-    private lateinit var overlayParams: WindowManager.LayoutParams
+    private var windowManager: WindowManager? = null
+    private var overlayView: View? = null
+    private var overlayParams: WindowManager.LayoutParams? = null
     private var overlayAdded = false
+
+    private lateinit var prefs: SharedPreferences
 
     override fun onServiceConnected() {
         super.onServiceConnected()
         Log.d(TAG, "Service connected")
+        prefs = getSharedPreferences(PrefsKeys.PREFS_NAME, MODE_PRIVATE)
         setupOverlay()
     }
 
     private fun setupOverlay() {
-        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+        try {
+            val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+            windowManager = wm
 
-        val isDark = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
-        overlayView = View(this).apply {
-            setBackgroundColor(if (isDark) Color.BLACK else Color.WHITE)
-            visibility = View.GONE
+            val isDark = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
+            val view = View(this).apply {
+                setBackgroundColor(if (isDark) Color.BLACK else Color.WHITE)
+                visibility = View.GONE
+            }
+
+            val params = WindowManager.LayoutParams(
+                0, 0, 0, 0,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+            }
+
+            wm.addView(view, params)
+            overlayView = view
+            overlayParams = params
+            overlayAdded = true
+        } catch (e: Exception) {
+            // If this fails (blocked overlay type, OEM restriction, etc.)
+            // don't take the whole service down with it -- the "one reel
+            // per session" logic below still works fine without the
+            // overlay feature.
+            Log.w(TAG, "Overlay setup failed, continuing without icon-cover feature: ${e.message}")
+            overlayAdded = false
         }
-
-        overlayParams = WindowManager.LayoutParams(
-            0, 0, 0, 0,
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
-        }
-
-        windowManager.addView(overlayView, overlayParams)
-        overlayAdded = true
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
@@ -93,10 +113,18 @@ class ReelsAccessibilityService : AccessibilityService() {
             return
         }
 
+        if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.KEY_ENABLED, true)) {
+            // Paused from the in-app switch -- do nothing.
+            hideOverlay()
+            return
+        }
+
         val root = rootInActiveWindow ?: return
         try {
             updateOverlay(root)
             handleReelSession(root, event)
+        } catch (e: Exception) {
+            Log.w(TAG, "Error handling accessibility event: ${e.message}")
         } finally {
             root.recycle()
         }
@@ -105,6 +133,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     // ---- Bottom-nav Reels icon covering ----
 
     private fun updateOverlay(root: AccessibilityNodeInfo) {
+        if (!overlayAdded) return
         val tabNode = findTabIconNode(root)
         if (tabNode != null) {
             val bounds = Rect()
@@ -129,14 +158,17 @@ class ReelsAccessibilityService : AccessibilityService() {
     }
 
     private fun showOverlayAt(bounds: Rect) {
-        if (!overlayAdded || bounds.width() <= 0 || bounds.height() <= 0) return
-        overlayParams.x = bounds.left
-        overlayParams.y = bounds.top
-        overlayParams.width = bounds.width()
-        overlayParams.height = bounds.height()
+        val wm = windowManager ?: return
+        val view = overlayView ?: return
+        val params = overlayParams ?: return
+        if (bounds.width() <= 0 || bounds.height() <= 0) return
+        params.x = bounds.left
+        params.y = bounds.top
+        params.width = bounds.width()
+        params.height = bounds.height()
         try {
-            windowManager.updateViewLayout(overlayView, overlayParams)
-            overlayView.visibility = View.VISIBLE
+            wm.updateViewLayout(view, params)
+            view.visibility = View.VISIBLE
         } catch (e: Exception) {
             Log.w(TAG, "Overlay update failed: ${e.message}")
         }
@@ -144,12 +176,15 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     private fun hideOverlay() {
         if (!overlayAdded) return
-        if (overlayView.visibility != View.GONE) {
-            overlayView.visibility = View.GONE
-            overlayParams.width = 0
-            overlayParams.height = 0
+        val wm = windowManager ?: return
+        val view = overlayView ?: return
+        val params = overlayParams ?: return
+        if (view.visibility != View.GONE) {
+            view.visibility = View.GONE
+            params.width = 0
+            params.height = 0
             try {
-                windowManager.updateViewLayout(overlayView, overlayParams)
+                wm.updateViewLayout(view, params)
             } catch (_: Exception) {
             }
         }
@@ -228,7 +263,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         super.onDestroy()
         if (overlayAdded) {
             try {
-                windowManager.removeView(overlayView)
+                windowManager?.removeView(overlayView)
             } catch (_: Exception) {
             }
             overlayAdded = false
