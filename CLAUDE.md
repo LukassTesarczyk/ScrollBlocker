@@ -1,18 +1,16 @@
 # ReelsBlocker -- kontext pro Claude Code
 
-## Struktura repa -- POZOR
+## Struktura repa
 
-Repo se na GitHubu jmenuje `scrollblocker`, ale obsahuje dvě podsložky:
+Repo se na GitHubu jmenuje `scrollblocker`, ale samotný Android projekt
+žije v podsložce **`ReelsBlocker/`** -- working directory pro build je
+`ReelsBlocker/app/build.gradle`, `ReelsBlocker/README.md` atd. CI běží
+z `ReelsBlocker/.github/workflows/android.yml` a je zrcadlený i jako
+`.github/workflows/android.yml` v kořeni repa.
 
-- **`ReelsBlocker/`** -- aktivní projekt, tady se odehrává veškerý vývoj
-  (aktuálně v1.5, `versionCode 6`). Working directory pro build je
-  `ReelsBlocker/app/build.gradle`, `ReelsBlocker/README.md` atd. CI běží
-  z `ReelsBlocker/.github/workflows/android.yml` a je zrcadlený i jako
-  `.github/workflows/android.yml` v kořeni repa.
-- **`ScrollBlocker/`** -- zastaralá kopie z jednoho starého commitu
-  ("Nova verze"), od té doby needitovaná (pořád `versionCode 1`,
-  `v1.0`). Needituj ji, needuplikuj do ní změny -- je to jen pozůstatek
-  z doby, kdy se appka přejmenovávala.
+(Dřív tu byla i zastaralá duplicitní složka `ScrollBlocker/` z jednoho
+starého commitu -- byla needitovaná od "Nova verze" a nikde
+nepoužívaná, takže byla smazaná.)
 
 Pokud dole v textu není řečeno jinak, veškeré cesty k souborům
 (`app/build.gradle`, `README.md`, `ReelsAccessibilityService.kt`,
