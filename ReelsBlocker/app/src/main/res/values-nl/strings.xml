@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Detecteert wanneer het Instagram Reels-tabblad open is en verlaat het automatisch. Leest alleen de schermweergave van Instagram -- leest of bewaart geen persoonlijke gegevens en doet niets in andere apps.</string>
+    <string name="run">Start</string>
+    <string name="stop">Stop</string>
+    <string name="total_blocked">Totaal geblokkeerd</string>
+    <string name="today">Vandaag</string>
+    <string name="last_7_days">Laatste 7 dagen</string>
+    <string name="setup_open_accessibility">Toegankelijkheidsinstellingen openen</string>
+    <string name="setup_open_battery">Batterij-instellingen van de app openen</string>
+    <string name="setup_open_other_permissions">App-info openen (overige machtigingen)</string>
+    <string name="setup_instructions">1. Tik op “Toegankelijkheidsinstellingen openen” en schakel “Reels Blocker Service” in. Blijft de schakelaar niet aan: App-info -&gt; ⋮-menu (rechtsboven) -&gt; “Beperkte instellingen toestaan”.
+
+2. Tik op “Batterij-instellingen van de app openen”, zet batterijgebruik op “Geen beperkingen” en schakel Autostart in (specifiek voor Xiaomi/HyperOS).
+
+3. Zelfde scherm -&gt; Overige machtigingen -&gt; sta “Pop-upvensters weergeven terwijl op de achtergrond actief” toe.
+
+4. Open ook recente apps en tik op het slotje bij Reels Blocker zodat HyperOS de app niet op de achtergrond afsluit -- als de service ooit als “werkt niet” verschijnt bij Toegankelijkheid, komt dat meestal hierdoor, en het opnieuw inschakelen van de schakelaar lost het op.
+
+5. Gebruik Run/Stop hierboven om het blokkeren op elk moment te pauzeren, per app.
+
+6. Tik linksboven op de pijl -&gt; Log als er iets misgaat -- kopieer en stuur het door zodat het precies opgelost kan worden.</string>
+    <string name="debug_intro">Het logboek wordt alleen lokaal op dit apparaat opgeslagen -- er wordt niets ergens naartoe verstuurd. Kopieer en deel het als er iets misgaat.</string>
+    <string name="refresh">Vernieuwen</string>
+    <string name="copy">Kopiëren</string>
+    <string name="clear">Wissen</string>
+    <string name="download_txt">Downloaden als .txt</string>
+    <string name="log_copied_toast">Logboek gekopieerd</string>
+    <string name="export_failed_toast">Exporteren van logboek mislukt</string>
+    <string name="export_chooser_title">Logboek opslaan als .txt</string>
+    <string name="menu_overview">Overzicht</string>
+    <string name="menu_settings">Instellingen</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Talen</string>
+    <string name="languages_title">Talen</string>
+    <string name="language_system_default">Systeemtaal</string>
+    <string name="hub_stats">Statistieken</string>
+    <string name="hub_move">Verplaatsen</string>
+    <string name="move_prompt">Tik waar je %1$s naartoe wilt verplaatsen</string>
+    <string name="status_running">Actief</string>
+    <string name="status_stopped">Gestopt</string>
+    <string name="service_enabled">Toegankelijkheidsservice ingeschakeld</string>
+    <string name="service_not_enabled">Toegankelijkheidsservice NIET ingeschakeld -- zie Instellingen in het menu</string>
+    <string name="service_not_implemented">Detectie nog niet geïmplementeerd</string>
+    <string name="not_implemented_note">Detectie voor %1$s is nog niet geïmplementeerd -- Run/Stop wordt bewaard voor later, maar er wordt nog niets geblokkeerd of bijgehouden.</string>
+</resources>

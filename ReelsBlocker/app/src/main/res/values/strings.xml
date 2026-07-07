@@ -1,8 +1,44 @@
 <resources>
     <string name="app_name">Reels Blocker</string>
-    <string name="accessibility_service_description">
-        Watches for the Instagram Reels tab and automatically backs out of it.
-        Only reads on-screen content from Instagram -- does not read or store
-        any personal data, and does not act in any other app.
-    </string>
+    <string name="accessibility_service_description">Watches for the Instagram Reels tab and automatically backs out of it. Only reads on-screen content from Instagram -- does not read or store any personal data, and does not act in any other app.</string>
+
+    <string name="version_format">v%1$s</string>
+
+    <string name="run">Run</string>
+    <string name="stop">Stop</string>
+    <string name="total_blocked">Total blocked</string>
+    <string name="today">Today</string>
+    <string name="last_7_days">Last 7 days</string>
+
+    <string name="setup_open_accessibility">Open Accessibility Settings</string>
+    <string name="setup_open_battery">Open App Battery Settings</string>
+    <string name="setup_open_other_permissions">Open App Info (Other permissions)</string>
+    <string name="setup_instructions">1. Tap \"Open Accessibility Settings\" and enable \"Reels Blocker Service\". If the switch won\'t stay on: App info -> ⋮ menu (top right) -> \"Allow restricted settings\".\n\n2. Tap \"Open App Battery Settings\" and set battery usage to \"No restrictions\" and enable Autostart (Xiaomi/HyperOS specific).\n\n3. Same screen -> Other permissions -> allow \"Display pop-up windows while running in the background\".\n\n4. Also open recent apps and tap the lock icon on Reels Blocker so HyperOS doesn\'t kill it in the background -- if the service ever shows as \"not working\" in Accessibility settings, this is usually why, and re-enabling the toggle fixes it.\n\n5. Use Run/Stop above to pause blocking anytime, per app.\n\n6. Tap the arrow top-left -> Log if something misbehaves -- copy it and send it over so it can be fixed precisely.</string>
+
+    <string name="debug_intro">The log is stored locally on this device only -- nothing is sent anywhere. Copy it and share it if something breaks.</string>
+    <string name="refresh">Refresh</string>
+    <string name="copy">Copy</string>
+    <string name="clear">Clear</string>
+    <string name="download_txt">Download as .txt</string>
+    <string name="log_copied_toast">Log copied</string>
+    <string name="export_failed_toast">Log export failed</string>
+    <string name="export_chooser_title">Save log as .txt</string>
+
+    <string name="menu_overview">Overview</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Languages</string>
+    <string name="languages_title">Languages</string>
+    <string name="language_system_default">System default</string>
+
+    <string name="hub_stats">Stats</string>
+    <string name="hub_move">Move</string>
+    <string name="move_prompt">Tap where to move %1$s</string>
+
+    <string name="status_running">Running</string>
+    <string name="status_stopped">Stopped</string>
+    <string name="service_enabled">Accessibility service enabled</string>
+    <string name="service_not_enabled">Accessibility service NOT enabled -- see Settings in the menu</string>
+    <string name="service_not_implemented">Detection not implemented yet</string>
+    <string name="not_implemented_note">%1$s detection isn\'t implemented yet -- Run/Stop is saved for when it is, but nothing is blocked or tracked for it yet.</string>
 </resources>

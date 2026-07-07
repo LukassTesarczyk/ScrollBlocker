@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Sleduje, kdy je otevřená záložka Instagram Reels, a automaticky z ní odchází. Čte jen obsah na obrazovce Instagramu -- nečte ani neukládá žádná osobní data a v žádné jiné appce nic nedělá.</string>
+    <string name="run">Spustit</string>
+    <string name="stop">Zastavit</string>
+    <string name="total_blocked">Celkem zablokováno</string>
+    <string name="today">Dnes</string>
+    <string name="last_7_days">Posledních 7 dní</string>
+    <string name="setup_open_accessibility">Otevřít nastavení přístupnosti</string>
+    <string name="setup_open_battery">Otevřít nastavení baterie appky</string>
+    <string name="setup_open_other_permissions">Otevřít info o appce (Další oprávnění)</string>
+    <string name="setup_instructions">1. Klepni na „Otevřít nastavení přístupnosti“ a zapni „Reels Blocker Service“. Pokud přepínač nezůstane zapnutý: Info o appce -&gt; nabídka ⋮ (vpravo nahoře) -&gt; „Povolit omezená nastavení“.
+
+2. Klepni na „Otevřít nastavení baterie appky“ a nastav využití baterie na „Bez omezení“ a zapni Autostart (specifické pro Xiaomi/HyperOS).
+
+3. Na stejné obrazovce -&gt; Další oprávnění -&gt; povol „Zobrazovat vyskakovací okna na pozadí“.
+
+4. Otevři taky poslední aplikace a klepni na ikonku zámku u appky Reels Blocker, ať ji HyperOS neukončuje na pozadí -- pokud se služba někdy ukáže jako „nefunkční“ v nastavení přístupnosti, je to obvykle tímhle a pomůže znovu zapnout přepínač.
+
+5. Přepínačem Run/Stop nahoře můžeš blokování kdykoli pozastavit, pro každou appku zvlášť.
+
+6. Klepni na šipku vlevo nahoře -&gt; Log, pokud něco nefunguje -- zkopíruj ho a pošli, ať se to dá přesně opravit.</string>
+    <string name="debug_intro">Log se ukládá lokálně jen v tomto zařízení -- nic se nikam neposílá. Zkopíruj a pošli ho, když se něco pokazí.</string>
+    <string name="refresh">Obnovit</string>
+    <string name="copy">Kopírovat</string>
+    <string name="clear">Smazat</string>
+    <string name="download_txt">Stáhnout jako .txt</string>
+    <string name="log_copied_toast">Log zkopírován</string>
+    <string name="export_failed_toast">Export logu selhal</string>
+    <string name="export_chooser_title">Uložit log jako .txt</string>
+    <string name="menu_overview">Přehled</string>
+    <string name="menu_settings">Nastavení</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Jazyky</string>
+    <string name="languages_title">Jazyky</string>
+    <string name="language_system_default">Podle systému</string>
+    <string name="hub_stats">Statistiky</string>
+    <string name="hub_move">Přesunout</string>
+    <string name="move_prompt">Klepni, kam přesunout %1$s</string>
+    <string name="status_running">Běží</string>
+    <string name="status_stopped">Zastaveno</string>
+    <string name="service_enabled">Služba přístupnosti je zapnutá</string>
+    <string name="service_not_enabled">Služba přístupnosti NENÍ zapnutá -- viz Nastavení v menu</string>
+    <string name="service_not_implemented">Detekce zatím není implementována</string>
+    <string name="not_implemented_note">%1$s zatím nemá implementovanou detekci -- Run/Stop se ukládá pro až to bude hotové, ale zatím nic neblokuje ani nesleduje.</string>
+</resources>

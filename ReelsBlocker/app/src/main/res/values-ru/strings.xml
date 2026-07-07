@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Определяет, когда открыта вкладка Instagram Reels, и автоматически выходит из неё. Считывает только содержимое экрана Instagram -- не читает и не сохраняет никакие личные данные и не действует ни в каком другом приложении.</string>
+    <string name="run">Запустить</string>
+    <string name="stop">Остановить</string>
+    <string name="total_blocked">Всего заблокировано</string>
+    <string name="today">Сегодня</string>
+    <string name="last_7_days">Последние 7 дней</string>
+    <string name="setup_open_accessibility">Открыть настройки специальных возможностей</string>
+    <string name="setup_open_battery">Открыть настройки батареи приложения</string>
+    <string name="setup_open_other_permissions">Открыть сведения о приложении (Другие разрешения)</string>
+    <string name="setup_instructions">1. Нажмите «Открыть настройки специальных возможностей» и включите «Reels Blocker Service». Если переключатель не остаётся включённым: Сведения о приложении -&gt; меню ⋮ (вверху справа) -&gt; «Разрешить ограниченные настройки».
+
+2. Нажмите «Открыть настройки батареи приложения», установите использование батареи на «Без ограничений» и включите автозапуск (специфично для Xiaomi/HyperOS).
+
+3. На том же экране -&gt; Другие разрешения -&gt; разрешите «Показ всплывающих окон в фоновом режиме».
+
+4. Также откройте недавние приложения и нажмите значок замка на Reels Blocker, чтобы HyperOS не закрывал его в фоне -- если служба когда-либо покажет статус «не работает» в специальных возможностях, обычно причина именно в этом, и повторное включение переключателя решает проблему.
+
+5. Используйте Run/Stop вверху, чтобы приостановить блокировку в любой момент, отдельно для каждого приложения.
+
+6. Нажмите на стрелку вверху слева -&gt; Log, если что-то работает не так -- скопируйте его и отправьте, чтобы проблему можно было точно исправить.</string>
+    <string name="debug_intro">Журнал сохраняется только локально на этом устройстве -- никуда не отправляется. Скопируйте и отправьте его, если что-то сломалось.</string>
+    <string name="refresh">Обновить</string>
+    <string name="copy">Копировать</string>
+    <string name="clear">Очистить</string>
+    <string name="download_txt">Скачать как .txt</string>
+    <string name="log_copied_toast">Журнал скопирован</string>
+    <string name="export_failed_toast">Не удалось экспортировать журнал</string>
+    <string name="export_chooser_title">Сохранить журнал как .txt</string>
+    <string name="menu_overview">Обзор</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_log">Журнал</string>
+    <string name="menu_languages">Языки</string>
+    <string name="languages_title">Языки</string>
+    <string name="language_system_default">Как в системе</string>
+    <string name="hub_stats">Статистика</string>
+    <string name="hub_move">Переместить</string>
+    <string name="move_prompt">Нажмите, куда переместить %1$s</string>
+    <string name="status_running">Работает</string>
+    <string name="status_stopped">Остановлено</string>
+    <string name="service_enabled">Служба специальных возможностей включена</string>
+    <string name="service_not_enabled">Служба специальных возможностей НЕ включена -- см. Настройки в меню</string>
+    <string name="service_not_implemented">Определение пока не реализовано</string>
+    <string name="not_implemented_note">Определение для %1$s пока не реализовано -- переключатель Run/Stop сохраняется на будущее, но пока ничего не блокируется и не отслеживается.</string>
+</resources>

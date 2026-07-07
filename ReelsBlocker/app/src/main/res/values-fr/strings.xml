@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Détecte quand l\'onglet Instagram Reels est ouvert et le quitte automatiquement. Ne lit que le contenu affiché par Instagram -- ne lit ni ne stocke aucune donnée personnelle, et n\'agit dans aucune autre application.</string>
+    <string name="run">Démarrer</string>
+    <string name="stop">Arrêter</string>
+    <string name="total_blocked">Total bloqué</string>
+    <string name="today">Aujourd\'hui</string>
+    <string name="last_7_days">7 derniers jours</string>
+    <string name="setup_open_accessibility">Ouvrir les paramètres d\'accessibilité</string>
+    <string name="setup_open_battery">Ouvrir les paramètres de batterie de l\'appli</string>
+    <string name="setup_open_other_permissions">Ouvrir les infos de l\'appli (Autres autorisations)</string>
+    <string name="setup_instructions">1. Appuie sur «Ouvrir les paramètres d\'accessibilité» et active «Reels Blocker Service». Si l\'interrupteur ne reste pas activé : Infos de l\'appli -&gt; menu ⋮ (en haut à droite) -&gt; «Autoriser les paramètres restreints».
+
+2. Appuie sur «Ouvrir les paramètres de batterie de l\'appli», règle l\'utilisation de la batterie sur «Aucune restriction» et active le démarrage automatique (spécifique Xiaomi/HyperOS).
+
+3. Même écran -&gt; Autres autorisations -&gt; autorise «Afficher des fenêtres pop-up en arrière-plan».
+
+4. Ouvre aussi les applications récentes et appuie sur l\'icône de cadenas sur Reels Blocker pour que HyperOS ne le ferme pas en arrière-plan -- si le service s\'affiche un jour comme «ne fonctionne pas» dans les paramètres d\'accessibilité, c\'est généralement pour cette raison, et réactiver l\'interrupteur règle le problème.
+
+5. Utilise Run/Stop en haut pour mettre le blocage en pause à tout moment, par application.
+
+6. Appuie sur la flèche en haut à gauche -&gt; Log si quelque chose ne va pas -- copie-le et envoie-le pour que ce soit corrigé précisément.</string>
+    <string name="debug_intro">Le journal est stocké uniquement en local sur cet appareil -- rien n\'est envoyé ailleurs. Copie-le et partage-le en cas de problème.</string>
+    <string name="refresh">Actualiser</string>
+    <string name="copy">Copier</string>
+    <string name="clear">Effacer</string>
+    <string name="download_txt">Télécharger en .txt</string>
+    <string name="log_copied_toast">Journal copié</string>
+    <string name="export_failed_toast">Échec de l\'export du journal</string>
+    <string name="export_chooser_title">Enregistrer le journal en .txt</string>
+    <string name="menu_overview">Aperçu</string>
+    <string name="menu_settings">Paramètres</string>
+    <string name="menu_log">Journal</string>
+    <string name="menu_languages">Langues</string>
+    <string name="languages_title">Langues</string>
+    <string name="language_system_default">Langue du système</string>
+    <string name="hub_stats">Statistiques</string>
+    <string name="hub_move">Déplacer</string>
+    <string name="move_prompt">Touche l\'endroit où déplacer %1$s</string>
+    <string name="status_running">En cours</string>
+    <string name="status_stopped">Arrêté</string>
+    <string name="service_enabled">Service d\'accessibilité activé</string>
+    <string name="service_not_enabled">Service d\'accessibilité NON activé -- voir Paramètres dans le menu</string>
+    <string name="service_not_implemented">Détection pas encore implémentée</string>
+    <string name="not_implemented_note">La détection pour %1$s n\'est pas encore implémentée -- Run/Stop est enregistré pour plus tard, mais rien n\'est encore bloqué ni suivi.</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Upptäcker när Instagram Reels-fliken är öppen och lämnar den automatiskt. Läser bara skärminnehåll från Instagram -- läser eller sparar inga personuppgifter och gör inget i någon annan app.</string>
+    <string name="run">Starta</string>
+    <string name="stop">Stoppa</string>
+    <string name="total_blocked">Totalt blockerade</string>
+    <string name="today">Idag</string>
+    <string name="last_7_days">Senaste 7 dagarna</string>
+    <string name="setup_open_accessibility">Öppna tillgänglighetsinställningar</string>
+    <string name="setup_open_battery">Öppna appens batteriinställningar</string>
+    <string name="setup_open_other_permissions">Öppna appinfo (övriga behörigheter)</string>
+    <string name="setup_instructions">1. Tryck på “Öppna tillgänglighetsinställningar” och aktivera “Reels Blocker Service”. Om reglaget inte förblir aktiverat: Appinfo -&gt; ⋮-menyn (uppe till höger) -&gt; “Tillåt begränsade inställningar”.
+
+2. Tryck på “Öppna appens batteriinställningar”, ställ batterianvändning till “Inga begränsningar” och aktivera Autostart (specifikt för Xiaomi/HyperOS).
+
+3. Samma skärm -&gt; Övriga behörigheter -&gt; tillåt “Visa popup-fönster medan appen körs i bakgrunden”.
+
+4. Öppna även senaste appar och tryck på hänglåsikonen vid Reels Blocker så att HyperOS inte stänger den i bakgrunden -- om tjänsten någonsin visas som “fungerar inte” under tillgänglighet beror det oftast på detta, och att aktivera reglaget igen löser det.
+
+5. Använd Run/Stop ovan för att pausa blockeringen när som helst, per app.
+
+6. Tryck på pilen uppe till vänster -&gt; Log om något krånglar -- kopiera och skicka den så att det kan åtgärdas exakt.</string>
+    <string name="debug_intro">Loggen sparas endast lokalt på den här enheten -- inget skickas någonstans. Kopiera och dela den om något går sönder.</string>
+    <string name="refresh">Uppdatera</string>
+    <string name="copy">Kopiera</string>
+    <string name="clear">Rensa</string>
+    <string name="download_txt">Ladda ner som .txt</string>
+    <string name="log_copied_toast">Logg kopierad</string>
+    <string name="export_failed_toast">Export av logg misslyckades</string>
+    <string name="export_chooser_title">Spara logg som .txt</string>
+    <string name="menu_overview">Översikt</string>
+    <string name="menu_settings">Inställningar</string>
+    <string name="menu_log">Logg</string>
+    <string name="menu_languages">Språk</string>
+    <string name="languages_title">Språk</string>
+    <string name="language_system_default">Systemstandard</string>
+    <string name="hub_stats">Statistik</string>
+    <string name="hub_move">Flytta</string>
+    <string name="move_prompt">Tryck var %1$s ska flyttas</string>
+    <string name="status_running">Igång</string>
+    <string name="status_stopped">Stoppad</string>
+    <string name="service_enabled">Tillgänglighetstjänst aktiverad</string>
+    <string name="service_not_enabled">Tillgänglighetstjänst INTE aktiverad -- se Inställningar i menyn</string>
+    <string name="service_not_implemented">Identifiering inte implementerad än</string>
+    <string name="not_implemented_note">Identifiering för %1$s är inte implementerad än -- Run/Stop sparas till senare, men just nu blockeras eller registreras inget.</string>
+</resources>

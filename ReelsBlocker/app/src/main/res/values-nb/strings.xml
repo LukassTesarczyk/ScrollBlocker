@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Oppdager når Instagram Reels-fanen er åpen og forlater den automatisk. Leser bare skjerminnhold fra Instagram -- leser eller lagrer ingen personopplysninger, og gjør ingenting i noen annen app.</string>
+    <string name="run">Start</string>
+    <string name="stop">Stopp</string>
+    <string name="total_blocked">Totalt blokkert</string>
+    <string name="today">I dag</string>
+    <string name="last_7_days">Siste 7 dager</string>
+    <string name="setup_open_accessibility">Åpne tilgjengelighetsinnstillinger</string>
+    <string name="setup_open_battery">Åpne appens batteriinnstillinger</string>
+    <string name="setup_open_other_permissions">Åpne appinfo (andre tillatelser)</string>
+    <string name="setup_instructions">1. Trykk på «Åpne tilgjengelighetsinnstillinger» og slå på «Reels Blocker Service». Hvis bryteren ikke forblir på: Appinfo -&gt; ⋮-meny (øverst til høyre) -&gt; «Tillat begrensede innstillinger».
+
+2. Trykk på «Åpne appens batteriinnstillinger», sett batteribruk til «Ingen begrensninger» og slå på autostart (spesifikt for Xiaomi/HyperOS).
+
+3. Samme skjerm -&gt; Andre tillatelser -&gt; tillat «Vis sprettoppvinduer mens appen kjører i bakgrunnen».
+
+4. Åpne også nylige apper og trykk på hengelåsikonet ved Reels Blocker, slik at HyperOS ikke lukker den i bakgrunnen -- hvis tjenesten noen gang vises som «fungerer ikke» under tilgjengelighet, skyldes det som regel dette, og det løses ved å slå bryteren på igjen.
+
+5. Bruk Run/Stop over til å sette blokkeringen på pause når som helst, per app.
+
+6. Trykk på pilen øverst til venstre -&gt; Log hvis noe ikke fungerer -- kopier den og send den så det kan rettes presist.</string>
+    <string name="debug_intro">Loggen lagres kun lokalt på denne enheten -- ingenting sendes noe sted. Kopier og del den hvis noe går galt.</string>
+    <string name="refresh">Oppdater</string>
+    <string name="copy">Kopier</string>
+    <string name="clear">Tøm</string>
+    <string name="download_txt">Last ned som .txt</string>
+    <string name="log_copied_toast">Logg kopiert</string>
+    <string name="export_failed_toast">Eksport av logg mislyktes</string>
+    <string name="export_chooser_title">Lagre logg som .txt</string>
+    <string name="menu_overview">Oversikt</string>
+    <string name="menu_settings">Innstillinger</string>
+    <string name="menu_log">Logg</string>
+    <string name="menu_languages">Språk</string>
+    <string name="languages_title">Språk</string>
+    <string name="language_system_default">Systemstandard</string>
+    <string name="hub_stats">Statistikk</string>
+    <string name="hub_move">Flytt</string>
+    <string name="move_prompt">Trykk hvor %1$s skal flyttes</string>
+    <string name="status_running">Kjører</string>
+    <string name="status_stopped">Stoppet</string>
+    <string name="service_enabled">Tilgjengelighetstjeneste aktivert</string>
+    <string name="service_not_enabled">Tilgjengelighetstjeneste IKKE aktivert -- se Innstillinger i menyen</string>
+    <string name="service_not_implemented">Deteksjon er ikke implementert ennå</string>
+    <string name="not_implemented_note">Deteksjon for %1$s er ikke implementert ennå -- Run/Stop lagres til senere, men foreløpig blokkeres eller registreres ingenting.</string>
+</resources>

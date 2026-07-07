@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Визначає, коли відкрита вкладка Instagram Reels, і автоматично виходить з неї. Зчитує лише вміст екрана Instagram -- не зчитує й не зберігає жодних особистих даних і не діє в жодному іншому додатку.</string>
+    <string name="run">Запустити</string>
+    <string name="stop">Зупинити</string>
+    <string name="total_blocked">Всього заблоковано</string>
+    <string name="today">Сьогодні</string>
+    <string name="last_7_days">Останні 7 днів</string>
+    <string name="setup_open_accessibility">Відкрити налаштування спеціальних можливостей</string>
+    <string name="setup_open_battery">Відкрити налаштування батареї застосунку</string>
+    <string name="setup_open_other_permissions">Відкрити інформацію про застосунок (Інші дозволи)</string>
+    <string name="setup_instructions">1. Натисніть «Відкрити налаштування спеціальних можливостей» і увімкніть «Reels Blocker Service». Якщо перемикач не залишається увімкненим: Інформація про застосунок -&gt; меню ⋮ (вгорі праворуч) -&gt; «Дозволити обмежені налаштування».
+
+2. Натисніть «Відкрити налаштування батареї застосунку», встановіть використання батареї на «Без обмежень» і увімкніть автозапуск (специфічно для Xiaomi/HyperOS).
+
+3. На тому ж екрані -&gt; Інші дозволи -&gt; дозвольте «Показ спливаючих вікон у фоновому режимі».
+
+4. Також відкрийте нещодавні застосунки й натисніть значок замка на Reels Blocker, щоб HyperOS не закривав його у фоні -- якщо служба колись покаже статус «не працює» в спеціальних можливостях, зазвичай причина саме в цьому, і повторне увімкнення перемикача вирішує проблему.
+
+5. Використовуйте Run/Stop вгорі, щоб призупинити блокування в будь-який момент, окремо для кожного застосунку.
+
+6. Натисніть на стрілку вгорі ліворуч -&gt; Log, якщо щось працює не так -- скопіюйте його та надішліть, щоб проблему можна було точно виправити.</string>
+    <string name="debug_intro">Журнал зберігається лише локально на цьому пристрої -- нікуди не надсилається. Скопіюйте та надішліть його, якщо щось зламалося.</string>
+    <string name="refresh">Оновити</string>
+    <string name="copy">Копіювати</string>
+    <string name="clear">Очистити</string>
+    <string name="download_txt">Завантажити як .txt</string>
+    <string name="log_copied_toast">Журнал скопійовано</string>
+    <string name="export_failed_toast">Не вдалося експортувати журнал</string>
+    <string name="export_chooser_title">Зберегти журнал як .txt</string>
+    <string name="menu_overview">Огляд</string>
+    <string name="menu_settings">Налаштування</string>
+    <string name="menu_log">Журнал</string>
+    <string name="menu_languages">Мови</string>
+    <string name="languages_title">Мови</string>
+    <string name="language_system_default">Як у системі</string>
+    <string name="hub_stats">Статистика</string>
+    <string name="hub_move">Перемістити</string>
+    <string name="move_prompt">Торкніться, куди перемістити %1$s</string>
+    <string name="status_running">Працює</string>
+    <string name="status_stopped">Зупинено</string>
+    <string name="service_enabled">Службу спеціальних можливостей увімкнено</string>
+    <string name="service_not_enabled">Службу спеціальних можливостей НЕ увімкнено -- див. Налаштування в меню</string>
+    <string name="service_not_implemented">Визначення ще не реалізовано</string>
+    <string name="not_implemented_note">Визначення для %1$s ще не реалізовано -- перемикач Run/Stop зберігається на майбутнє, але поки що нічого не блокується й не відстежується.</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Открива кога е отворен разделът Instagram Reels и автоматично излиза от него. Чете само съдържанието на екрана на Instagram -- не чете и не съхранява лични данни и не действа в никое друго приложение.</string>
+    <string name="run">Старт</string>
+    <string name="stop">Стоп</string>
+    <string name="total_blocked">Общо блокирани</string>
+    <string name="today">Днес</string>
+    <string name="last_7_days">Последните 7 дни</string>
+    <string name="setup_open_accessibility">Отвори настройки за достъпност</string>
+    <string name="setup_open_battery">Отвори настройки за батерията на приложението</string>
+    <string name="setup_open_other_permissions">Отвори информация за приложението (Други разрешения)</string>
+    <string name="setup_instructions">1. Докосни „Отвори настройки за достъпност“ и включи „Reels Blocker Service“. Ако превключвателят не остане включен: Информация за приложението -&gt; меню ⋮ (горе вдясно) -&gt; „Разреши ограничени настройки“.
+
+2. Докосни „Отвори настройки за батерията на приложението“, задай използване на батерията на „Без ограничения“ и включи автоматично стартиране (специфично за Xiaomi/HyperOS).
+
+3. На същия екран -&gt; Други разрешения -&gt; разреши „Показване на изскачащи прозорци във фонов режим“.
+
+4. Отвори също скорошните приложения и докосни иконата с катинар при Reels Blocker, за да не го спира HyperOS във фонов режим -- ако услугата някога се покаже като „не работи“ в достъпността, обикновено причината е тази, а повторното включване на превключвателя го решава.
+
+5. Използвай Run/Stop по-горе, за да поставиш блокирането на пауза по всяко време, за всяко приложение поотделно.
+
+6. Докосни стрелката горе вляво -&gt; Log, ако нещо не работи -- копирай го и го изпрати, за да може да бъде поправено точно.</string>
+    <string name="debug_intro">Логът се съхранява само локално на това устройство -- нищо не се изпраща никъде. Копирай го и го сподели, ако нещо се счупи.</string>
+    <string name="refresh">Опресни</string>
+    <string name="copy">Копирай</string>
+    <string name="clear">Изчисти</string>
+    <string name="download_txt">Изтегли като .txt</string>
+    <string name="log_copied_toast">Логът е копиран</string>
+    <string name="export_failed_toast">Износът на лога се провали</string>
+    <string name="export_chooser_title">Запази лога като .txt</string>
+    <string name="menu_overview">Преглед</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Езици</string>
+    <string name="languages_title">Езици</string>
+    <string name="language_system_default">По подразбиране от системата</string>
+    <string name="hub_stats">Статистика</string>
+    <string name="hub_move">Премести</string>
+    <string name="move_prompt">Докосни къде да преместиш %1$s</string>
+    <string name="status_running">Работи</string>
+    <string name="status_stopped">Спряно</string>
+    <string name="service_enabled">Услугата за достъпност е включена</string>
+    <string name="service_not_enabled">Услугата за достъпност НЕ е включена -- виж Настройки в менюто</string>
+    <string name="service_not_implemented">Разпознаването все още не е реализирано</string>
+    <string name="not_implemented_note">Разпознаването за %1$s все още не е реализирано -- Run/Stop се запазва за по-късно, но засега нищо не се блокира и не се проследява.</string>
+</resources>

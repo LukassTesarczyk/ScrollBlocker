@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">يكتشف عند فتح تبويب Instagram Reels ويخرج منه تلقائيًا. يقرأ فقط محتوى الشاشة من إنستغرام -- لا يقرأ أو يخزّن أي بيانات شخصية، ولا يعمل في أي تطبيق آخر.</string>
+    <string name="run">تشغيل</string>
+    <string name="stop">إيقاف</string>
+    <string name="total_blocked">إجمالي المحظور</string>
+    <string name="today">اليوم</string>
+    <string name="last_7_days">آخر 7 أيام</string>
+    <string name="setup_open_accessibility">فتح إعدادات إمكانية الوصول</string>
+    <string name="setup_open_battery">فتح إعدادات بطارية التطبيق</string>
+    <string name="setup_open_other_permissions">فتح معلومات التطبيق (أذونات أخرى)</string>
+    <string name="setup_instructions">1. اضغط على «فتح إعدادات إمكانية الوصول» وفعّل «Reels Blocker Service». إذا لم يبقَ المفتاح مفعّلًا: معلومات التطبيق -&gt; القائمة ⋮ (أعلى اليمين) -&gt; «السماح بالإعدادات المقيدة».
+
+2. اضغط على «فتح إعدادات بطارية التطبيق» واضبط استخدام البطارية على «بلا قيود» وفعّل التشغيل التلقائي (خاص بأجهزة Xiaomi/HyperOS).
+
+3. في نفس الشاشة -&gt; أذونات أخرى -&gt; اسمح بـ «عرض النوافذ المنبثقة أثناء العمل في الخلفية».
+
+4. افتح أيضًا التطبيقات الأخيرة واضغط على أيقونة القفل بجانب Reels Blocker حتى لا يوقفه HyperOS في الخلفية -- إذا ظهرت الخدمة يومًا كـ «لا تعمل» في إمكانية الوصول، فهذا غالبًا هو السبب، وإعادة تفعيل المفتاح يحل المشكلة.
+
+5. استخدم Run/Stop أعلاه لإيقاف الحظر مؤقتًا في أي وقت، لكل تطبيق على حدة.
+
+6. اضغط على السهم أعلى اليسار -&gt; Log إذا حدث خلل -- انسخه وأرسله ليتم إصلاحه بدقة.</string>
+    <string name="debug_intro">يُحفظ السجل محليًا على هذا الجهاز فقط -- لا يُرسل شيء إلى أي مكان. انسخه وشاركه إذا حدث عطل.</string>
+    <string name="refresh">تحديث</string>
+    <string name="copy">نسخ</string>
+    <string name="clear">مسح</string>
+    <string name="download_txt">تنزيل كملف .txt</string>
+    <string name="log_copied_toast">تم نسخ السجل</string>
+    <string name="export_failed_toast">فشل تصدير السجل</string>
+    <string name="export_chooser_title">حفظ السجل كملف .txt</string>
+    <string name="menu_overview">نظرة عامة</string>
+    <string name="menu_settings">الإعدادات</string>
+    <string name="menu_log">السجل</string>
+    <string name="menu_languages">اللغات</string>
+    <string name="languages_title">اللغات</string>
+    <string name="language_system_default">افتراضي النظام</string>
+    <string name="hub_stats">الإحصائيات</string>
+    <string name="hub_move">نقل</string>
+    <string name="move_prompt">اضغط على المكان الذي تريد نقل %1$s إليه</string>
+    <string name="status_running">قيد التشغيل</string>
+    <string name="status_stopped">متوقف</string>
+    <string name="service_enabled">خدمة إمكانية الوصول مفعّلة</string>
+    <string name="service_not_enabled">خدمة إمكانية الوصول غير مفعّلة -- راجع الإعدادات في القائمة</string>
+    <string name="service_not_implemented">الكشف غير متوفر بعد</string>
+    <string name="not_implemented_note">الكشف الخاص بـ %1$s غير متوفر بعد -- يُحفظ إعداد Run/Stop لوقت جاهزيته، لكن لا يوجد حاليًا أي حظر أو تتبع.</string>
+</resources>

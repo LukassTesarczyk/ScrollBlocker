@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Érzékeli, amikor megnyílik az Instagram Reels fül, és automatikusan kilép belőle. Csak az Instagram képernyőtartalmát olvassa -- nem olvas és nem tárol semmilyen személyes adatot, és más alkalmazásban nem tesz semmit.</string>
+    <string name="run">Indítás</string>
+    <string name="stop">Leállítás</string>
+    <string name="total_blocked">Összesen blokkolva</string>
+    <string name="today">Ma</string>
+    <string name="last_7_days">Elmúlt 7 nap</string>
+    <string name="setup_open_accessibility">Kisegítő lehetőségek megnyitása</string>
+    <string name="setup_open_battery">Alkalmazás akkumulátor-beállításainak megnyitása</string>
+    <string name="setup_open_other_permissions">Alkalmazásinformáció megnyitása (Egyéb engedélyek)</string>
+    <string name="setup_instructions">1. Koppints a „Kisegítő lehetőségek megnyitása” gombra, és kapcsold be a „Reels Blocker Service” szolgáltatást. Ha a kapcsoló nem marad bekapcsolva: Alkalmazásinformáció -&gt; ⋮ menü (jobb felül) -&gt; „Korlátozott beállítások engedélyezése”.
+
+2. Koppints az „Alkalmazás akkumulátor-beállításainak megnyitása” gombra, állítsd az akkumulátor-használatot „Nincs korlátozás” értékre, és kapcsold be az automatikus indítást (Xiaomi/HyperOS-specifikus).
+
+3. Ugyanezen a képernyőn -&gt; Egyéb engedélyek -&gt; engedélyezd a „Felugró ablakok megjelenítése háttérben futás közben” lehetőséget.
+
+4. Nyisd meg a legutóbbi alkalmazásokat is, és koppints a lakat ikonra a Reels Blockernél, hogy a HyperOS ne zárja be a háttérben -- ha a szolgáltatás valaha „nem működik” állapotban jelenik meg a kisegítő lehetőségeknél, ez általában emiatt van, és a kapcsoló újbóli bekapcsolása megoldja.
+
+5. A fenti Run/Stop kapcsolóval bármikor szüneteltetheted a blokkolást, alkalmazásonként.
+
+6. Koppints a bal felső nyílra -&gt; Log, ha valami nem működik -- másold ki, és küldd el, hogy pontosan ki lehessen javítani.</string>
+    <string name="debug_intro">A napló csak helyben, ezen az eszközön tárolódik -- semmi nem kerül elküldésre sehova. Másold ki és oszd meg, ha valami elromlik.</string>
+    <string name="refresh">Frissítés</string>
+    <string name="copy">Másolás</string>
+    <string name="clear">Törlés</string>
+    <string name="download_txt">Letöltés .txt fájlként</string>
+    <string name="log_copied_toast">Napló kimásolva</string>
+    <string name="export_failed_toast">A napló exportálása sikertelen</string>
+    <string name="export_chooser_title">Napló mentése .txt fájlként</string>
+    <string name="menu_overview">Áttekintés</string>
+    <string name="menu_settings">Beállítások</string>
+    <string name="menu_log">Napló</string>
+    <string name="menu_languages">Nyelvek</string>
+    <string name="languages_title">Nyelvek</string>
+    <string name="language_system_default">Rendszer alapértelmezett</string>
+    <string name="hub_stats">Statisztika</string>
+    <string name="hub_move">Áthelyezés</string>
+    <string name="move_prompt">Koppints oda, ahová a(z) %1$s kerüljön</string>
+    <string name="status_running">Fut</string>
+    <string name="status_stopped">Leállítva</string>
+    <string name="service_enabled">A kisegítő szolgáltatás engedélyezve</string>
+    <string name="service_not_enabled">A kisegítő szolgáltatás NINCS engedélyezve -- lásd Beállítások a menüben</string>
+    <string name="service_not_implemented">A felismerés még nincs megvalósítva</string>
+    <string name="not_implemented_note">A(z) %1$s felismerése még nincs megvalósítva -- a Run/Stop elmentődik későbbre, de egyelőre semmi nincs blokkolva vagy követve.</string>
+</resources>

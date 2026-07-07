@@ -96,7 +96,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginEnd="6dp"
-                            android:text="Run"
+                            android:text="@string/run"
                             android:textColor="#FFFFFF"
                             android:backgroundTint="#26A69A" />
 
@@ -106,7 +106,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="6dp"
-                            android:text="Stop"
+                            android:text="@string/stop"
                             android:textColor="#FFFFFF"
                             android:backgroundTint="#2E2E2E" />
 
@@ -159,7 +159,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
                             <TextView
-                                android:text="Total blocked"
+                                android:text="@string/total_blocked"
                                 android:textColor="#808080"
                                 android:textSize="12sp"
                                 android:layout_width="wrap_content"
@@ -179,7 +179,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
                             <TextView
-                                android:text="Today"
+                                android:text="@string/today"
                                 android:textColor="#808080"
                                 android:textSize="12sp"
                                 android:layout_width="wrap_content"
@@ -196,7 +196,7 @@
                         android:padding="18dp">
 
                         <TextView
-                            android:text="Last 7 days"
+                            android:text="@string/last_7_days"
                             android:textColor="#808080"
                             android:textSize="13sp"
                             android:layout_marginBottom="10dp"
@@ -237,7 +237,7 @@
                         android:id="@+id/btnOpenAccessibility"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Open Accessibility Settings"
+                        android:text="@string/setup_open_accessibility"
                         android:textColor="#FFFFFF"
                         android:backgroundTint="#2E2E2E"
                         android:layout_marginBottom="10dp" />
@@ -246,7 +246,7 @@
                         android:id="@+id/btnOpenBatterySettings"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Open App Battery Settings"
+                        android:text="@string/setup_open_battery"
                         android:textColor="#FFFFFF"
                         android:backgroundTint="#2E2E2E"
                         android:layout_marginBottom="10dp" />
@@ -255,7 +255,7 @@
                         android:id="@+id/btnOpenOtherPermissions"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Open App Info (Other permissions)"
+                        android:text="@string/setup_open_other_permissions"
                         android:textColor="#FFFFFF"
                         android:backgroundTint="#2E2E2E" />
 
@@ -272,7 +272,7 @@
                     android:visibility="gone">
 
                     <TextView
-                        android:text="Log se ukládá lokálně v appce -- nic se nikam neposílá. Zkopíruj a pošli, když se něco pokazí."
+                        android:text="@string/debug_intro"
                         android:textColor="#808080"
                         android:textSize="12sp"
                         android:layout_marginBottom="14dp"
@@ -291,7 +291,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginEnd="4dp"
-                            android:text="Refresh"
+                            android:text="@string/refresh"
                             android:textSize="12sp"
                             android:textColor="#FFFFFF"
                             android:backgroundTint="#2E2E2E" />
@@ -303,7 +303,7 @@
                             android:layout_weight="1"
                             android:layout_marginStart="4dp"
                             android:layout_marginEnd="4dp"
-                            android:text="Copy"
+                            android:text="@string/copy"
                             android:textSize="12sp"
                             android:textColor="#FFFFFF"
                             android:backgroundTint="#2E2E2E" />
@@ -314,12 +314,22 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="4dp"
-                            android:text="Clear"
+                            android:text="@string/clear"
                             android:textSize="12sp"
                             android:textColor="#FFFFFF"
                             android:backgroundTint="#C62828" />
 
                     </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnDownloadLog"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/download_txt"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#2E2E2E"
+                        android:layout_marginBottom="14dp" />
 
                     <ScrollView
                         android:layout_width="match_parent"
@@ -337,6 +347,33 @@
                             android:text="" />
 
                     </ScrollView>
+
+                </LinearLayout>
+
+                <!-- Languages -->
+                <LinearLayout
+                    android:id="@+id/languagesContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card"
+                    android:padding="10dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:text="@string/languages_title"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:padding="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <LinearLayout
+                        android:id="@+id/languageList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
 
                 </LinearLayout>
 
@@ -371,15 +408,13 @@
                     android:layout_gravity="center"
                     android:orientation="vertical"
                     android:gravity="center">
-                    <TextView
+                    <ImageView
                         android:id="@+id/hubInstagramIcon"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:gravity="center"
-                        android:textColor="#FFFFFF"
-                        android:textStyle="bold"
-                        android:textSize="12sp"
-                        android:text="IG" />
+                        android:padding="6dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_instagram" />
                     <TextView
                         android:id="@+id/hubInstagramLabel"
                         android:text="Instagram"
@@ -419,15 +454,13 @@
                     android:layout_gravity="center"
                     android:orientation="vertical"
                     android:gravity="center">
-                    <TextView
+                    <ImageView
                         android:id="@+id/hubTiktokIcon"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:gravity="center"
-                        android:textColor="#FFFFFF"
-                        android:textStyle="bold"
-                        android:textSize="12sp"
-                        android:text="TT" />
+                        android:padding="6dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_tiktok" />
                     <TextView
                         android:id="@+id/hubTiktokLabel"
                         android:text="TikTok"
@@ -467,15 +500,13 @@
                     android:layout_gravity="center"
                     android:orientation="vertical"
                     android:gravity="center">
-                    <TextView
+                    <ImageView
                         android:id="@+id/hubSnapchatIcon"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:gravity="center"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        android:textSize="12sp"
-                        android:text="SC" />
+                        android:padding="6dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_snapchat" />
                     <TextView
                         android:id="@+id/hubSnapchatLabel"
                         android:text="Snapchat"
@@ -542,7 +573,7 @@
             android:id="@+id/btnMenuOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Overview"
+            android:text="@string/menu_overview"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             android:padding="14dp"
@@ -555,7 +586,7 @@
             android:id="@+id/btnMenuSetup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Settings"
+            android:text="@string/menu_settings"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             android:padding="14dp"
@@ -568,7 +599,92 @@
             android:id="@+id/btnMenuDebug"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Log"
+            android:text="@string/menu_log"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="@drawable/bg_menu_item"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/btnMenuLanguages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_languages"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="@drawable/bg_menu_item"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+    <!-- Hub long-press action sheet: scrim + small card above the hub bar -->
+    <View
+        android:id="@+id/hubSheetScrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <LinearLayout
+        android:id="@+id/hubActionSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="92dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_card"
+        android:elevation="12dp"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvHubSheetTitle"
+            android:text="Instagram"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/btnHubStats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hub_stats"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="@drawable/bg_menu_item"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/btnHubMove"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hub_move"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:padding="14dp"
+            android:background="@drawable/bg_menu_item"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/btnHubToggleRun"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stop"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             android:padding="14dp"

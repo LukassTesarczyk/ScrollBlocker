@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Otkriva kada je otvorena kartica Instagram Reels i automatski je napušta. Čita samo sadržaj zaslona Instagrama -- ne čita niti pohranjuje osobne podatke i ne djeluje ni u jednoj drugoj aplikaciji.</string>
+    <string name="run">Pokreni</string>
+    <string name="stop">Zaustavi</string>
+    <string name="total_blocked">Ukupno blokirano</string>
+    <string name="today">Danas</string>
+    <string name="last_7_days">Posljednjih 7 dana</string>
+    <string name="setup_open_accessibility">Otvori postavke pristupačnosti</string>
+    <string name="setup_open_battery">Otvori postavke baterije aplikacije</string>
+    <string name="setup_open_other_permissions">Otvori informacije o aplikaciji (Ostale dozvole)</string>
+    <string name="setup_instructions">1. Dodirni “Otvori postavke pristupačnosti” i uključi “Reels Blocker Service”. Ako prekidač ne ostane uključen: Informacije o aplikaciji -&gt; izbornik ⋮ (gore desno) -&gt; “Dopusti ograničene postavke”.
+
+2. Dodirni “Otvori postavke baterije aplikacije”, postavi potrošnju baterije na “Bez ograničenja” i uključi automatsko pokretanje (specifično za Xiaomi/HyperOS).
+
+3. Na istom zaslonu -&gt; Ostale dozvole -&gt; dopusti “Prikaz skočnih prozora dok radi u pozadini”.
+
+4. Otvori i nedavne aplikacije te dodirni ikonu lokota kod Reels Blockera kako ga HyperOS ne bi zatvarao u pozadini -- ako se usluga ikada prikaže kao “ne radi” u pristupačnosti, obično je to razlog, a ponovno uključivanje prekidača to rješava.
+
+5. Koristi Run/Stop iznad za privremenu obustavu blokiranja u bilo kojem trenutku, po aplikaciji.
+
+6. Dodirni strelicu gore lijevo -&gt; Log ako nešto ne radi -- kopiraj ga i pošalji kako bi se moglo precizno popraviti.</string>
+    <string name="debug_intro">Zapisnik se pohranjuje samo lokalno na ovom uređaju -- ništa se nikamo ne šalje. Kopiraj ga i podijeli ako nešto ne radi kako treba.</string>
+    <string name="refresh">Osvježi</string>
+    <string name="copy">Kopiraj</string>
+    <string name="clear">Izbriši</string>
+    <string name="download_txt">Preuzmi kao .txt</string>
+    <string name="log_copied_toast">Zapisnik kopiran</string>
+    <string name="export_failed_toast">Izvoz zapisnika nije uspio</string>
+    <string name="export_chooser_title">Spremi zapisnik kao .txt</string>
+    <string name="menu_overview">Pregled</string>
+    <string name="menu_settings">Postavke</string>
+    <string name="menu_log">Zapisnik</string>
+    <string name="menu_languages">Jezici</string>
+    <string name="languages_title">Jezici</string>
+    <string name="language_system_default">Zadano sustavom</string>
+    <string name="hub_stats">Statistika</string>
+    <string name="hub_move">Premjesti</string>
+    <string name="move_prompt">Dodirni kamo premjestiti %1$s</string>
+    <string name="status_running">Pokrenuto</string>
+    <string name="status_stopped">Zaustavljeno</string>
+    <string name="service_enabled">Usluga pristupačnosti uključena</string>
+    <string name="service_not_enabled">Usluga pristupačnosti NIJE uključena -- pogledaj Postavke u izborniku</string>
+    <string name="service_not_implemented">Otkrivanje još nije implementirano</string>
+    <string name="not_implemented_note">Otkrivanje za %1$s još nije implementirano -- Run/Stop se sprema za kasnije, ali trenutačno se ništa ne blokira niti prati.</string>
+</resources>

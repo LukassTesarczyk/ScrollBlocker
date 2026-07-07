@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Instagram Reels sekmesi açıldığında algılar ve otomatik olarak çıkar. Yalnızca Instagram\'ın ekran içeriğini okur -- hiçbir kişisel veri okumaz veya saklamaz ve başka hiçbir uygulamada işlem yapmaz.</string>
+    <string name="run">Başlat</string>
+    <string name="stop">Durdur</string>
+    <string name="total_blocked">Toplam engellenen</string>
+    <string name="today">Bugün</string>
+    <string name="last_7_days">Son 7 gün</string>
+    <string name="setup_open_accessibility">Erişilebilirlik ayarlarını aç</string>
+    <string name="setup_open_battery">Uygulama pil ayarlarını aç</string>
+    <string name="setup_open_other_permissions">Uygulama bilgisini aç (Diğer izinler)</string>
+    <string name="setup_instructions">1. “Erişilebilirlik ayarlarını aç” seçeneğine dokun ve “Reels Blocker Service”i etkinleştir. Anahtar açık kalmıyorsa: Uygulama bilgisi -&gt; ⋮ menüsü (sağ üstte) -&gt; “Kısıtlı ayarlara izin ver”.
+
+2. “Uygulama pil ayarlarını aç” seçeneğine dokun, pil kullanımını “Kısıtlama yok” olarak ayarla ve Otomatik başlatmayı etkinleştir (Xiaomi/HyperOS\'a özgü).
+
+3. Aynı ekranda -&gt; Diğer izinler -&gt; “Arka planda çalışırken açılır pencereleri göster”e izin ver.
+
+4. Ayrıca son kullanılan uygulamaları aç ve Reels Blocker\'daki kilit simgesine dokun, böylece HyperOS onu arka planda kapatmaz -- hizmet erişilebilirlikte “çalışmıyor” olarak görünürse genellikle sebebi budur ve anahtarı tekrar açmak sorunu çözer.
+
+5. Yukarıdaki Run/Stop ile engellemeyi uygulama başına istediğin zaman duraklatabilirsin.
+
+6. Bir şey ters giderse sol üstteki oka -&gt; Log dokun -- kopyala ve gönder, böylece sorun tam olarak çözülebilir.</string>
+    <string name="debug_intro">Günlük yalnızca bu cihazda yerel olarak saklanır -- hiçbir yere gönderilmez. Bir şey bozulursa kopyala ve paylaş.</string>
+    <string name="refresh">Yenile</string>
+    <string name="copy">Kopyala</string>
+    <string name="clear">Temizle</string>
+    <string name="download_txt">.txt olarak indir</string>
+    <string name="log_copied_toast">Günlük kopyalandı</string>
+    <string name="export_failed_toast">Günlük dışa aktarma başarısız oldu</string>
+    <string name="export_chooser_title">Günlüğü .txt olarak kaydet</string>
+    <string name="menu_overview">Genel Bakış</string>
+    <string name="menu_settings">Ayarlar</string>
+    <string name="menu_log">Günlük</string>
+    <string name="menu_languages">Diller</string>
+    <string name="languages_title">Diller</string>
+    <string name="language_system_default">Sistem varsayılanı</string>
+    <string name="hub_stats">İstatistikler</string>
+    <string name="hub_move">Taşı</string>
+    <string name="move_prompt">%1$s nereye taşınacaksa oraya dokun</string>
+    <string name="status_running">Çalışıyor</string>
+    <string name="status_stopped">Durduruldu</string>
+    <string name="service_enabled">Erişilebilirlik hizmeti etkin</string>
+    <string name="service_not_enabled">Erişilebilirlik hizmeti etkin DEĞİL -- menüdeki Ayarlar\'a bak</string>
+    <string name="service_not_implemented">Algılama henüz uygulanmadı</string>
+    <string name="not_implemented_note">%1$s için algılama henüz uygulanmadı -- Run/Stop daha sonrası için kaydediliyor, ancak şimdilik hiçbir şey engellenmiyor veya izlenmiyor.</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">מזהה מתי לשונית Instagram Reels פתוחה ויוצא ממנה אוטומטית. קורא רק את תוכן המסך של אינסטגרם -- אינו קורא או שומר נתונים אישיים כלשהם, ואינו פועל באף אפליקציה אחרת.</string>
+    <string name="run">הפעל</string>
+    <string name="stop">עצור</string>
+    <string name="total_blocked">סה\"כ נחסמו</string>
+    <string name="today">היום</string>
+    <string name="last_7_days">7 הימים האחרונים</string>
+    <string name="setup_open_accessibility">פתח הגדרות נגישות</string>
+    <string name="setup_open_battery">פתח הגדרות סוללה של האפליקציה</string>
+    <string name="setup_open_other_permissions">פתח פרטי אפליקציה (הרשאות נוספות)</string>
+    <string name="setup_instructions">1. הקש על \"פתח הגדרות נגישות\" והפעל את \"Reels Blocker Service\". אם המתג לא נשאר דלוק: פרטי אפליקציה -&gt; תפריט ⋮ (למעלה מימין) -&gt; \"אפשר הגדרות מוגבלות\".
+
+2. הקש על \"פתח הגדרות סוללה של האפליקציה\", הגדר את השימוש בסוללה ל\"ללא הגבלות\" והפעל הפעלה אוטומטית (ספציפי ל-Xiaomi/HyperOS).
+
+3. באותו מסך -&gt; הרשאות נוספות -&gt; אפשר \"הצגת חלונות קופצים בזמן פעולה ברקע\".
+
+4. פתח גם את האפליקציות האחרונות והקש על סמל המנעול ליד Reels Blocker כדי ש-HyperOS לא יסגור אותה ברקע -- אם השירות אי פעם מוצג כ\"לא פועל\" בנגישות, זו בדרך כלל הסיבה, והפעלה מחדש של המתג פותרת זאת.
+
+5. השתמש ב-Run/Stop למעלה כדי להשהות את החסימה בכל עת, לכל אפליקציה בנפרד.
+
+6. הקש על החץ בפינה השמאלית העליונה -&gt; Log אם משהו לא עובד -- העתק ושלח כדי שניתן יהיה לתקן זאת במדויק.</string>
+    <string name="debug_intro">היומן נשמר רק באופן מקומי במכשיר זה -- שום דבר לא נשלח לשום מקום. העתק ושתף אותו אם משהו נשבר.</string>
+    <string name="refresh">רענן</string>
+    <string name="copy">העתק</string>
+    <string name="clear">נקה</string>
+    <string name="download_txt">הורד כקובץ .txt</string>
+    <string name="log_copied_toast">היומן הועתק</string>
+    <string name="export_failed_toast">ייצוא היומן נכשל</string>
+    <string name="export_chooser_title">שמור יומן כקובץ .txt</string>
+    <string name="menu_overview">סקירה</string>
+    <string name="menu_settings">הגדרות</string>
+    <string name="menu_log">יומן</string>
+    <string name="menu_languages">שפות</string>
+    <string name="languages_title">שפות</string>
+    <string name="language_system_default">ברירת מחדל של המערכת</string>
+    <string name="hub_stats">סטטיסטיקה</string>
+    <string name="hub_move">הזז</string>
+    <string name="move_prompt">הקש היכן להזיז את %1$s</string>
+    <string name="status_running">פועל</string>
+    <string name="status_stopped">נעצר</string>
+    <string name="service_enabled">שירות הנגישות מופעל</string>
+    <string name="service_not_enabled">שירות הנגישות אינו מופעל -- ראה הגדרות בתפריט</string>
+    <string name="service_not_implemented">הזיהוי עדיין לא מומש</string>
+    <string name="not_implemented_note">הזיהוי עבור %1$s עדיין לא מומש -- Run/Stop נשמר לשימוש עתידי, אך כרגע שום דבר לא נחסם ולא נעקב.</string>
+</resources>

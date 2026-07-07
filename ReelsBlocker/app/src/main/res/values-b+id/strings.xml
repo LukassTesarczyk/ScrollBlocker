@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Mendeteksi saat tab Instagram Reels terbuka dan otomatis keluar darinya. Hanya membaca konten layar dari Instagram -- tidak membaca atau menyimpan data pribadi apa pun, dan tidak melakukan apa pun di aplikasi lain.</string>
+    <string name="run">Jalankan</string>
+    <string name="stop">Hentikan</string>
+    <string name="total_blocked">Total diblokir</string>
+    <string name="today">Hari ini</string>
+    <string name="last_7_days">7 hari terakhir</string>
+    <string name="setup_open_accessibility">Buka pengaturan aksesibilitas</string>
+    <string name="setup_open_battery">Buka pengaturan baterai aplikasi</string>
+    <string name="setup_open_other_permissions">Buka info aplikasi (Izin lainnya)</string>
+    <string name="setup_instructions">1. Ketuk \"Buka pengaturan aksesibilitas\" lalu aktifkan \"Reels Blocker Service\". Jika sakelar tidak tetap aktif: Info aplikasi -&gt; menu ⋮ (kanan atas) -&gt; \"Izinkan pengaturan terbatas\".
+
+2. Ketuk \"Buka pengaturan baterai aplikasi\", atur penggunaan baterai ke \"Tanpa batasan\" dan aktifkan Mulai otomatis (khusus Xiaomi/HyperOS).
+
+3. Di layar yang sama -&gt; Izin lainnya -&gt; izinkan \"Tampilkan jendela pop-up saat berjalan di latar belakang\".
+
+4. Buka juga aplikasi terbaru dan ketuk ikon gembok pada Reels Blocker agar HyperOS tidak menutupnya di latar belakang -- jika layanan pernah muncul sebagai \"tidak berfungsi\" di aksesibilitas, biasanya inilah sebabnya, dan mengaktifkan kembali sakelar akan memperbaikinya.
+
+5. Gunakan Run/Stop di atas untuk menjeda pemblokiran kapan saja, per aplikasi.
+
+6. Ketuk panah di kiri atas -&gt; Log jika ada yang tidak beres -- salin dan kirimkan agar dapat diperbaiki secara tepat.</string>
+    <string name="debug_intro">Log hanya disimpan secara lokal di perangkat ini -- tidak ada yang dikirim ke mana pun. Salin dan bagikan jika ada yang rusak.</string>
+    <string name="refresh">Segarkan</string>
+    <string name="copy">Salin</string>
+    <string name="clear">Hapus</string>
+    <string name="download_txt">Unduh sebagai .txt</string>
+    <string name="log_copied_toast">Log disalin</string>
+    <string name="export_failed_toast">Ekspor log gagal</string>
+    <string name="export_chooser_title">Simpan log sebagai .txt</string>
+    <string name="menu_overview">Ikhtisar</string>
+    <string name="menu_settings">Pengaturan</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Bahasa</string>
+    <string name="languages_title">Bahasa</string>
+    <string name="language_system_default">Default sistem</string>
+    <string name="hub_stats">Statistik</string>
+    <string name="hub_move">Pindahkan</string>
+    <string name="move_prompt">Ketuk lokasi untuk memindahkan %1$s</string>
+    <string name="status_running">Berjalan</string>
+    <string name="status_stopped">Berhenti</string>
+    <string name="service_enabled">Layanan aksesibilitas aktif</string>
+    <string name="service_not_enabled">Layanan aksesibilitas TIDAK aktif -- lihat Pengaturan di menu</string>
+    <string name="service_not_implemented">Deteksi belum diterapkan</string>
+    <string name="not_implemented_note">Deteksi untuk %1$s belum diterapkan -- Run/Stop disimpan untuk nanti, tetapi saat ini belum ada yang diblokir atau dilacak.</string>
+</resources>

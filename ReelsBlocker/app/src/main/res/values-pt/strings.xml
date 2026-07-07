@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Detecta quando a aba de Reels do Instagram está aberta e sai automaticamente dela. Só lê o conteúdo exibido pelo Instagram -- não lê nem armazena dados pessoais, e não age em nenhum outro app.</string>
+    <string name="run">Iniciar</string>
+    <string name="stop">Parar</string>
+    <string name="total_blocked">Total bloqueado</string>
+    <string name="today">Hoje</string>
+    <string name="last_7_days">Últimos 7 dias</string>
+    <string name="setup_open_accessibility">Abrir configurações de acessibilidade</string>
+    <string name="setup_open_battery">Abrir configurações de bateria do app</string>
+    <string name="setup_open_other_permissions">Abrir informações do app (Outras permissões)</string>
+    <string name="setup_instructions">1. Toque em “Abrir configurações de acessibilidade” e ative o “Reels Blocker Service”. Se o botão não permanecer ativado: Informações do app -&gt; menu ⋮ (canto superior direito) -&gt; “Permitir configurações restritas”.
+
+2. Toque em “Abrir configurações de bateria do app”, defina o uso de bateria como “Sem restrições” e ative a inicialização automática (específico da Xiaomi/HyperOS).
+
+3. Na mesma tela -&gt; Outras permissões -&gt; permita “Exibir janelas pop-up em segundo plano”.
+
+4. Abra também os apps recentes e toque no ícone de cadeado no Reels Blocker para que o HyperOS não o encerre em segundo plano -- se o serviço aparecer como “não está funcionando” na acessibilidade, geralmente é por isso, e reativar o botão resolve.
+
+5. Use Run/Stop acima para pausar o bloqueio a qualquer momento, por app.
+
+6. Toque na seta no canto superior esquerdo -&gt; Log se algo não funcionar -- copie e envie para que possa ser corrigido com precisão.</string>
+    <string name="debug_intro">O log é salvo apenas localmente neste dispositivo -- nada é enviado para lugar nenhum. Copie e compartilhe se algo quebrar.</string>
+    <string name="refresh">Atualizar</string>
+    <string name="copy">Copiar</string>
+    <string name="clear">Limpar</string>
+    <string name="download_txt">Baixar como .txt</string>
+    <string name="log_copied_toast">Log copiado</string>
+    <string name="export_failed_toast">Falha ao exportar o log</string>
+    <string name="export_chooser_title">Salvar log como .txt</string>
+    <string name="menu_overview">Visão geral</string>
+    <string name="menu_settings">Configurações</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Idiomas</string>
+    <string name="languages_title">Idiomas</string>
+    <string name="language_system_default">Padrão do sistema</string>
+    <string name="hub_stats">Estatísticas</string>
+    <string name="hub_move">Mover</string>
+    <string name="move_prompt">Toque para onde mover %1$s</string>
+    <string name="status_running">Em execução</string>
+    <string name="status_stopped">Parado</string>
+    <string name="service_enabled">Serviço de acessibilidade ativado</string>
+    <string name="service_not_enabled">Serviço de acessibilidade NÃO ativado -- veja Configurações no menu</string>
+    <string name="service_not_implemented">Detecção ainda não implementada</string>
+    <string name="not_implemented_note">A detecção para %1$s ainda não foi implementada -- Run/Stop é salvo para quando estiver pronta, mas por enquanto nada é bloqueado nem monitorado.</string>
+</resources>

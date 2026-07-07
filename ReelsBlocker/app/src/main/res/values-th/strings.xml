@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">ตรวจจับเมื่อแท็บ Instagram Reels เปิดอยู่ และออกจากแท็บนั้นโดยอัตโนมัติ อ่านเฉพาะเนื้อหาบนหน้าจอของ Instagram เท่านั้น -- ไม่อ่านหรือจัดเก็บข้อมูลส่วนบุคคลใด ๆ และไม่ทำงานในแอปอื่นใด</string>
+    <string name="run">เริ่ม</string>
+    <string name="stop">หยุด</string>
+    <string name="total_blocked">บล็อกทั้งหมด</string>
+    <string name="today">วันนี้</string>
+    <string name="last_7_days">7 วันล่าสุด</string>
+    <string name="setup_open_accessibility">เปิดการตั้งค่าการเข้าถึง</string>
+    <string name="setup_open_battery">เปิดการตั้งค่าแบตเตอรี่ของแอป</string>
+    <string name="setup_open_other_permissions">เปิดข้อมูลแอป (สิทธิ์อื่น ๆ)</string>
+    <string name="setup_instructions">1. แตะ “เปิดการตั้งค่าการเข้าถึง” แล้วเปิดใช้งาน “Reels Blocker Service” หากสวิตช์ไม่ค้างเปิด: ข้อมูลแอป -&gt; เมนู ⋮ (มุมขวาบน) -&gt; “อนุญาตการตั้งค่าที่ถูกจำกัด”
+
+2. แตะ “เปิดการตั้งค่าแบตเตอรี่ของแอป” ตั้งค่าการใช้แบตเตอรี่เป็น “ไม่มีการจำกัด” และเปิดใช้งานการเริ่มต้นอัตโนมัติ (เฉพาะ Xiaomi/HyperOS)
+
+3. หน้าจอเดียวกัน -&gt; สิทธิ์อื่น ๆ -&gt; อนุญาต “แสดงหน้าต่างป๊อปอัปขณะทำงานในพื้นหลัง”
+
+4. เปิดแอปล่าสุดด้วย แล้วแตะไอคอนแม่กุญแจที่ Reels Blocker เพื่อไม่ให้ HyperOS ปิดแอปในพื้นหลัง -- หากบริการแสดงสถานะ “ไม่ทำงาน” ในการเข้าถึงเมื่อใด มักเป็นเพราะเหตุนี้ และการเปิดสวิตช์ใหม่จะแก้ไขได้
+
+5. ใช้ Run/Stop ด้านบนเพื่อหยุดการบล็อกชั่วคราวได้ทุกเมื่อ แยกตามแต่ละแอป
+
+6. แตะลูกศรมุมซ้ายบน -&gt; Log หากมีอะไรผิดปกติ -- คัดลอกแล้วส่งมาเพื่อให้แก้ไขได้อย่างแม่นยำ</string>
+    <string name="debug_intro">บันทึกถูกเก็บไว้ในเครื่องนี้เท่านั้น -- ไม่มีการส่งข้อมูลไปที่ใดเลย คัดลอกและแชร์หากมีอะไรผิดพลาด</string>
+    <string name="refresh">รีเฟรช</string>
+    <string name="copy">คัดลอก</string>
+    <string name="clear">ล้าง</string>
+    <string name="download_txt">ดาวน์โหลดเป็น .txt</string>
+    <string name="log_copied_toast">คัดลอกบันทึกแล้ว</string>
+    <string name="export_failed_toast">ส่งออกบันทึกล้มเหลว</string>
+    <string name="export_chooser_title">บันทึกไฟล์เป็น .txt</string>
+    <string name="menu_overview">ภาพรวม</string>
+    <string name="menu_settings">การตั้งค่า</string>
+    <string name="menu_log">บันทึก</string>
+    <string name="menu_languages">ภาษา</string>
+    <string name="languages_title">ภาษา</string>
+    <string name="language_system_default">ค่าเริ่มต้นของระบบ</string>
+    <string name="hub_stats">สถิติ</string>
+    <string name="hub_move">ย้าย</string>
+    <string name="move_prompt">แตะตำแหน่งที่จะย้าย %1$s ไป</string>
+    <string name="status_running">กำลังทำงาน</string>
+    <string name="status_stopped">หยุดแล้ว</string>
+    <string name="service_enabled">เปิดใช้งานบริการการเข้าถึงแล้ว</string>
+    <string name="service_not_enabled">บริการการเข้าถึงยังไม่ได้เปิดใช้งาน -- ดูการตั้งค่าในเมนู</string>
+    <string name="service_not_implemented">ยังไม่รองรับการตรวจจับ</string>
+    <string name="not_implemented_note">ยังไม่รองรับการตรวจจับสำหรับ %1$s -- ระบบบันทึกค่า Run/Stop ไว้สำหรับใช้ในอนาคต แต่ตอนนี้ยังไม่มีการบล็อกหรือติดตามใด ๆ</string>
+</resources>

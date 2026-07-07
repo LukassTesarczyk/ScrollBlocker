@@ -13,6 +13,7 @@ import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -31,12 +32,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnOpenMenu: TextView
     private lateinit var drawerScrim: View
     private lateinit var drawerPanel: LinearLayout
+    private lateinit var languagesContainer: LinearLayout
+    private lateinit var languageList: LinearLayout
     private lateinit var btnMenuOverview: TextView
     private lateinit var btnMenuSetup: TextView
     private lateinit var btnMenuDebug: TextView
+    private lateinit var btnMenuLanguages: TextView
+    private lateinit var hubSheetScrim: View
+    private lateinit var hubActionSheet: LinearLayout
+    private lateinit var tvHubSheetTitle: TextView
+    private lateinit var btnHubStats: TextView
+    private lateinit var btnHubMove: TextView
+    private lateinit var btnHubToggleRun: TextView
 
     private var selectedApp: String = "instagram"
     private var drawerOpen = false
+    private var hubSheetOpen = false
+    private var hubSheetSlot: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,16 +65,25 @@ class MainActivity : AppCompatActivity() {
         btnOpenMenu = findViewById(R.id.btnOpenMenu)
         drawerScrim = findViewById(R.id.drawerScrim)
         drawerPanel = findViewById(R.id.drawerPanel)
+        languagesContainer = findViewById(R.id.languagesContainer)
+        languageList = findViewById(R.id.languageList)
         btnMenuOverview = findViewById(R.id.btnMenuOverview)
         btnMenuSetup = findViewById(R.id.btnMenuSetup)
         btnMenuDebug = findViewById(R.id.btnMenuDebug)
+        btnMenuLanguages = findViewById(R.id.btnMenuLanguages)
+        hubSheetScrim = findViewById(R.id.hubSheetScrim)
+        hubActionSheet = findViewById(R.id.hubActionSheet)
+        tvHubSheetTitle = findViewById(R.id.tvHubSheetTitle)
+        btnHubStats = findViewById(R.id.btnHubStats)
+        btnHubMove = findViewById(R.id.btnHubMove)
+        btnHubToggleRun = findViewById(R.id.btnHubToggleRun)
 
         val versionName = try {
             packageManager.getPackageInfo(packageName, 0).versionName
         } catch (e: Exception) {
             "?"
         }
-        findViewById<TextView>(R.id.tvVersion).text = "v$versionName"
+        findViewById<TextView>(R.id.tvVersion).text = getString(R.string.version_format, versionName)
 
         findViewById<Button>(R.id.btnOpenAccessibility).setOnClickListener {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -88,36 +109,49 @@ class MainActivity : AppCompatActivity() {
         btnMenuOverview.setOnClickListener { showTab("overview"); closeDrawer() }
         btnMenuSetup.setOnClickListener { showTab("setup"); closeDrawer() }
         btnMenuDebug.setOnClickListener { showTab("debug"); closeDrawer() }
+        btnMenuLanguages.setOnClickListener { showTab("languages"); closeDrawer() }
+
+        hubSheetScrim.setOnClickListener { closeHubSheet() }
+        btnHubStats.setOnClickListener {
+            val slot = hubSheetSlot
+            closeHubSheet()
+            if (slot != null) {
+                selectApp(hubOrder[slot])
+                showTab("overview")
+            }
+        }
+        btnHubMove.setOnClickListener {
+            val slot = hubSheetSlot
+            closeHubSheet()
+            if (slot != null) enterReorderMode(slot)
+        }
+        btnHubToggleRun.setOnClickListener {
+            val slot = hubSheetSlot
+            closeHubSheet()
+            if (slot != null) {
+                val appId = hubOrder[slot]
+                val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor(appId), false)
+                prefs.edit().putBoolean(PrefsKeys.enabledKeyFor(appId), !enabled).apply()
+                if (appId == selectedApp) refreshStatus()
+            }
+        }
 
         findViewById<Button>(R.id.btnRefreshLog).setOnClickListener { renderLog() }
         findViewById<Button>(R.id.btnCopyLog).setOnClickListener {
             val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setPrimaryClip(ClipData.newPlainText("Reels Blocker log", AppLog.readAll(this)))
-            Toast.makeText(this, "Log zkopírován", Toast.LENGTH_SHORT).show()
+            clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.app_name), AppLog.readAll(this)))
+            Toast.makeText(this, getString(R.string.log_copied_toast), Toast.LENGTH_SHORT).show()
         }
         findViewById<Button>(R.id.btnClearLog).setOnClickListener {
             AppLog.clear(this)
             renderLog()
         }
+        findViewById<Button>(R.id.btnDownloadLog).setOnClickListener { exportLog() }
 
         setupHub()
+        setupLanguages()
 
-        findViewById<TextView>(R.id.tvInstructions).text = """
-            1. Tap "Open Accessibility Settings" and enable "Reels Blocker Service".
-               If the switch won't stay on: App info -> ⋮ menu (top right) ->
-               "Allow restricted settings".
-            2. Tap "Open App Battery Settings" and set battery usage to
-               "No restrictions" and enable Autostart (Xiaomi/HyperOS specific).
-            3. Same screen -> Other permissions -> allow "Display pop-up
-               windows while running in the background".
-            4. Also open recent apps and tap the lock icon on Reels Blocker
-               so HyperOS doesn't kill it in the background -- if the service
-               ever shows as "not working" in Accessibility settings, this is
-               usually why, and re-enabling the toggle fixes it.
-            5. Use Run/Stop above to pause blocking anytime, per app.
-            6. Tap the arrow top-left -> Log if something misbehaves -- copy
-               it and send it over so it can be fixed precisely.
-        """.trimIndent()
+        findViewById<TextView>(R.id.tvInstructions).text = getString(R.string.setup_instructions)
 
         showTab("overview")
         selectApp("instagram")
@@ -150,7 +184,6 @@ class MainActivity : AppCompatActivity() {
 
         for (i in hubSlotIds.indices) {
             val slot = findViewById<View>(hubSlotIds[i])
-            val badge = findViewById<TextView>(hubBadgeIds[i])
 
             slot.setOnClickListener {
                 val current = reorderingSlot
@@ -163,29 +196,51 @@ class MainActivity : AppCompatActivity() {
             }
 
             slot.setOnLongClickListener {
-                enterReorderMode(i)
+                if (reorderingSlot == null) openHubSheet(i)
                 true
             }
-
-            badge.setOnClickListener {
-                // Tapping the badge itself just keeps/confirms reorder mode
-                // for this slot -- the real "move" action is picking the
-                // target slot afterwards.
-                enterReorderMode(i)
-            }
         }
+    }
+
+    private fun openHubSheet(slotIndex: Int) {
+        hubSheetSlot = slotIndex
+        hubSheetOpen = true
+        val appId = hubOrder[slotIndex]
+        tvHubSheetTitle.text = PrefsKeys.displayNameFor(appId)
+        val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor(appId), false)
+        btnHubToggleRun.text = if (enabled) getString(R.string.stop) else getString(R.string.run)
+
+        hubSheetScrim.visibility = View.VISIBLE
+        hubSheetScrim.alpha = 0f
+        hubSheetScrim.animate().alpha(1f).setDuration(160).start()
+
+        hubActionSheet.visibility = View.VISIBLE
+        hubActionSheet.alpha = 0f
+        hubActionSheet.translationY = 40f
+        hubActionSheet.animate().alpha(1f).translationY(0f).setDuration(180).start()
+    }
+
+    private fun closeHubSheet() {
+        hubSheetOpen = false
+        hubSheetSlot = null
+        hubSheetScrim.animate().alpha(0f).setDuration(160).withEndAction {
+            hubSheetScrim.visibility = View.GONE
+        }.start()
+        hubActionSheet.animate().alpha(0f).translationY(40f).setDuration(160).withEndAction {
+            hubActionSheet.visibility = View.GONE
+        }.start()
     }
 
     private fun renderHubIcons() {
         for (i in hubOrder.indices) {
             val appId = hubOrder[i]
-            val icon = findViewById<TextView>(hubIconIds[i])
+            val icon = findViewById<ImageView>(hubIconIds[i])
             val label = findViewById<TextView>(hubLabelIds[i])
             label.text = PrefsKeys.displayNameFor(appId)
-            icon.text = hubShortLabel(appId)
+            icon.setImageResource(hubIconRes(appId))
 
             val (bg, fg) = hubColors(appId)
-            icon.setTextColor(Color.parseColor(fg))
+            icon.imageTintList = ColorStateList.valueOf(Color.parseColor(fg))
             icon.background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
                 setColor(Color.parseColor(bg))
@@ -205,18 +260,18 @@ class MainActivity : AppCompatActivity() {
         else -> "#444444" to "#FFFFFF"
     }
 
-    private fun hubShortLabel(appId: String): String = when (appId) {
-        "instagram" -> "IG"
-        "tiktok" -> "TT"
-        "snapchat" -> "SC"
-        else -> appId.take(2).uppercase()
+    private fun hubIconRes(appId: String): Int = when (appId) {
+        "instagram" -> R.drawable.ic_instagram
+        "tiktok" -> R.drawable.ic_tiktok
+        "snapchat" -> R.drawable.ic_snapchat
+        else -> R.drawable.ic_instagram
     }
 
     private fun enterReorderMode(slotIndex: Int) {
         reorderingSlot = slotIndex
         Toast.makeText(
             this,
-            "Klepni, kam přesunout ${PrefsKeys.displayNameFor(hubOrder[slotIndex])}",
+            getString(R.string.move_prompt, PrefsKeys.displayNameFor(hubOrder[slotIndex])),
             Toast.LENGTH_SHORT
         ).show()
 
@@ -273,14 +328,88 @@ class MainActivity : AppCompatActivity() {
         val implemented = PrefsKeys.isImplemented(appId)
         tvNotImplementedNote.visibility = if (implemented) View.GONE else View.VISIBLE
         if (!implemented) {
-            tvNotImplementedNote.text =
-                "${PrefsKeys.displayNameFor(appId)} zatím nemá implementovanou detekci -- " +
-                    "Run/Stop se ukládá pro až to bude hotové, ale zatím nic neblokuje ani nesleduje."
+            tvNotImplementedNote.text = getString(R.string.not_implemented_note, PrefsKeys.displayNameFor(appId))
         }
 
         renderHubIcons()
         refreshStatus()
         renderStats()
+    }
+
+    // ---- Languages ----
+
+    private data class LangEntry(val tag: String, val englishName: String, val nativeName: String)
+
+    private val supportedLanguages = listOf(
+        LangEntry("ar", "Arabic", "العربية"),
+        LangEntry("bg", "Bulgarian", "Български"),
+        LangEntry("zh-Hans", "Chinese (Simplified)", "中文"),
+        LangEntry("hr", "Croatian", "Hrvatski"),
+        LangEntry("cs", "Czech", "Čeština"),
+        LangEntry("da", "Danish", "Dansk"),
+        LangEntry("nl", "Dutch", "Nederlands"),
+        LangEntry("en", "English", "English"),
+        LangEntry("fi", "Finnish", "Suomi"),
+        LangEntry("fr", "French", "Français"),
+        LangEntry("de", "German", "Deutsch"),
+        LangEntry("el", "Greek", "Ελληνικά"),
+        LangEntry("he", "Hebrew", "עברית"),
+        LangEntry("hi", "Hindi", "हिन्दी"),
+        LangEntry("hu", "Hungarian", "Magyar"),
+        LangEntry("id", "Indonesian", "Bahasa Indonesia"),
+        LangEntry("it", "Italian", "Italiano"),
+        LangEntry("ja", "Japanese", "日本語"),
+        LangEntry("ko", "Korean", "한국어"),
+        LangEntry("nb", "Norwegian", "Norsk"),
+        LangEntry("pl", "Polish", "Polski"),
+        LangEntry("pt", "Portuguese", "Português"),
+        LangEntry("ro", "Romanian", "Română"),
+        LangEntry("ru", "Russian", "Русский"),
+        LangEntry("sk", "Slovak", "Slovenčina"),
+        LangEntry("es", "Spanish", "Español"),
+        LangEntry("sv", "Swedish", "Svenska"),
+        LangEntry("th", "Thai", "ไทย"),
+        LangEntry("tr", "Turkish", "Türkçe"),
+        LangEntry("uk", "Ukrainian", "Українська"),
+        LangEntry("vi", "Vietnamese", "Tiếng Việt")
+    ).sortedBy { it.englishName }
+
+    private fun setupLanguages() {
+        languageList.removeAllViews()
+        addLanguageRow(getString(R.string.language_system_default), null)
+        for (lang in supportedLanguages) {
+            val label = if (lang.englishName == lang.nativeName) {
+                lang.englishName
+            } else {
+                "${lang.englishName} — ${lang.nativeName}"
+            }
+            addLanguageRow(label, lang.tag)
+        }
+    }
+
+    private fun addLanguageRow(label: String, tag: String?) {
+        val density = resources.displayMetrics.density
+        val row = TextView(this).apply {
+            text = label
+            setTextColor(Color.WHITE)
+            textSize = 15f
+            setPadding((14 * density).toInt(), (14 * density).toInt(), (14 * density).toInt(), (14 * density).toInt())
+            setBackgroundResource(R.drawable.bg_menu_item)
+            isClickable = true
+            isFocusable = true
+            setOnClickListener {
+                val locales = if (tag == null) {
+                    androidx.core.os.LocaleListCompat.getEmptyLocaleList()
+                } else {
+                    androidx.core.os.LocaleListCompat.forLanguageTags(tag)
+                }
+                androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(locales)
+            }
+        }
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { bottomMargin = (4 * density).toInt() }
+        languageList.addView(row, params)
     }
 
     // ---- Tabs / drawer menu ----
@@ -289,10 +418,12 @@ class MainActivity : AppCompatActivity() {
         overviewContainer.visibility = if (tab == "overview") View.VISIBLE else View.GONE
         setupContainer.visibility = if (tab == "setup") View.VISIBLE else View.GONE
         debugContainer.visibility = if (tab == "debug") View.VISIBLE else View.GONE
+        languagesContainer.visibility = if (tab == "languages") View.VISIBLE else View.GONE
 
         btnMenuOverview.setBackgroundResource(if (tab == "overview") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
         btnMenuSetup.setBackgroundResource(if (tab == "setup") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
         btnMenuDebug.setBackgroundResource(if (tab == "debug") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
+        btnMenuLanguages.setBackgroundResource(if (tab == "languages") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
 
         if (tab == "overview") renderStats()
         if (tab == "debug") renderLog()
@@ -330,7 +461,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (drawerOpen) {
+        if (hubSheetOpen) {
+            closeHubSheet()
+        } else if (drawerOpen) {
             closeDrawer()
         } else {
             super.onBackPressed()
@@ -341,7 +474,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun refreshStatus() {
         val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor(selectedApp), false)
-        tvPauseStatus.text = if (enabled) "Running" else "Stopped"
+        tvPauseStatus.text = if (enabled) getString(R.string.status_running) else getString(R.string.status_stopped)
 
         val runBtn = findViewById<Button>(R.id.btnRun)
         val stopBtn = findViewById<Button>(R.id.btnStop)
@@ -351,12 +484,12 @@ class MainActivity : AppCompatActivity() {
         if (selectedApp == "instagram") {
             val serviceOn = isAccessibilityServiceEnabled()
             tvServiceStatus.text = if (serviceOn) {
-                "Accessibility service enabled"
+                getString(R.string.service_enabled)
             } else {
-                "Accessibility service NOT enabled -- see Settings in the menu"
+                getString(R.string.service_not_enabled)
             }
         } else {
-            tvServiceStatus.text = "Detekce zatím neimplementována"
+            tvServiceStatus.text = getString(R.string.service_not_implemented)
         }
     }
 
@@ -423,6 +556,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun renderLog() {
         findViewById<TextView>(R.id.tvLog).text = AppLog.readAll(this)
+    }
+
+    private fun exportLog() {
+        val file = AppLog.exportToCache(this)
+        if (file == null) {
+            Toast.makeText(this, getString(R.string.export_failed_toast), Toast.LENGTH_SHORT).show()
+            return
+        }
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            this, "$packageName.fileprovider", file
+        )
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(intent, getString(R.string.export_chooser_title)))
     }
 
     private fun isAccessibilityServiceEnabled(): Boolean {

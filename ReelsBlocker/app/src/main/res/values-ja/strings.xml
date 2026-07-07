@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Instagram Reelsタブが開いたことを検知して自動的に抜けます。Instagramの画面内容のみを読み取ります -- 個人データの読み取りや保存は一切行わず、他のアプリでは何も動作しません。</string>
+    <string name="run">開始</string>
+    <string name="stop">停止</string>
+    <string name="total_blocked">合計ブロック数</string>
+    <string name="today">今日</string>
+    <string name="last_7_days">過去7日間</string>
+    <string name="setup_open_accessibility">ユーザー補助設定を開く</string>
+    <string name="setup_open_battery">アプリの電池設定を開く</string>
+    <string name="setup_open_other_permissions">アプリ情報を開く（その他の権限）</string>
+    <string name="setup_instructions">1. 「ユーザー補助設定を開く」をタップし、「Reels Blocker Service」を有効にします。スイッチがオンのままにならない場合：アプリ情報 -&gt; ⋮メニュー（右上）-&gt; 「制限付き設定を許可」。
+
+2. 「アプリの電池設定を開く」をタップし、電池の使用を「制限なし」に設定し、自動起動を有効にします（Xiaomi/HyperOS固有）。
+
+3. 同じ画面で -&gt; その他の権限 -&gt; 「バックグラウンドで実行中にポップアップウィンドウを表示」を許可します。
+
+4. 最近使ったアプリも開き、Reels Blockerの鍵アイコンをタップして、HyperOSがバックグラウンドで終了させないようにします -- サービスがユーザー補助で「機能していません」と表示された場合、たいていこれが原因で、スイッチを入れ直すと解決します。
+
+5. 上部のRun/Stopで、アプリごとにいつでもブロックを一時停止できます。
+
+6. 何か不具合があれば左上の矢印 -&gt; Logをタップし、コピーして送ってください。正確に修正できます。</string>
+    <string name="debug_intro">ログはこの端末のみにローカル保存されます -- どこにも送信されません。何か問題があればコピーして共有してください。</string>
+    <string name="refresh">更新</string>
+    <string name="copy">コピー</string>
+    <string name="clear">クリア</string>
+    <string name="download_txt">.txtとしてダウンロード</string>
+    <string name="log_copied_toast">ログをコピーしました</string>
+    <string name="export_failed_toast">ログのエクスポートに失敗しました</string>
+    <string name="export_chooser_title">ログを.txtとして保存</string>
+    <string name="menu_overview">概要</string>
+    <string name="menu_settings">設定</string>
+    <string name="menu_log">ログ</string>
+    <string name="menu_languages">言語</string>
+    <string name="languages_title">言語</string>
+    <string name="language_system_default">システムのデフォルト</string>
+    <string name="hub_stats">統計</string>
+    <string name="hub_move">移動</string>
+    <string name="move_prompt">%1$sの移動先をタップしてください</string>
+    <string name="status_running">実行中</string>
+    <string name="status_stopped">停止中</string>
+    <string name="service_enabled">ユーザー補助サービスが有効です</string>
+    <string name="service_not_enabled">ユーザー補助サービスが無効です -- メニューの設定を確認してください</string>
+    <string name="service_not_implemented">検出機能は未実装です</string>
+    <string name="not_implemented_note">%1$sの検出機能はまだ実装されていません -- Run/Stopは今後のために保存されますが、現時点ではブロックや記録は行われません。</string>
+</resources>

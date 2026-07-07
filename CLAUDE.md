@@ -26,14 +26,20 @@ Android accessibility-service appka, která:
 2. Vizuálně zakrývá ikonku Reels ve spodní navigační liště Instagramu
    barevně sladěným overlayem (barva se vzorkuje ze skutečného
    screenshotu obrazovky).
-3. Má vlastní UI se záložkami Overview (statistiky + graf posledních 7
-   dní), Setup (návod + zástupci na systémová nastavení) a Debug
-   (log ukládaný lokálně v appce, žádný adb potřeba).
-4. Dole má "hub" appek (Instagram / TikTok / Snapchat) s možností
-   přeuspořádat pořadí (podržet ikonku → objeví se šipky → klepnutím
-   zvolit cílovou pozici). Zatím je plně funkční jen Instagram --
+3. Má vlastní UI: nahoře vlevo šipka otevírá boční vysouvací panel s
+   Overview (statistiky + graf posledních 7 dní), Settings (návod +
+   zástupci na systémová nastavení), Log (log ukládaný lokálně v appce,
+   žádný adb potřeba, jde i stáhnout jako `.txt` přes share sheet) a
+   Languages (přepínač jazyka appky, nezávislý na systémovém jazyce
+   telefonu -- `AppCompatDelegate.setApplicationLocales`).
+4. Dole má "hub" appek (Instagram / TikTok / Snapchat, s jednoduchými
+   vektorovými ikonkami) -- klepnutí přepne aktivní appku, podržení
+   otevře action sheet s možnostmi Stats / Move / Run-Stop. "Move"
+   spustí režim přesunu (zvětší se, ostatní ztlumí, klepni kam
+   přesunout). Zatím je plně funkční detekce jen pro Instagram --
    ostatní dvě appky jen ukládají přepínač Run/Stop pro budoucí
    detekci, appka na to sama upozorňuje.
+5. Appka je lokalizovaná do ~30 jazyků (viz `res/values-*/strings.xml`).
 
 ## Vlastník projektu
 
@@ -79,21 +85,72 @@ tabu, ne o logcat výstup.
    Instagramu.** Resource ID a bounds v `ReelsAccessibilityService.kt`
    jsou odhady z chování popsaného v logu, ne z oficiální dokumentace
    Instagramu (žádná neexistuje). Pokud něco nefunguje, popros o čerstvý
-   log z Debug tabu, než měníš detekční logiku znovu.
-6. Po každé změně **připomeň mu přesný postup**: `git add . && git
+   log z menu -> Log, než měníš detekční logiku znovu. Strukturální věci
+   (výkon, hlavní vlákno, hysterze zobrazování, životní cyklus služby)
+   naopak řešit jde i bez logu -- to není hádání o Instagramu, to je
+   normální inženýrská práce nad naším vlastním kódem.
+6. **Nové UI texty vždy přidávej jako string resource** do
+   `res/values/strings.xml` (anglicky, je to zdroj pravdy), ne natvrdo
+   do kódu/layoutu. Appka je lokalizovaná do ~30 jazyků
+   (`res/values-<kód>/strings.xml`) -- když přidáš nový text, ideálně
+   dopiš překlad aspoň do několika hlavních jazyků (cs, sk, de, es, fr...).
+   Minimálně ale musí být v `values/strings.xml`, ať appka nespadne na
+   chybějícím resource. Nepřekládej vlastní jména appek
+   (Instagram/TikTok/Snapchat) ani `app_name`.
+7. Po každé změně **připomeň mu přesný postup**: `git add . && git
    commit -m "..." && git push`, počkat na GitHub Actions, stáhnout
    `.apk` z Artifacts, nainstalovat. Needěl si zbytečné závěry o tom, že
    umí věci, které nejsou pravda (např. že appka sama nainstaluje
    aktualizaci na telefon -- neumí).
 
+## Design systém -- drž se ho, i v budoucích úpravách
+
+Appka má záměrně tmavý, minimalistický, plochý vzhled. Než přidáš nové
+UI, drž se těchto zavedených pravidel:
+
+- **Paleta:** pozadí appky `#121212`, kartičky/panely `#1A1A1A` až
+  `#181818`, hranice/oddělovače `#232323`/`#2A2A2A`, sekundární text
+  `#808080`-`#909090`, primární text bílá. Akcentová barva je teal
+  `#26A69A` (aktivní stavy, Run tlačítko). Neutrální/needuretknuté
+  tlačítko `#2E2E2E`. Destruktivní akce (Stop, Clear, badge) `#C62828`.
+- **Kartičky:** `@drawable/bg_card` -- `#1A1A1A`, rohy 18dp. Používej to
+  jako pozadí pro každou logickou sekci (status, statistiky, setup, log,
+  languages), s paddingem ~18dp.
+- **Tlačítka:** plochá, bez ALL CAPS textu, zaoblené rohy (~14dp) --
+  nastaveno globálně přes `Widget.App.Button` v `styles.xml`
+  (`materialButtonStyle`), takže nový `<Button>` v layoutu tohle dědí
+  automaticky, není potřeba nic nastavovat ručně.
+- **Menu položky** (boční panel, action sheet, seznam jazyků):
+  `@drawable/bg_menu_item` (ripple, průhledné pozadí, rohy 14dp) pro
+  neaktivní, `@drawable/bg_menu_item_active` (jemný teal nádech) pro
+  aktivní/vybrané. Jsou to obyčejné `TextView` s paddingem 14dp, ne
+  `Button` -- jednodušší na styl bez Material overheadu.
+  Ikonová kolečka nahoře (šipka menu) mají `@drawable/bg_icon_button`.
+- **Vysouvací panely** (drawer, hub action sheet): tmavší scrim
+  `#99000000` přes celou obrazovku + `translationX`/`translationY`
+  animace ~160-220ms, žádné instantní zobrazení/schování bez animace.
+- **Overlay/accessibility okna** (čtvereček přes Reels ikonku, "zpět do
+  feedu" pilulka): fade animace (alpha), ne tvrdé
+  GONE/VISIBLE přepínání -- to dřív způsobovalo viditelné blikání.
+- Ikonky appek v hubu jsou jednoduché vektorové drawables
+  (`ic_instagram.xml`, `ic_tiktok.xml`, `ic_snapchat.xml`) -- generické
+  tvary (fotoaparát/nota/duch), záměrně ne přesné kopie oficiálních log
+  kvůli ochranným známkám. Tintují se programově přes `imageTintList`.
+
 ## Otevřené resty / věci, co ještě nejsou hotové
 
 - TikTok a Snapchat v hubu nemají žádnou detekční logiku -- jen UI a
   uložený přepínač.
-- Reorder hubu je řešený jako "podrž -> klepni kam přesunout", ne jako
-  fyzické tažení prstem -- pokud by chtěl opravdový drag gesture, bude
-  to potřeba doladit živě s jeho zařízením.
+- Reorder hubu je pořád řešený jako "Move v action sheetu -> klepni kam
+  přesunout", ne jako fyzické tažení prstem -- pokud by chtěl opravdový
+  drag gesture, bude to potřeba doladit živě s jeho zařízením.
 - Overlay přes ikonku Reels je heuristika nad cizí (Instagram) UI --
   může se kdykoli rozbít po update Instagramu. Postup na dohledání
   nových resource ID je popsaný v `README.md` v sekci "Keeping
   detection working".
+- **Známá mezera:** overlay/"1 reel" logika reaguje na celoobrazovkový
+  Reels přehrávač bez ohledu na to, jak se do něj vstoupilo -- ale podle
+  zpětné vazby jde do Reels swipnout stranou přímo z feedu/DM a appka to
+  v některých případech nezachytí. Potřeba čerstvý log z právě tohohle
+  konkrétního scénáře (swipe do Reels ze strany, ne přes tab), než se do
+  toho bude sahat -- viz pravidlo 5 výše.

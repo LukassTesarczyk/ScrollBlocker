@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Instagram Reels 탭이 열려 있는지 감지하여 자동으로 빠져나갑니다. Instagram의 화면 내용만 읽으며 -- 개인 데이터를 읽거나 저장하지 않고, 다른 어떤 앱에서도 동작하지 않습니다.</string>
+    <string name="run">시작</string>
+    <string name="stop">중지</string>
+    <string name="total_blocked">총 차단 수</string>
+    <string name="today">오늘</string>
+    <string name="last_7_days">최근 7일</string>
+    <string name="setup_open_accessibility">접근성 설정 열기</string>
+    <string name="setup_open_battery">앱 배터리 설정 열기</string>
+    <string name="setup_open_other_permissions">앱 정보 열기(기타 권한)</string>
+    <string name="setup_instructions">1. \"접근성 설정 열기\"를 탭하고 \"Reels Blocker Service\"를 켜세요. 스위치가 켜진 상태로 유지되지 않으면: 앱 정보 -&gt; ⋮ 메뉴(오른쪽 상단) -&gt; \"제한된 설정 허용\".
+
+2. \"앱 배터리 설정 열기\"를 탭하고 배터리 사용을 \"제한 없음\"으로 설정하고 자동 시작을 켜세요(Xiaomi/HyperOS 전용).
+
+3. 같은 화면에서 -&gt; 기타 권한 -&gt; \"백그라운드에서 실행 중 팝업 창 표시\"를 허용하세요.
+
+4. 최근 앱 목록도 열어서 Reels Blocker의 자물쇠 아이콘을 탭하여 HyperOS가 백그라운드에서 앱을 종료하지 않도록 하세요 -- 서비스가 접근성에서 \"작동하지 않음\"으로 표시된다면 대개 이 때문이며, 스위치를 다시 켜면 해결됩니다.
+
+5. 위의 Run/Stop을 사용하여 앱별로 언제든지 차단을 일시 중지할 수 있습니다.
+
+6. 문제가 있으면 왼쪽 상단의 화살표 -&gt; Log를 탭하세요 -- 복사해서 보내주시면 정확히 수정할 수 있습니다.</string>
+    <string name="debug_intro">로그는 이 기기에만 로컬로 저장됩니다 -- 어디로도 전송되지 않습니다. 문제가 발생하면 복사해서 공유해 주세요.</string>
+    <string name="refresh">새로고침</string>
+    <string name="copy">복사</string>
+    <string name="clear">지우기</string>
+    <string name="download_txt">.txt로 다운로드</string>
+    <string name="log_copied_toast">로그가 복사되었습니다</string>
+    <string name="export_failed_toast">로그 내보내기에 실패했습니다</string>
+    <string name="export_chooser_title">로그를 .txt로 저장</string>
+    <string name="menu_overview">개요</string>
+    <string name="menu_settings">설정</string>
+    <string name="menu_log">로그</string>
+    <string name="menu_languages">언어</string>
+    <string name="languages_title">언어</string>
+    <string name="language_system_default">시스템 기본값</string>
+    <string name="hub_stats">통계</string>
+    <string name="hub_move">이동</string>
+    <string name="move_prompt">%1$s을(를) 이동할 위치를 탭하세요</string>
+    <string name="status_running">실행 중</string>
+    <string name="status_stopped">중지됨</string>
+    <string name="service_enabled">접근성 서비스가 활성화됨</string>
+    <string name="service_not_enabled">접근성 서비스가 활성화되지 않음 -- 메뉴의 설정을 확인하세요</string>
+    <string name="service_not_implemented">감지 기능이 아직 구현되지 않았습니다</string>
+    <string name="not_implemented_note">%1$s의 감지 기능은 아직 구현되지 않았습니다 -- Run/Stop은 나중을 위해 저장되지만 현재는 차단이나 추적이 이루어지지 않습니다.</string>
+</resources>

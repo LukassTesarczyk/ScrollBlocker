@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Rect
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
 import java.util.concurrent.Executors
@@ -48,7 +50,8 @@ class ReelsAccessibilityService : AccessibilityService() {
         // then re-showing) the overlay on every such blip is what reads
         // as "problikávání". Only actually hide once it's been missing
         // continuously for this long.
-        private const val HIDE_GRACE_MS = 500L
+        private const val HIDE_GRACE_MS = 900L
+        private const val FADE_MS = 140L
         private const val REPOSITION_THRESHOLD_PX = 14
         private const val MIN_REPOSITION_INTERVAL_MS = 200L
         // How many consecutive "not in viewer" reads before we actually
@@ -159,34 +162,32 @@ class ReelsAccessibilityService : AccessibilityService() {
             val density = metrics.density
 
             val root = FrameLayout(this)
-            val bg = View(this).apply {
-                setBackgroundColor(Color.parseColor("#73000000")) // black, ~45% opacity
-            }
-            root.addView(
-                bg,
-                FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT
-                )
-            )
 
             val label = TextView(this).apply {
-                text = "\u21A9  Zpět do feedu"
+                text = "\u21A9  Zp\u011bt do feedu"
                 setTextColor(Color.WHITE)
-                textSize = 15f
+                textSize = 14f
                 setPadding(
-                    (22 * density).toInt(), (12 * density).toInt(),
-                    (22 * density).toInt(), (12 * density).toInt()
+                    (20 * density).toInt(), (13 * density).toInt(),
+                    (20 * density).toInt(), (13 * density).toInt()
                 )
-                setBackgroundColor(Color.parseColor("#EE2A2A2A"))
+                background = GradientDrawable().apply {
+                    setColor(Color.parseColor("#EE1A1A1A"))
+                    cornerRadius = 22 * density
+                    setStroke((1 * density).toInt(), Color.parseColor("#3326A69A"))
+                }
+                alpha = 0f
+                translationY = -60 * density
             }
             val labelParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
-            ).apply { gravity = Gravity.CENTER }
+            ).apply {
+                gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                topMargin = statusBarHeightPx + (16 * density).toInt()
+            }
             root.addView(label, labelParams)
 
-            root.alpha = 0f
             root.visibility = View.GONE
 
             val params = WindowManager.LayoutParams(
@@ -210,20 +211,29 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     private fun playExitAnimation() {
         val root = transitionRoot ?: return
-        val label = transitionLabel
+        val label = transitionLabel ?: return
+        val density = resources.displayMetrics.density
         try {
             root.visibility = View.VISIBLE
-            root.alpha = 0f
-            label?.scaleX = 0.85f
-            label?.scaleY = 0.85f
-            root.animate().alpha(1f).setDuration(140).withEndAction {
-                root.postDelayed({
-                    root.animate().alpha(0f).setDuration(260).withEndAction {
-                        root.visibility = View.GONE
-                    }.start()
-                }, 380)
-            }.start()
-            label?.animate()?.scaleX(1f)?.scaleY(1f)?.setDuration(220)?.start()
+            label.animate().cancel()
+            label.alpha = 0f
+            label.translationY = -60 * density
+            label.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(220)
+                .setInterpolator(DecelerateInterpolator())
+                .withEndAction {
+                    label.postDelayed({
+                        label.animate()
+                            .alpha(0f)
+                            .translationY(-40 * density)
+                            .setDuration(200)
+                            .withEndAction { root.visibility = View.GONE }
+                            .start()
+                    }, 900)
+                }
+                .start()
         } catch (e: Exception) {
             AppLog.w(this, TAG, "Exit animation failed: ${e.message}")
         }
@@ -265,8 +275,12 @@ class ReelsAccessibilityService : AccessibilityService() {
             tabNode.getBoundsInScreen(bounds)
             tabNode.recycle()
             showOverlayAt(bounds)
-        } else if (System.currentTimeMillis() - lastSeenTabAt >= HIDE_GRACE_MS) {
-            hideOverlay()
+        } else {
+            val missMs = System.currentTimeMillis() - lastSeenTabAt
+            if (missMs >= HIDE_GRACE_MS && overlayView?.visibility != View.GONE) {
+                AppLog.d(this, TAG, "Tab icon missing for ${missMs}ms -- hiding overlay")
+                hideOverlay()
+            }
         }
     }
 
@@ -304,6 +318,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         val params = overlayParams ?: return
         if (bounds.width() <= 0 || bounds.height() <= 0) return
 
+        val wasHidden = view.visibility != View.VISIBLE
         val last = lastAppliedBounds
         val bigEnoughChange = last == null ||
             Math.abs(last.left - bounds.left) > REPOSITION_THRESHOLD_PX ||
@@ -313,7 +328,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         val enoughTimePassed = now - lastRepositionAt > MIN_REPOSITION_INTERVAL_MS
         val movedEnough = bigEnoughChange && (enoughTimePassed || last == null)
 
-        if (movedEnough || view.visibility != View.VISIBLE) {
+        if (movedEnough || wasHidden) {
             params.x = bounds.left
             params.y = bounds.top - statusBarHeightPx
             params.width = bounds.width()
@@ -330,7 +345,12 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
 
         view.setBackgroundColor(sampledColor ?: fallbackColor())
-        view.visibility = View.VISIBLE
+        if (wasHidden) {
+            view.animate().cancel()
+            view.visibility = View.VISIBLE
+            view.alpha = 0f
+            view.animate().alpha(1f).setDuration(FADE_MS).start()
+        }
         maybeResampleColor(bounds)
     }
 
@@ -339,7 +359,10 @@ class ReelsAccessibilityService : AccessibilityService() {
         val wm = windowManager ?: return
         val view = overlayView ?: return
         val params = overlayParams ?: return
-        if (view.visibility != View.GONE) {
+        if (view.visibility == View.GONE) return
+        lastAppliedBounds = null
+        view.animate().cancel()
+        view.animate().alpha(0f).setDuration(FADE_MS).withEndAction {
             view.visibility = View.GONE
             params.width = 0
             params.height = 0
@@ -347,8 +370,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                 wm.updateViewLayout(view, params)
             } catch (_: Exception) {
             }
-        }
-        lastAppliedBounds = null
+        }.start()
     }
 
     private fun fallbackColor(): Int = Color.parseColor("#1A1A1A")

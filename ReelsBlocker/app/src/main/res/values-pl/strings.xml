@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Wykrywa, kiedy otwarta jest karta Instagram Reels, i automatycznie ją zamyka. Odczytuje tylko zawartość ekranu Instagrama -- nie odczytuje ani nie zapisuje żadnych danych osobowych i nie działa w żadnej innej aplikacji.</string>
+    <string name="run">Uruchom</string>
+    <string name="stop">Zatrzymaj</string>
+    <string name="total_blocked">Łącznie zablokowanych</string>
+    <string name="today">Dzisiaj</string>
+    <string name="last_7_days">Ostatnie 7 dni</string>
+    <string name="setup_open_accessibility">Otwórz ustawienia ułatwień dostępu</string>
+    <string name="setup_open_battery">Otwórz ustawienia baterii aplikacji</string>
+    <string name="setup_open_other_permissions">Otwórz informacje o aplikacji (inne uprawnienia)</string>
+    <string name="setup_instructions">1. Dotknij „Otwórz ustawienia ułatwień dostępu” i włącz „Reels Blocker Service”. Jeśli przełącznik nie zostaje włączony: Informacje o aplikacji -&gt; menu ⋮ (prawy górny róg) -&gt; „Zezwól na ograniczone ustawienia”.
+
+2. Dotknij „Otwórz ustawienia baterii aplikacji”, ustaw zużycie baterii na „Brak ograniczeń” i włącz autostart (specyficzne dla Xiaomi/HyperOS).
+
+3. Na tym samym ekranie -&gt; Inne uprawnienia -&gt; zezwól na „Wyświetlanie okienek podczas działania w tle”.
+
+4. Otwórz też ostatnie aplikacje i dotknij ikony kłódki przy Reels Blocker, żeby HyperOS nie zamykał go w tle -- jeśli usługa kiedykolwiek pokaże się jako „nie działa” w ułatwieniach dostępu, zwykle to właśnie z tego powodu, a ponowne włączenie przełącznika to naprawia.
+
+5. Użyj Run/Stop u góry, aby wstrzymać blokowanie w dowolnym momencie, osobno dla każdej aplikacji.
+
+6. Dotknij strzałki w lewym górnym rogu -&gt; Log, jeśli coś nie działa -- skopiuj go i wyślij, aby można było to precyzyjnie naprawić.</string>
+    <string name="debug_intro">Log jest zapisywany wyłącznie lokalnie na tym urządzeniu -- nic nie jest nigdzie wysyłane. Skopiuj i wyślij go, gdy coś się zepsuje.</string>
+    <string name="refresh">Odśwież</string>
+    <string name="copy">Kopiuj</string>
+    <string name="clear">Wyczyść</string>
+    <string name="download_txt">Pobierz jako .txt</string>
+    <string name="log_copied_toast">Log skopiowany</string>
+    <string name="export_failed_toast">Eksport logu nie powiódł się</string>
+    <string name="export_chooser_title">Zapisz log jako .txt</string>
+    <string name="menu_overview">Przegląd</string>
+    <string name="menu_settings">Ustawienia</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Języki</string>
+    <string name="languages_title">Języki</string>
+    <string name="language_system_default">Domyślny systemowy</string>
+    <string name="hub_stats">Statystyki</string>
+    <string name="hub_move">Przenieś</string>
+    <string name="move_prompt">Dotknij, gdzie przenieść %1$s</string>
+    <string name="status_running">Działa</string>
+    <string name="status_stopped">Zatrzymane</string>
+    <string name="service_enabled">Usługa ułatwień dostępu włączona</string>
+    <string name="service_not_enabled">Usługa ułatwień dostępu NIE jest włączona -- zobacz Ustawienia w menu</string>
+    <string name="service_not_implemented">Wykrywanie jeszcze niezaimplementowane</string>
+    <string name="not_implemented_note">Wykrywanie dla %1$s nie zostało jeszcze zaimplementowane -- Run/Stop jest zapisywane na później, ale na razie nic nie jest blokowane ani śledzone.</string>
+</resources>

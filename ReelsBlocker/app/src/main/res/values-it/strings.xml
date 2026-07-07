@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Rileva quando è aperta la scheda Instagram Reels ed esce automaticamente. Legge solo i contenuti a schermo di Instagram -- non legge né memorizza dati personali e non agisce in nessun\'altra app.</string>
+    <string name="run">Avvia</string>
+    <string name="stop">Ferma</string>
+    <string name="total_blocked">Totale bloccati</string>
+    <string name="today">Oggi</string>
+    <string name="last_7_days">Ultimi 7 giorni</string>
+    <string name="setup_open_accessibility">Apri impostazioni di accessibilità</string>
+    <string name="setup_open_battery">Apri impostazioni batteria dell\'app</string>
+    <string name="setup_open_other_permissions">Apri info app (Altre autorizzazioni)</string>
+    <string name="setup_instructions">1. Tocca «Apri impostazioni di accessibilità» e attiva «Reels Blocker Service». Se l\'interruttore non resta attivo: Info app -&gt; menu ⋮ (in alto a destra) -&gt; «Consenti impostazioni con restrizioni».
+
+2. Tocca «Apri impostazioni batteria dell\'app», imposta l\'uso della batteria su «Nessuna restrizione» e attiva l\'avvio automatico (specifico Xiaomi/HyperOS).
+
+3. Nella stessa schermata -&gt; Altre autorizzazioni -&gt; consenti «Mostra popup mentre è in esecuzione in background».
+
+4. Apri anche le app recenti e tocca l\'icona del lucchetto su Reels Blocker così HyperOS non lo chiude in background -- se il servizio appare come «non funzionante» nell\'accessibilità, di solito è per questo, e riattivare l\'interruttore risolve il problema.
+
+5. Usa Run/Stop in alto per mettere in pausa il blocco in qualsiasi momento, per ogni app.
+
+6. Tocca la freccia in alto a sinistra -&gt; Log se qualcosa non funziona -- copialo e invialo per poterlo correggere con precisione.</string>
+    <string name="debug_intro">Il log viene salvato solo localmente su questo dispositivo -- non viene inviato da nessuna parte. Copialo e condividilo se qualcosa si rompe.</string>
+    <string name="refresh">Aggiorna</string>
+    <string name="copy">Copia</string>
+    <string name="clear">Cancella</string>
+    <string name="download_txt">Scarica come .txt</string>
+    <string name="log_copied_toast">Log copiato</string>
+    <string name="export_failed_toast">Esportazione log non riuscita</string>
+    <string name="export_chooser_title">Salva log come .txt</string>
+    <string name="menu_overview">Panoramica</string>
+    <string name="menu_settings">Impostazioni</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Lingue</string>
+    <string name="languages_title">Lingue</string>
+    <string name="language_system_default">Lingua di sistema</string>
+    <string name="hub_stats">Statistiche</string>
+    <string name="hub_move">Sposta</string>
+    <string name="move_prompt">Tocca dove spostare %1$s</string>
+    <string name="status_running">Attivo</string>
+    <string name="status_stopped">Fermato</string>
+    <string name="service_enabled">Servizio di accessibilità attivo</string>
+    <string name="service_not_enabled">Servizio di accessibilità NON attivo -- vedi Impostazioni nel menu</string>
+    <string name="service_not_implemented">Rilevamento non ancora implementato</string>
+    <string name="not_implemented_note">Il rilevamento per %1$s non è ancora implementato -- Run/Stop viene salvato per quando sarà pronto, ma per ora non blocca né monitora nulla.</string>
+</resources>

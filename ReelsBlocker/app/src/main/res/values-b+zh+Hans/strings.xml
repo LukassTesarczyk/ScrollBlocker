@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">检测 Instagram Reels 标签页何时打开并自动退出。仅读取 Instagram 的屏幕内容 -- 不读取或存储任何个人数据，也不在任何其他应用中执行任何操作。</string>
+    <string name="run">运行</string>
+    <string name="stop">停止</string>
+    <string name="total_blocked">累计屏蔽次数</string>
+    <string name="today">今天</string>
+    <string name="last_7_days">最近7天</string>
+    <string name="setup_open_accessibility">打开无障碍设置</string>
+    <string name="setup_open_battery">打开应用电池设置</string>
+    <string name="setup_open_other_permissions">打开应用信息（其他权限）</string>
+    <string name="setup_instructions">1. 点击“打开无障碍设置”并启用“Reels Blocker Service”。如果开关无法保持开启：应用信息 -&gt; ⋮ 菜单（右上角）-&gt; “允许受限设置”。
+
+2. 点击“打开应用电池设置”，将电池使用设为“无限制”，并开启自启动（Xiaomi/HyperOS 专属）。
+
+3. 在同一屏幕上 -&gt; 其他权限 -&gt; 允许“后台运行时显示弹出窗口”。
+
+4. 同时打开最近任务列表，点击 Reels Blocker 上的锁定图标，防止 HyperOS 在后台关闭它 -- 如果该服务在无障碍设置中显示为“未运行”，通常就是这个原因，重新开启开关即可解决。
+
+5. 使用上方的 Run/Stop 可随时按应用暂停屏蔽。
+
+6. 如果出现问题，点击左上角箭头 -&gt; Log，复制后发送，以便精确修复。</string>
+    <string name="debug_intro">日志仅保存在本设备本地 -- 不会发送到任何地方。如出现问题，请复制并分享日志。</string>
+    <string name="refresh">刷新</string>
+    <string name="copy">复制</string>
+    <string name="clear">清除</string>
+    <string name="download_txt">下载为 .txt</string>
+    <string name="log_copied_toast">日志已复制</string>
+    <string name="export_failed_toast">日志导出失败</string>
+    <string name="export_chooser_title">将日志另存为 .txt</string>
+    <string name="menu_overview">概览</string>
+    <string name="menu_settings">设置</string>
+    <string name="menu_log">日志</string>
+    <string name="menu_languages">语言</string>
+    <string name="languages_title">语言</string>
+    <string name="language_system_default">系统默认</string>
+    <string name="hub_stats">统计</string>
+    <string name="hub_move">移动</string>
+    <string name="move_prompt">点击要将 %1$s 移动到的位置</string>
+    <string name="status_running">运行中</string>
+    <string name="status_stopped">已停止</string>
+    <string name="service_enabled">无障碍服务已启用</string>
+    <string name="service_not_enabled">无障碍服务未启用 -- 请查看菜单中的设置</string>
+    <string name="service_not_implemented">检测功能尚未实现</string>
+    <string name="not_implemented_note">%1$s 的检测功能尚未实现 -- Run/Stop 状态会被保存以备将来使用，但目前不会屏蔽或跟踪任何内容。</string>
+</resources>

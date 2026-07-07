@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Sleduje, kedy je otvorená karta Instagram Reels, a automaticky z nej odchádza. Číta len obsah na obrazovke Instagramu -- nečíta ani neukladá žiadne osobné údaje a v žiadnej inej appke nič nerobí.</string>
+    <string name="run">Spustiť</string>
+    <string name="stop">Zastaviť</string>
+    <string name="total_blocked">Celkovo zablokované</string>
+    <string name="today">Dnes</string>
+    <string name="last_7_days">Posledných 7 dní</string>
+    <string name="setup_open_accessibility">Otvoriť nastavenia zjednodušenia ovládania</string>
+    <string name="setup_open_battery">Otvoriť nastavenia batérie appky</string>
+    <string name="setup_open_other_permissions">Otvoriť info o appke (Ďalšie povolenia)</string>
+    <string name="setup_instructions">1. Klepni na „Otvoriť nastavenia zjednodušenia ovládania“ a zapni „Reels Blocker Service“. Ak prepínač nezostane zapnutý: Info o appke -&gt; menu ⋮ (vpravo hore) -&gt; „Povoliť obmedzené nastavenia“.
+
+2. Klepni na „Otvoriť nastavenia batérie appky“ a nastav využitie batérie na „Bez obmedzení“ a zapni Autoštart (špecifické pre Xiaomi/HyperOS).
+
+3. Na tej istej obrazovke -&gt; Ďalšie povolenia -&gt; povoľ „Zobrazovať vyskakovacie okná na pozadí“.
+
+4. Otvor aj posledné aplikácie a klepni na ikonu zámku pri appke Reels Blocker, aby ju HyperOS neukončoval na pozadí -- ak sa služba niekedy zobrazí ako „nefunkčná“ v nastaveniach zjednodušenia ovládania, zvyčajne je to tento dôvod a pomôže znova zapnúť prepínač.
+
+5. Prepínačom Run/Stop hore môžeš blokovanie kedykoľvek pozastaviť, pre každú appku zvlášť.
+
+6. Klepni na šípku vľavo hore -&gt; Log, ak niečo nefunguje -- skopíruj ho a pošli, aby sa to dalo presne opraviť.</string>
+    <string name="debug_intro">Log sa ukladá lokálne len v tomto zariadení -- nič sa nikam neposiela. Skopíruj a pošli ho, keď sa niečo pokazí.</string>
+    <string name="refresh">Obnoviť</string>
+    <string name="copy">Kopírovať</string>
+    <string name="clear">Vymazať</string>
+    <string name="download_txt">Stiahnuť ako .txt</string>
+    <string name="log_copied_toast">Log skopírovaný</string>
+    <string name="export_failed_toast">Export logu zlyhal</string>
+    <string name="export_chooser_title">Uložiť log ako .txt</string>
+    <string name="menu_overview">Prehľad</string>
+    <string name="menu_settings">Nastavenia</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Jazyky</string>
+    <string name="languages_title">Jazyky</string>
+    <string name="language_system_default">Podľa systému</string>
+    <string name="hub_stats">Štatistiky</string>
+    <string name="hub_move">Presunúť</string>
+    <string name="move_prompt">Klepni, kam presunúť %1$s</string>
+    <string name="status_running">Beží</string>
+    <string name="status_stopped">Zastavené</string>
+    <string name="service_enabled">Služba zjednodušenia ovládania je zapnutá</string>
+    <string name="service_not_enabled">Služba zjednodušenia ovládania NIE JE zapnutá -- pozri Nastavenia v menu</string>
+    <string name="service_not_implemented">Detekcia zatiaľ nie je implementovaná</string>
+    <string name="not_implemented_note">%1$s zatiaľ nemá implementovanú detekciu -- Run/Stop sa ukladá na neskôr, ale zatiaľ nič neblokuje ani nesleduje.</string>
+</resources>

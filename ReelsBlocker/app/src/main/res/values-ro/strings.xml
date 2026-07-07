@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Detectează când este deschisă fila Instagram Reels și iese automat din ea. Citește doar conținutul afișat de Instagram -- nu citește și nu stochează date personale și nu acționează în nicio altă aplicație.</string>
+    <string name="run">Pornește</string>
+    <string name="stop">Oprește</string>
+    <string name="total_blocked">Total blocate</string>
+    <string name="today">Astăzi</string>
+    <string name="last_7_days">Ultimele 7 zile</string>
+    <string name="setup_open_accessibility">Deschide setările de accesibilitate</string>
+    <string name="setup_open_battery">Deschide setările bateriei aplicației</string>
+    <string name="setup_open_other_permissions">Deschide informațiile aplicației (Alte permisiuni)</string>
+    <string name="setup_instructions">1. Atinge „Deschide setările de accesibilitate” și activează „Reels Blocker Service”. Dacă comutatorul nu rămâne activat: Informații aplicație -&gt; meniul ⋮ (dreapta sus) -&gt; „Permite setările restricționate”.
+
+2. Atinge „Deschide setările bateriei aplicației”, setează utilizarea bateriei pe „Fără restricții” și activează Pornirea automată (specific Xiaomi/HyperOS).
+
+3. Pe același ecran -&gt; Alte permisiuni -&gt; permite „Afișarea ferestrelor pop-up în fundal”.
+
+4. Deschide și aplicațiile recente și atinge iconița de lacăt de la Reels Blocker, ca HyperOS să nu o închidă în fundal -- dacă serviciul apare vreodată ca „nu funcționează” la accesibilitate, de obicei acesta este motivul, iar reactivarea comutatorului rezolvă problema.
+
+5. Folosește Run/Stop de mai sus pentru a pune blocarea pe pauză oricând, pentru fiecare aplicație.
+
+6. Atinge săgeata din stânga sus -&gt; Log dacă ceva nu funcționează -- copiază-l și trimite-l pentru a putea fi reparat cu precizie.</string>
+    <string name="debug_intro">Jurnalul este stocat doar local pe acest dispozitiv -- nimic nu este trimis nicăieri. Copiază-l și trimite-l dacă ceva se strică.</string>
+    <string name="refresh">Reîmprospătează</string>
+    <string name="copy">Copiază</string>
+    <string name="clear">Șterge</string>
+    <string name="download_txt">Descarcă ca .txt</string>
+    <string name="log_copied_toast">Jurnal copiat</string>
+    <string name="export_failed_toast">Exportul jurnalului a eșuat</string>
+    <string name="export_chooser_title">Salvează jurnalul ca .txt</string>
+    <string name="menu_overview">Prezentare generală</string>
+    <string name="menu_settings">Setări</string>
+    <string name="menu_log">Jurnal</string>
+    <string name="menu_languages">Limbi</string>
+    <string name="languages_title">Limbi</string>
+    <string name="language_system_default">Implicit sistem</string>
+    <string name="hub_stats">Statistici</string>
+    <string name="hub_move">Mută</string>
+    <string name="move_prompt">Atinge unde să muți %1$s</string>
+    <string name="status_running">Activ</string>
+    <string name="status_stopped">Oprit</string>
+    <string name="service_enabled">Serviciul de accesibilitate este activat</string>
+    <string name="service_not_enabled">Serviciul de accesibilitate NU este activat -- vezi Setări în meniu</string>
+    <string name="service_not_implemented">Detecția nu este încă implementată</string>
+    <string name="not_implemented_note">Detecția pentru %1$s nu este încă implementată -- Run/Stop este salvat pentru mai târziu, dar deocamdată nimic nu este blocat sau urmărit.</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Erkennt, wenn der Instagram-Reels-Tab geöffnet ist, und verlässt ihn automatisch. Liest nur Bildschirminhalte von Instagram -- speichert oder liest keine persönlichen Daten und ist in keiner anderen App aktiv.</string>
+    <string name="run">Start</string>
+    <string name="stop">Stopp</string>
+    <string name="total_blocked">Insgesamt blockiert</string>
+    <string name="today">Heute</string>
+    <string name="last_7_days">Letzte 7 Tage</string>
+    <string name="setup_open_accessibility">Bedienungshilfen-Einstellungen öffnen</string>
+    <string name="setup_open_battery">Akku-Einstellungen der App öffnen</string>
+    <string name="setup_open_other_permissions">App-Info öffnen (weitere Berechtigungen)</string>
+    <string name="setup_instructions">1. Tippe auf „Bedienungshilfen-Einstellungen öffnen“ und aktiviere „Reels Blocker Service“. Bleibt der Schalter nicht an: App-Info -&gt; ⋮-Menü (oben rechts) -&gt; „Eingeschränkte Einstellungen zulassen“.
+
+2. Tippe auf „Akku-Einstellungen der App öffnen“, stelle den Akkuverbrauch auf „Keine Einschränkungen“ und aktiviere Autostart (Xiaomi/HyperOS-spezifisch).
+
+3. Gleicher Bildschirm -&gt; Weitere Berechtigungen -&gt; „Pop-up-Fenster im Hintergrund anzeigen“ erlauben.
+
+4. Öffne außerdem die zuletzt verwendeten Apps und tippe beim Reels Blocker auf das Schloss-Symbol, damit HyperOS ihn nicht im Hintergrund beendet -- wenn der Dienst jemals als „nicht funktionsfähig“ in den Bedienungshilfen angezeigt wird, liegt es meist daran, und erneutes Aktivieren des Schalters behebt es.
+
+5. Mit Run/Stop oben kannst du die Blockierung jederzeit pro App pausieren.
+
+6. Tippe oben links auf den Pfeil -&gt; Log, wenn etwas nicht funktioniert -- kopiere ihn und schicke ihn, damit es gezielt behoben werden kann.</string>
+    <string name="debug_intro">Das Log wird nur lokal auf diesem Gerät gespeichert -- es wird nichts irgendwohin gesendet. Kopiere und teile es, wenn etwas nicht funktioniert.</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="copy">Kopieren</string>
+    <string name="clear">Leeren</string>
+    <string name="download_txt">Als .txt herunterladen</string>
+    <string name="log_copied_toast">Log kopiert</string>
+    <string name="export_failed_toast">Log-Export fehlgeschlagen</string>
+    <string name="export_chooser_title">Log als .txt speichern</string>
+    <string name="menu_overview">Übersicht</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_languages">Sprachen</string>
+    <string name="languages_title">Sprachen</string>
+    <string name="language_system_default">Systemsprache</string>
+    <string name="hub_stats">Statistik</string>
+    <string name="hub_move">Verschieben</string>
+    <string name="move_prompt">Tippe, wohin %1$s verschoben werden soll</string>
+    <string name="status_running">Aktiv</string>
+    <string name="status_stopped">Gestoppt</string>
+    <string name="service_enabled">Bedienungshilfe ist aktiviert</string>
+    <string name="service_not_enabled">Bedienungshilfe ist NICHT aktiviert -- siehe Einstellungen im Menü</string>
+    <string name="service_not_implemented">Erkennung noch nicht implementiert</string>
+    <string name="not_implemented_note">Die Erkennung für %1$s ist noch nicht implementiert -- Run/Stop wird für später gespeichert, aktuell wird aber noch nichts blockiert oder erfasst.</string>
+</resources>

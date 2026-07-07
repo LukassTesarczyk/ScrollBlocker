@@ -80,4 +80,18 @@ object AppLog {
         } catch (_: Exception) {
         }
     }
+
+    /** Copies the log into the cache dir (readable by FileProvider) for export/sharing. */
+    fun exportToCache(context: Context): File? {
+        return try {
+            val stamp = java.text.SimpleDateFormat("yyyy-MM-dd_HHmm", java.util.Locale.US).format(java.util.Date())
+            val exportDir = File(context.cacheDir, "log_export").apply { mkdirs() }
+            val exportFile = File(exportDir, "reels_blocker_log_$stamp.txt")
+            exportFile.writeText(readAll(context))
+            exportFile
+        } catch (e: Exception) {
+            Log.w("ReelsBlocker", "Log export failed: ${e.message}")
+            null
+        }
+    }
 }

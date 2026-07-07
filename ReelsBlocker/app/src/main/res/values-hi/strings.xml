@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">पता लगाता है कि कब Instagram Reels टैब खुला है और उससे अपने आप बाहर निकल जाता है। केवल Instagram की स्क्रीन सामग्री पढ़ता है -- कोई भी व्यक्तिगत डेटा न तो पढ़ता है न ही सहेजता है, और किसी अन्य ऐप में कुछ नहीं करता।</string>
+    <string name="run">शुरू करें</string>
+    <string name="stop">रोकें</string>
+    <string name="total_blocked">कुल ब्लॉक किए गए</string>
+    <string name="today">आज</string>
+    <string name="last_7_days">पिछले 7 दिन</string>
+    <string name="setup_open_accessibility">एक्सेसिबिलिटी सेटिंग्स खोलें</string>
+    <string name="setup_open_battery">ऐप की बैटरी सेटिंग्स खोलें</string>
+    <string name="setup_open_other_permissions">ऐप जानकारी खोलें (अन्य अनुमतियाँ)</string>
+    <string name="setup_instructions">1. \"एक्सेसिबिलिटी सेटिंग्स खोलें\" पर टैप करें और \"Reels Blocker Service\" चालू करें। यदि स्विच चालू नहीं रहता: ऐप जानकारी -&gt; ⋮ मेनू (ऊपर दाईं ओर) -&gt; \"प्रतिबंधित सेटिंग्स की अनुमति दें\"।
+
+2. \"ऐप की बैटरी सेटिंग्स खोलें\" पर टैप करें, बैटरी उपयोग को \"कोई प्रतिबंध नहीं\" पर सेट करें और ऑटोस्टार्ट चालू करें (Xiaomi/HyperOS के लिए विशिष्ट)।
+
+3. उसी स्क्रीन पर -&gt; अन्य अनुमतियाँ -&gt; \"बैकग्राउंड में चलते समय पॉप-अप विंडो दिखाना\" की अनुमति दें।
+
+4. हाल की ऐप्स भी खोलें और Reels Blocker पर लॉक आइकन पर टैप करें ताकि HyperOS इसे बैकग्राउंड में बंद न करे -- यदि सेवा कभी एक्सेसिबिलिटी में \"काम नहीं कर रही\" दिखे, तो आमतौर पर यही कारण होता है, और स्विच को फिर से चालू करने से यह ठीक हो जाता है।
+
+5. किसी भी समय, प्रत्येक ऐप के लिए, ब्लॉकिंग रोकने के लिए ऊपर दिए गए Run/Stop का उपयोग करें।
+
+6. यदि कुछ ठीक से काम नहीं कर रहा है तो ऊपर बाईं ओर तीर -&gt; Log पर टैप करें -- इसे कॉपी करके भेजें ताकि इसे सटीक रूप से ठीक किया जा सके।</string>
+    <string name="debug_intro">लॉग केवल इसी डिवाइस पर स्थानीय रूप से सहेजा जाता है -- कहीं भी कुछ नहीं भेजा जाता। कुछ खराब होने पर इसे कॉपी करके शेयर करें।</string>
+    <string name="refresh">रीफ्रेश करें</string>
+    <string name="copy">कॉपी करें</string>
+    <string name="clear">साफ़ करें</string>
+    <string name="download_txt">.txt के रूप में डाउनलोड करें</string>
+    <string name="log_copied_toast">लॉग कॉपी हो गया</string>
+    <string name="export_failed_toast">लॉग एक्सपोर्ट विफल रहा</string>
+    <string name="export_chooser_title">लॉग को .txt के रूप में सहेजें</string>
+    <string name="menu_overview">अवलोकन</string>
+    <string name="menu_settings">सेटिंग्स</string>
+    <string name="menu_log">लॉग</string>
+    <string name="menu_languages">भाषाएँ</string>
+    <string name="languages_title">भाषाएँ</string>
+    <string name="language_system_default">सिस्टम डिफ़ॉल्ट</string>
+    <string name="hub_stats">आँकड़े</string>
+    <string name="hub_move">स्थानांतरित करें</string>
+    <string name="move_prompt">%1$s को कहाँ स्थानांतरित करना है, वहाँ टैप करें</string>
+    <string name="status_running">चल रहा है</string>
+    <string name="status_stopped">रुका हुआ</string>
+    <string name="service_enabled">एक्सेसिबिलिटी सेवा चालू है</string>
+    <string name="service_not_enabled">एक्सेसिबिलिटी सेवा चालू नहीं है -- मेनू में सेटिंग्स देखें</string>
+    <string name="service_not_implemented">डिटेक्शन अभी लागू नहीं किया गया है</string>
+    <string name="not_implemented_note">%1$s के लिए डिटेक्शन अभी लागू नहीं किया गया है -- Run/Stop बाद के लिए सहेजा जाता है, लेकिन फिलहाल कुछ भी ब्लॉक या ट्रैक नहीं किया जा रहा है।</string>
+</resources>

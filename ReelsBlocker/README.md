@@ -119,6 +119,49 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.7 -- jazyky, přepracovaný hub appek, export logu, nová animace
+
+Log poslaný po v1.6 potvrdil, že problikávání se zmírnilo, ale úplně
+nezmizelo -- overlay se pořád občas schová a zase ukáže (řeší se teď
+plynulým prolnutím místo tvrdého zmizení, takže by to mělo být míň
+vidět, i když se to stane). Detekci Reels jsem ale zase nechal na
+pokoji bez čerstvého logu -- viz poznámka dole.
+
+- **~30 jazyků appky:** vlevo nahoře v novém menu (šipka) přibyla
+  položka Languages -- jde přepnout jazyk appky nezávisle na jazyce
+  telefonu (čeština, slovenština, němčina, francouzština, španělština,
+  italština, portugalština, nizozemština, polština, ruština,
+  ukrajinština, dánština, finština, řečtina, maďarština, rumunština,
+  švédština, chorvatština, bulharština, turečtina, vietnamština,
+  thajština, arabština, hebrejština, hindština, indonéština, japonština,
+  korejština, norština, čínština (zjednodušená) + angličtina jako
+  výchozí). Seznam je řazený abecedně podle anglického názvu jazyka.
+- **Hub appek přepracovaný:** Instagram/TikTok/Snapchat mají teď
+  jednoduché ikonky místo textových zkratek (IG/TT/SC). Podržení appky
+  už nerovnou spustí přesun -- otevře se malé menu s volbami Stats
+  (skočí na přehled dané appky), Move (přesun, funguje jako dřív --
+  klepni kam přesunout) a Run/Stop (rychlé zapnutí/vypnutí přímo
+  odsud).
+- **Log jde stáhnout jako .txt:** v menu -> Log přibylo tlačítko
+  "Download as .txt", které log uloží/pošle přes systémové "Sdílet"
+  (Soubory, e-mail, Disk...), ne jen kopírování do schránky.
+- **Nová animace při vyhození z Reels:** místo tmavého záblesku přes
+  celou obrazovku teď shora sjede malá pilulka s textem, bez tmavého
+  podkladu -- méně rušivé.
+- **Problikávání, pokračování:** overlay se teď plynule prolíná
+  (fade) místo okamžitého zmizení/objevení, prodloužena i tolerance,
+  než se vůbec schová (500ms -> 900ms). Přidáno i podrobnější logování
+  (kdy a proč se overlay schovává), aby šlo případně dohledat skutečnou
+  příčinu z dalšího logu.
+
+**Známý, zatím neopravený problém:** podle zpětné vazby jde do Reels
+swipnout stranou přímo z feedu nebo z DM, a appka to v některých
+případech nezachytí (i kdyby overlay fungoval perfektně, jde tudy
+obejít). Tohle se týká samotné detekční logiky (ne spolehlivosti), a
+tu bez čerstvého logu z přesně tohohle scénáře neupravuju naslepo --
+až budeš mít chuť, pošli log pořízený zrovna při swipnutí do Reels ze
+strany (ne přes ikonku dole) a mrknu na to přesně.
+
 ## v1.6 -- oprava problikávání/"not working", nové rozhraní se šipkou
 
 Tohle kolo bylo o spolehlivosti appky, ne o detekci Reels (tu jsem
