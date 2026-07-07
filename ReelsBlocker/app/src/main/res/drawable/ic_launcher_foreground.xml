@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer brain outline -->
+    <path
+        android:pathData="M54,26 C71.67,26 86,36.74 86,50 C86,63.26 71.67,74 54,74 C36.33,74 22,63.26 22,50 C22,36.74 36.33,26 54,26 Z"
+        android:fillColor="#00000000"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:type="linear"
+                android:startX="20"
+                android:startY="20"
+                android:endX="90"
+                android:endY="90"
+                android:startColor="#A855F7"
+                android:endColor="#E040FB" />
+        </aapt:attr>
+    </path>
+
+    <!-- Hemisphere divide -->
+    <path
+        android:pathData="M54,28 C50,38 58,46 54,56 C50,64 58,70 54,72"
+        android:fillColor="#00000000"
+        android:strokeColor="#C158E0"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Fold lines -->
+    <path
+        android:pathData="M34,40 C38,36 42,40 46,38"
+        android:fillColor="#00000000"
+        android:strokeColor="#C158E0"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M30,52 C36,48 42,52 48,50"
+        android:fillColor="#00000000"
+        android:strokeColor="#C158E0"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M62,38 C66,40 70,36 74,40"
+        android:fillColor="#00000000"
+        android:strokeColor="#C158E0"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M60,50 C66,52 72,48 78,52"
+        android:fillColor="#00000000"
+        android:strokeColor="#C158E0"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round" />
+
+    <!-- Brainstem -->
+    <path
+        android:pathData="M46,74 C44,78 43,80 41,82"
+        android:fillColor="#00000000"
+        android:strokeColor="#C158E0"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M62,74 C64,78 65,80 67,82"
+        android:fillColor="#00000000"
+        android:strokeColor="#C158E0"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+
+</vector>

@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blockerが有効です</string>
     <string name="notification_text">Instagram Reelsをブロック中です。一時停止するにはアプリで停止をタップしてください。</string>
     <string name="restart_app">アプリを再起動</string>
+    <string name="pill_back_to_feed">↩ フィードに戻る</string>
+    <string name="pill_left_reels">↩ Reelsを終了しました</string>
 </resources>

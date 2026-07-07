@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker가 활성 상태입니다</string>
     <string name="notification_text">Instagram Reels를 차단 중입니다. 일시 중지하려면 앱에서 중지를 탭하세요.</string>
     <string name="restart_app">앱 재시작</string>
+    <string name="pill_back_to_feed">↩ 피드로 돌아가기</string>
+    <string name="pill_left_reels">↩ Reels에서 나감</string>
 </resources>

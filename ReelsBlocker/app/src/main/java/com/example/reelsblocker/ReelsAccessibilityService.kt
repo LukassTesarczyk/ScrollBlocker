@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PixelFormat
@@ -23,6 +24,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.NotificationCompat
 import java.util.concurrent.Executors
 
@@ -197,6 +199,21 @@ class ReelsAccessibilityService : AccessibilityService() {
         return if (resId > 0) resources.getDimensionPixelSize(resId) else 0
     }
 
+    // AppCompatDelegate's per-app language override is applied by
+    // AppCompatActivity wrapping its own base context -- a plain
+    // AccessibilityService never goes through that, so getString() here
+    // would otherwise silently ignore the language picked in the app and
+    // just use the phone's system language. Building a one-off
+    // Configuration with the chosen locale sidesteps that.
+    private fun localizedString(resId: Int): String {
+        val locales = AppCompatDelegate.getApplicationLocales()
+        val locale = if (locales.isEmpty) null else locales[0]
+        if (locale == null) return getString(resId)
+        val config = Configuration(resources.configuration)
+        config.setLocale(locale)
+        return createConfigurationContext(config).getString(resId)
+    }
+
     private fun setupOverlay() {
         try {
             val wm = getSystemService(WINDOW_SERVICE) as WindowManager
@@ -242,7 +259,6 @@ class ReelsAccessibilityService : AccessibilityService() {
             val root = FrameLayout(this)
 
             val label = TextView(this).apply {
-                text = "\u21A9  Zp\u011bt do feedu"
                 setTextColor(Color.WHITE)
                 textSize = 14f
                 setPadding(
@@ -287,11 +303,17 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun playExitAnimation() {
+    // wentToFeed is false when we had to fall back to the plain back
+    // button instead of clicking the Home tab -- in that case we can't
+    // actually promise the user landed back on the main feed (a fallback
+    // "back" from a reel opened inside a DM thread returns to the DM,
+    // not the feed), so the pill text needs to stay honest about that.
+    private fun playExitAnimation(wentToFeed: Boolean) {
         val root = transitionRoot ?: return
         val label = transitionLabel ?: return
         val density = resources.displayMetrics.density
         try {
+            label.text = localizedString(if (wentToFeed) R.string.pill_back_to_feed else R.string.pill_left_reels)
             root.visibility = View.VISIBLE
             label.animate().cancel()
             label.alpha = 0f
@@ -551,8 +573,8 @@ class ReelsAccessibilityService : AccessibilityService() {
                 if (now - lastActionTime > COOLDOWN_MS) {
                     AppLog.d(this, TAG, "Swiped past the first reel -- exiting to Home feed")
                     lastActionTime = now
-                    playExitAnimation()
-                    exitToFeed(root)
+                    val wentToFeed = exitToFeed(root)
+                    playExitAnimation(wentToFeed)
                     inReelsViewer = false
                 }
             }
@@ -590,7 +612,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             bounds.height() >= metrics.heightPixels * 0.6
     }
 
-    private fun exitToFeed(root: AccessibilityNodeInfo) {
+    private fun exitToFeed(root: AccessibilityNodeInfo): Boolean {
         Stats.recordBlock(this)
         val homeNode = findHomeTabNode(root)
         val clicked = homeNode?.let { clickNodeOrAncestor(it) } ?: false
@@ -599,6 +621,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             AppLog.d(this, TAG, "Home tab not found -- falling back to back button")
             performGlobalAction(GLOBAL_ACTION_BACK)
         }
+        return clicked
     }
 
     private fun findHomeTabNode(root: AccessibilityNodeInfo): AccessibilityNodeInfo? {

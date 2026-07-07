@@ -47,4 +47,7 @@
     <string name="notification_text">Blocking Instagram Reels. Tap Stop in the app to pause.</string>
 
     <string name="restart_app">Restart App</string>
+
+    <string name="pill_back_to_feed">↩ Back to feed</string>
+    <string name="pill_left_reels">↩ Left Reels</string>
 </resources>

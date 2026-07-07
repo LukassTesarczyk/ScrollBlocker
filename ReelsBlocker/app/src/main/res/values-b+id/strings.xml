@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker aktif</string>
     <string name="notification_text">Memblokir Instagram Reels. Ketuk Hentikan di aplikasi untuk menjeda.</string>
     <string name="restart_app">Mulai ulang aplikasi</string>
+    <string name="pill_back_to_feed">↩ Kembali ke feed</string>
+    <string name="pill_left_reels">↩ Keluar dari Reels</string>
 </resources>

@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker is actief</string>
     <string name="notification_text">Instagram Reels wordt geblokkeerd. Tik op Stop in de app om te pauzeren.</string>
     <string name="restart_app">App herstarten</string>
+    <string name="pill_back_to_feed">↩ Terug naar feed</string>
+    <string name="pill_left_reels">↩ Reels verlaten</string>
 </resources>

@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker on aktiivinen</string>
     <string name="notification_text">Estää Instagram Reelsiä. Napauta Pysäytä sovelluksessa keskeyttääksesi.</string>
     <string name="restart_app">Käynnistä sovellus uudelleen</string>
+    <string name="pill_back_to_feed">↩ Takaisin syötteeseen</string>
+    <string name="pill_left_reels">↩ Poistuttu Reelsistä</string>
 </resources>

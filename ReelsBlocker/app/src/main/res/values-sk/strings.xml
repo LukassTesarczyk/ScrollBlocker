@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker je aktívny</string>
     <string name="notification_text">Blokuje Instagram Reels. Zastavíš to tlačidlom Stop v appke.</string>
     <string name="restart_app">Reštartovať appku</string>
+    <string name="pill_back_to_feed">↩ Späť do feedu</string>
+    <string name="pill_left_reels">↩ Opustené Reels</string>
 </resources>

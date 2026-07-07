@@ -74,9 +74,15 @@ tabu, ne o logcat výstup.
 4. **Neměň zavedené věci bez důvodu**, hlavně:
    - `gradle.properties` (`android.useAndroidX=true`,
      `android.enableJetifier=true`) -- musí zůstat.
-   - Ikonka appky zůstává `android:icon="@android:drawable/sym_def_app_icon"`
-     v manifestu, žádné `@mipmap/ic_launcher` ani `roundIcon` (projekt
-     nemá vygenerované mipmap zdroje).
+   - Od v1.13 má appka vlastní adaptivní ikonku (`@mipmap/ic_launcher`
+     -> `res/mipmap-anydpi-v26/ic_launcher.xml` +
+     `res/drawable/ic_launcher_foreground.xml` (fialový obrys mozku
+     s gradientem) + `ic_launcher_background.xml`) -- fialový mozek na
+     tmavém pozadí, ručně nakreslená vektorová grafika podle referenční
+     fotky. Dřív tu byl systémový placeholder
+     (`@android:drawable/sym_def_app_icon`), protože projekt neměl
+     vygenerované mipmap zdroje -- teď má, takže tenhle bod už neplatí.
+     Neměň ikonku zpátky na placeholder bez výslovného požadavku.
    - `accessibility_service_config.xml` musí mít
      `android:canTakeScreenshot="true"` (bez toho tiše selhává
      vzorkování barvy overlaye -- byl to skutečný bug, který nás dlouho

@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker đang hoạt động</string>
     <string name="notification_text">Đang chặn Instagram Reels. Nhấn Dừng trong ứng dụng để tạm dừng.</string>
     <string name="restart_app">Khởi động lại ứng dụng</string>
+    <string name="pill_back_to_feed">↩ Quay lại bảng feed</string>
+    <string name="pill_left_reels">↩ Đã rời Reels</string>
 </resources>

@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker פעיל</string>
     <string name="notification_text">חוסם את Instagram Reels. הקש על עצור באפליקציה כדי להשהות.</string>
     <string name="restart_app">הפעל מחדש את האפליקציה</string>
+    <string name="pill_back_to_feed">↩ חזרה לפיד</string>
+    <string name="pill_left_reels">↩ יצאת מ-Reels</string>
 </resources>

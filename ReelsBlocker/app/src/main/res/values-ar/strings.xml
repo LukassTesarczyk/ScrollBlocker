@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker نشط</string>
     <string name="notification_text">يتم حظر Instagram Reels. اضغط على إيقاف في التطبيق للإيقاف المؤقت.</string>
     <string name="restart_app">إعادة تشغيل التطبيق</string>
+    <string name="pill_back_to_feed">↩ العودة إلى الخلاصة</string>
+    <string name="pill_left_reels">↩ تم الخروج من Reels</string>
 </resources>

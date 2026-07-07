@@ -119,6 +119,25 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.13 -- vlastní ikonka appky, opravená pilulka po vyhození
+
+- **Appka má konečně vlastní ikonku** místo systémového placeholderu --
+  fialový obrys mozku s gradientem na tmavém pozadí, ručně překreslený
+  podle fotky, co jsi poslal (jako obrázek v chatu se mi bohužel
+  nepodařilo dostat k originálnímu souboru, takže to není 1:1 stejný
+  obrázek, ale vizuálně by to mělo sedět -- gradient, styl, pozadí).
+  Standardní adaptivní ikonka, takže se hezky přizpůsobí kulatému i
+  hranatému stylu podle telefonu.
+- **Pilulka "Zpět do feedu" po vyhození z Reels je teď v jazyce appky**
+  (dřív byla natvrdo v češtině bez ohledu na nastavený jazyk).
+- **Pilulka už neluže, když tě to nehodí na feed:** pokud appka najde
+  a klepne na Home ikonku dole, napíše "Zpět do feedu" jako dřív. Pokud
+  se to nepovede a musí použít záložní tlačítko zpět (a to tě může
+  reálně poslat třeba zpátky do DM, ne na feed), napíše obecnější
+  "Opuštěno Reels" místo aby lhala o cíli. Detekci samotnou, jestli jsi
+  v DMs nebo feedu, jsem neřešil (žádné hádání resource ID) -- jen jsem
+  appku donutil říkat pravdu o tom, co sama ví jistě.
+
 ## v1.12 -- restart appky, hezčí graf, serif font
 
 Díky za potvrzení, že scrollování/vyhazování z Reels už funguje --

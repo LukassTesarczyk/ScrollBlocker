@@ -37,4 +37,6 @@
     <string name="notification_title">A Reels Blocker aktív</string>
     <string name="notification_text">Instagram Reels blokkolása. Koppints a Leállításra az appban a szüneteltetéshez.</string>
     <string name="restart_app">Alkalmazás újraindítása</string>
+    <string name="pill_back_to_feed">↩ Vissza a hírfolyamhoz</string>
+    <string name="pill_left_reels">↩ Reels elhagyva</string>
 </resources>

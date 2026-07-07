@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker etkin</string>
     <string name="notification_text">Instagram Reels engelleniyor. Duraklatmak için uygulamada Durdur\'a dokun.</string>
     <string name="restart_app">Uygulamayı yeniden başlat</string>
+    <string name="pill_back_to_feed">↩ Akışa dön</string>
+    <string name="pill_left_reels">↩ Reels\'ten çıkıldı</string>
 </resources>

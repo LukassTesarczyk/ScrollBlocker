@@ -37,4 +37,6 @@
     <string name="notification_title">Το Reels Blocker είναι ενεργό</string>
     <string name="notification_text">Αποκλεισμός Instagram Reels. Πάτησε Διακοπή στην εφαρμογή για παύση.</string>
     <string name="restart_app">Επανεκκίνηση εφαρμογής</string>
+    <string name="pill_back_to_feed">↩ Επιστροφή στη ροή</string>
+    <string name="pill_left_reels">↩ Έξοδος από Reels</string>
 </resources>

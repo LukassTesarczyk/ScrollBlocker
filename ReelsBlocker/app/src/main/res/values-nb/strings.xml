@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker er aktiv</string>
     <string name="notification_text">Blokkerer Instagram Reels. Trykk på Stopp i appen for å sette på pause.</string>
     <string name="restart_app">Start appen på nytt</string>
+    <string name="pill_back_to_feed">↩ Tilbake til feeden</string>
+    <string name="pill_left_reels">↩ Forlot Reels</string>
 </resources>

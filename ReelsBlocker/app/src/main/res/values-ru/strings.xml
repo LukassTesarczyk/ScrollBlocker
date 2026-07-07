@@ -37,4 +37,6 @@
     <string name="notification_title">Reels Blocker активен</string>
     <string name="notification_text">Блокировка Instagram Reels. Нажмите «Остановить» в приложении, чтобы приостановить.</string>
     <string name="restart_app">Перезапустить приложение</string>
+    <string name="pill_back_to_feed">↩ Назад в ленту</string>
+    <string name="pill_left_reels">↩ Reels закрыт</string>
 </resources>
