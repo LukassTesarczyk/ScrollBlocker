@@ -119,6 +119,33 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.5 -- opravy z reálného logu + reorder hubu + výchozí Stop
+
+Díky poslanému logu se konečně potvrdily dvě konkrétní příčiny:
+
+- **Barva nikdy nefungovala:** log ukázal `Services don't have the
+  capability of taking the screenshot`. Chyběl jeden atribut v
+  konfiguraci accessibility služby (`android:canTakeScreenshot="true"`)
+  -- bez něj vzorkování barvy vždy tiše selhalo a overlay běžel jen na
+  záložní barvě. Přidáno.
+- **Problikávání:** log ukázal, že se souřadnice ikonky měnily o desítky
+  pixelů během desítek milisekund (mikro-animace lišty při scrollu).
+  Zvýšen práh pro překreslení a přidán časový limit mezi aktualizacemi
+  pozice.
+- **"Po čase přestalo blokovat scroll":** appka brala jediný snímek, kdy
+  detekce "jsem v Reels" na moment selhala (typicky během přechodové
+  animace mezi reely), jako opuštění session -- a tím ti dávala nový
+  "zdarma" reel při každém takovém zaškobrtnutí. Teď to vyžaduje 2 po
+  sobě jdoucí neshody, než appka session skutečně ukončí.
+- **Všechny appky v hubu teď defaultně startují na Stop** -- musíš
+  aktivně zmáčknout Run.
+- **Reorder hubu:** podržet ikonku appky → zvětší se a objeví se u ní
+  ikonka šipek → klepni, kam ji chceš přesunout → appky se plynule
+  prohodí. (Poznámka: implementováno jako "podrž → klepni kam", ne jako
+  fyzické tažení prstem přes obrazovku -- spolehlivější bez možnosti to
+  rovnou vyzkoušet na tvém zařízení. Pokud bys chtěl doopravdy drag
+  prstem, dá se to udělat, ale bude to chtít víc kol ladění naživo.)
+
 ## v1.4 -- hub appek, Debug log v appce, oprava nekonzistentního vyhazování, nová animace
 
 - **Oprava "vyhazuje mě někdy hned, někdy funguje":** appka teď 700ms po

@@ -1,15 +1,15 @@
 package com.example.reelsblocker
 
+import android.content.Context
+
 object PrefsKeys {
     const val PREFS_NAME = "reels_blocker_prefs"
 
     // Legacy key -- kept as-is so existing installs don't lose their
     // Run/Stop state. This is Instagram's enabled flag specifically.
     const val KEY_ENABLED = "enabled"
+    const val KEY_HUB_ORDER = "hub_order"
 
-    // Known app slots in the bottom hub. Only "instagram" has real
-    // detection behind it right now -- the others just persist a toggle
-    // for when their detection is implemented.
     val KNOWN_APPS = listOf("instagram", "tiktok", "snapchat")
 
     fun enabledKeyFor(appId: String): String =
@@ -23,4 +23,24 @@ object PrefsKeys {
     }
 
     fun isImplemented(appId: String): Boolean = appId == "instagram"
+
+    fun loadHubOrder(context: Context): MutableList<String> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val saved = prefs.getString(KEY_HUB_ORDER, null)
+        val order = if (saved.isNullOrBlank()) {
+            KNOWN_APPS.toMutableList()
+        } else {
+            saved.split(",").filter { it in KNOWN_APPS }.toMutableList()
+        }
+        // Guard against a stale/partial saved order missing an app.
+        for (app in KNOWN_APPS) {
+            if (app !in order) order.add(app)
+        }
+        return order
+    }
+
+    fun saveHubOrder(context: Context, order: List<String>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString(KEY_HUB_ORDER, order.joinToString(",")).apply()
+    }
 }

@@ -41,17 +41,21 @@ class ReelsAccessibilityService : AccessibilityService() {
         private const val COOLDOWN_MS = 800L
         private const val COLOR_RESAMPLE_MS = 4000L
         private const val MISS_TOLERANCE = 3
-        private const val REPOSITION_THRESHOLD_PX = 6
+        private const val REPOSITION_THRESHOLD_PX = 14
+        private const val MIN_REPOSITION_INTERVAL_MS = 200L
+        // How many consecutive "not in viewer" reads before we actually
+        // consider the session over. Mid-swipe transition animations can
+        // briefly report bounds that don't look full-screen, which was
+        // resetting (and effectively re-granting) the "1 free reel" way
+        // too often the longer someone scrolled.
+        private const val VIEWER_MISS_TOLERANCE = 2
 
-        // Ignore scroll events that happen within this window of entering
-        // the viewer -- Instagram appears to fire an internal settle/layout
-        // scroll event right when the viewer opens, before the user has
-        // swiped anywhere, which previously caused random instant exits.
         private const val ENTRY_GRACE_MS = 700L
     }
 
     private var inReelsViewer = false
     private var viewerEnteredAt = 0L
+    private var viewerMissCount = 0
     private var lastActionTime = 0L
 
     private var windowManager: WindowManager? = null
@@ -60,6 +64,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var overlayParams: WindowManager.LayoutParams? = null
     private var overlayAdded = false
     private var lastAppliedBounds: Rect? = null
+    private var lastRepositionAt = 0L
     private var missCount = 0
     private var sampledColor: Int? = null
     private var lastColorSampleTime = 0L
@@ -200,7 +205,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             return
         }
 
-        if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), true)) {
+        if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)) {
             hideOverlay(force = true)
             return
         }
@@ -270,10 +275,13 @@ class ReelsAccessibilityService : AccessibilityService() {
         if (bounds.width() <= 0 || bounds.height() <= 0) return
 
         val last = lastAppliedBounds
-        val movedEnough = last == null ||
+        val bigEnoughChange = last == null ||
             Math.abs(last.left - bounds.left) > REPOSITION_THRESHOLD_PX ||
             Math.abs(last.top - bounds.top) > REPOSITION_THRESHOLD_PX ||
             last.width() != bounds.width() || last.height() != bounds.height()
+        val now = System.currentTimeMillis()
+        val enoughTimePassed = now - lastRepositionAt > MIN_REPOSITION_INTERVAL_MS
+        val movedEnough = bigEnoughChange && (enoughTimePassed || last == null)
 
         if (movedEnough || view.visibility != View.VISIBLE) {
             params.x = bounds.left
@@ -283,6 +291,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             try {
                 wm.updateViewLayout(view, params)
                 lastAppliedBounds = Rect(bounds)
+                lastRepositionAt = now
                 AppLog.d(this, TAG, "Overlay placed at x=${params.x} y=${params.y} w=${params.width} h=${params.height}")
             } catch (e: Exception) {
                 AppLog.w(this, TAG, "Overlay update failed: ${e.message}")
@@ -364,19 +373,13 @@ class ReelsAccessibilityService : AccessibilityService() {
         val currentlyInViewer = isReelsViewerScreen(root)
         val now = System.currentTimeMillis()
 
-        when {
-            currentlyInViewer && !inReelsViewer -> {
+        if (currentlyInViewer) {
+            viewerMissCount = 0
+            if (!inReelsViewer) {
                 inReelsViewer = true
                 viewerEnteredAt = now
                 AppLog.d(this, TAG, "Entered reels viewer -- 1 reel allowed, next real swipe exits")
-            }
-
-            !currentlyInViewer && inReelsViewer -> {
-                inReelsViewer = false
-                AppLog.d(this, TAG, "Left reels viewer -- session reset")
-            }
-
-            currentlyInViewer && inReelsViewer && event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
+            } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
                 if (now - viewerEnteredAt < ENTRY_GRACE_MS) {
                     AppLog.d(this, TAG, "Ignoring scroll ${now - viewerEnteredAt}ms after entry (likely settle, not a real swipe)")
                     return
@@ -389,6 +392,16 @@ class ReelsAccessibilityService : AccessibilityService() {
                     inReelsViewer = false
                 }
             }
+        } else if (inReelsViewer) {
+            viewerMissCount++
+            if (viewerMissCount >= VIEWER_MISS_TOLERANCE) {
+                inReelsViewer = false
+                viewerMissCount = 0
+                AppLog.d(this, TAG, "Left reels viewer -- session reset")
+            }
+            // else: a single non-matching frame during a swipe transition
+            // animation isn't treated as actually leaving -- avoids
+            // silently re-granting a fresh "free reel" on every swipe.
         }
     }
 

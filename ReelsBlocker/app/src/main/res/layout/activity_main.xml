@@ -324,93 +324,158 @@
         android:layout_height="1dp"
         android:background="#2A2A2A" />
 
-    <!-- App hub -->
+    <!-- App hub: 3 fixed slots. Which app icon renders in which slot is
+         dynamic (see MainActivity's hubOrder), so slots can be reordered
+         by long-pressing one, then tapping where to move it. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="76dp"
         android:orientation="horizontal"
         android:background="#181818">
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/hubInstagram"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
             android:clickable="true"
             android:focusable="true">
-            <TextView
-                android:id="@+id/hubInstagramIcon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:gravity="center"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:text="IG" />
-            <TextView
-                android:text="Instagram"
-                android:textColor="#B0B0B0"
-                android:textSize="10sp"
-                android:layout_marginTop="4dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
 
-        <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/hubInstagramIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:text="IG" />
+                <TextView
+                    android:id="@+id/hubInstagramLabel"
+                    android:text="Instagram"
+                    android:textColor="#B0B0B0"
+                    android:textSize="10sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/hubInstagramBadge"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="6dp"
+                android:gravity="center"
+                android:text="\u21C4"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/hubTiktok"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
             android:clickable="true"
             android:focusable="true">
-            <TextView
-                android:id="@+id/hubTiktokIcon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:gravity="center"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:text="TT" />
-            <TextView
-                android:text="TikTok"
-                android:textColor="#B0B0B0"
-                android:textSize="10sp"
-                android:layout_marginTop="4dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
 
-        <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/hubTiktokIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:text="TT" />
+                <TextView
+                    android:id="@+id/hubTiktokLabel"
+                    android:text="TikTok"
+                    android:textColor="#B0B0B0"
+                    android:textSize="10sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/hubTiktokBadge"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="6dp"
+                android:gravity="center"
+                android:text="\u21C4"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/hubSnapchat"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
             android:clickable="true"
             android:focusable="true">
-            <TextView
-                android:id="@+id/hubSnapchatIcon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:gravity="center"
-                android:textColor="#000000"
-                android:textStyle="bold"
-                android:textSize="12sp"
-                android:text="SC" />
-            <TextView
-                android:text="Snapchat"
-                android:textColor="#B0B0B0"
-                android:textSize="10sp"
-                android:layout_marginTop="4dp"
+
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/hubSnapchatIcon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    android:textColor="#000000"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:text="SC" />
+                <TextView
+                    android:id="@+id/hubSnapchatLabel"
+                    android:text="Snapchat"
+                    android:textColor="#B0B0B0"
+                    android:textSize="10sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/hubSnapchatBadge"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="6dp"
+                android:gravity="center"
+                android:text="\u21C4"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
     </LinearLayout>
 

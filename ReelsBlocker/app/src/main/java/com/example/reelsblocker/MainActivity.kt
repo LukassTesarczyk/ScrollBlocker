@@ -123,25 +123,134 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // ---- App hub ----
+    private val hubSlotIds = listOf(R.id.hubInstagram, R.id.hubTiktok, R.id.hubSnapchat)
+    private val hubIconIds = listOf(R.id.hubInstagramIcon, R.id.hubTiktokIcon, R.id.hubSnapchatIcon)
+    private val hubLabelIds = listOf(R.id.hubInstagramLabel, R.id.hubTiktokLabel, R.id.hubSnapchatLabel)
+    private val hubBadgeIds = listOf(R.id.hubInstagramBadge, R.id.hubTiktokBadge, R.id.hubSnapchatBadge)
+
+    private lateinit var hubOrder: MutableList<String>
+    private var reorderingSlot: Int? = null
 
     private fun setupHub() {
-        setupHubIcon(R.id.hubInstagramIcon, "#C13584")
-        setupHubIcon(R.id.hubTiktokIcon, "#000000")
-        setupHubIcon(R.id.hubSnapchatIcon, "#FFFC00")
+        hubOrder = PrefsKeys.loadHubOrder(this)
+        renderHubIcons()
 
-        findViewById<LinearLayout>(R.id.hubInstagram).setOnClickListener { selectApp("instagram") }
-        findViewById<LinearLayout>(R.id.hubTiktok).setOnClickListener { selectApp("tiktok") }
-        findViewById<LinearLayout>(R.id.hubSnapchat).setOnClickListener { selectApp("snapchat") }
+        for (i in hubSlotIds.indices) {
+            val slot = findViewById<View>(hubSlotIds[i])
+            val badge = findViewById<TextView>(hubBadgeIds[i])
+
+            slot.setOnClickListener {
+                val current = reorderingSlot
+                if (current != null) {
+                    if (current != i) swapSlots(current, i)
+                    exitReorderMode()
+                } else {
+                    selectApp(hubOrder[i])
+                }
+            }
+
+            slot.setOnLongClickListener {
+                enterReorderMode(i)
+                true
+            }
+
+            badge.setOnClickListener {
+                // Tapping the badge itself just keeps/confirms reorder mode
+                // for this slot -- the real "move" action is picking the
+                // target slot afterwards.
+                enterReorderMode(i)
+            }
+        }
     }
 
-    private fun setupHubIcon(viewId: Int, colorHex: String) {
-        val view = findViewById<TextView>(viewId)
-        val drawable = GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(Color.parseColor(colorHex))
+    private fun renderHubIcons() {
+        for (i in hubOrder.indices) {
+            val appId = hubOrder[i]
+            val icon = findViewById<TextView>(hubIconIds[i])
+            val label = findViewById<TextView>(hubLabelIds[i])
+            label.text = PrefsKeys.displayNameFor(appId)
+            icon.text = hubShortLabel(appId)
+
+            val (bg, fg) = hubColors(appId)
+            icon.setTextColor(Color.parseColor(fg))
+            icon.background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(Color.parseColor(bg))
+            }
+
+            val slot = findViewById<View>(hubSlotIds[i])
+            if (reorderingSlot == null) {
+                slot.alpha = if (appId == selectedApp) 1f else 0.45f
+            }
         }
-        view.background = drawable
+    }
+
+    private fun hubColors(appId: String): Pair<String, String> = when (appId) {
+        "instagram" -> "#C13584" to "#FFFFFF"
+        "tiktok" -> "#000000" to "#FFFFFF"
+        "snapchat" -> "#FFFC00" to "#000000"
+        else -> "#444444" to "#FFFFFF"
+    }
+
+    private fun hubShortLabel(appId: String): String = when (appId) {
+        "instagram" -> "IG"
+        "tiktok" -> "TT"
+        "snapchat" -> "SC"
+        else -> appId.take(2).uppercase()
+    }
+
+    private fun enterReorderMode(slotIndex: Int) {
+        reorderingSlot = slotIndex
+        Toast.makeText(
+            this,
+            "Klepni, kam přesunout ${PrefsKeys.displayNameFor(hubOrder[slotIndex])}",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        for (i in hubSlotIds.indices) {
+            val slot = findViewById<View>(hubSlotIds[i])
+            val badge = findViewById<TextView>(hubBadgeIds[i])
+            if (i == slotIndex) {
+                slot.animate().scaleX(1.18f).scaleY(1.18f).alpha(1f).setDuration(150).start()
+                badge.visibility = View.VISIBLE
+                badge.alpha = 0f
+                badge.animate().alpha(1f).setDuration(150).start()
+            } else {
+                slot.animate().scaleX(1f).scaleY(1f).alpha(0.35f).setDuration(150).start()
+            }
+        }
+    }
+
+    private fun exitReorderMode() {
+        reorderingSlot = null
+        for (i in hubSlotIds.indices) {
+            val slot = findViewById<View>(hubSlotIds[i])
+            val badge = findViewById<TextView>(hubBadgeIds[i])
+            val targetAlpha = if (hubOrder[i] == selectedApp) 1f else 0.45f
+            slot.animate().scaleX(1f).scaleY(1f).alpha(targetAlpha).setDuration(150).start()
+            if (badge.visibility == View.VISIBLE) {
+                badge.animate().alpha(0f).setDuration(120).withEndAction { badge.visibility = View.GONE }.start()
+            }
+        }
+    }
+
+    private fun swapSlots(a: Int, b: Int) {
+        val tmp = hubOrder[a]
+        hubOrder[a] = hubOrder[b]
+        hubOrder[b] = tmp
+        PrefsKeys.saveHubOrder(this, hubOrder)
+
+        val viewA = findViewById<View>(hubSlotIds[a])
+        val viewB = findViewById<View>(hubSlotIds[b])
+        val dx = (viewB.x - viewA.x) * 0.25f
+
+        viewA.animate().translationX(dx).setDuration(110).withEndAction {
+            renderHubIcons()
+            viewA.animate().translationX(0f).setDuration(160).start()
+        }.start()
+        viewB.animate().translationX(-dx).setDuration(110).withEndAction {
+            viewB.animate().translationX(0f).setDuration(160).start()
+        }.start()
     }
 
     private fun selectApp(appId: String) {
@@ -156,12 +265,7 @@ class MainActivity : AppCompatActivity() {
                     "Run/Stop se ukládá pro až to bude hotové, ale zatím nic neblokuje ani nesleduje."
         }
 
-        // Dim the unselected hub icons a bit so it's clear which is active.
-        listOf("instagram" to R.id.hubInstagram, "tiktok" to R.id.hubTiktok, "snapchat" to R.id.hubSnapchat)
-            .forEach { (id, viewId) ->
-                findViewById<LinearLayout>(viewId).alpha = if (id == appId) 1f else 0.45f
-            }
-
+        renderHubIcons()
         refreshStatus()
         renderStats()
     }
@@ -186,7 +290,7 @@ class MainActivity : AppCompatActivity() {
     // ---- Status / stats / log ----
 
     private fun refreshStatus() {
-        val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor(selectedApp), true)
+        val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor(selectedApp), false)
         tvPauseStatus.text = if (enabled) "Running" else "Stopped"
 
         val runBtn = findViewById<Button>(R.id.btnRun)
