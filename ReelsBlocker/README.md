@@ -119,6 +119,43 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.1 -- opravy scrollování a overlaye
+
+- **Zásadní příčina "nejde scrollovat feed/DMs":** Instagram zřejmě
+  používá stejné resource ID (`clips_viewer_view_pager`) pro skutečný
+  celoobrazovkový přehrávač i pro vloženou "Suggested reels" karuselovou
+  sekci přímo ve feedu. Detekce teď navíc ověřuje, že nalezený prvek
+  skutečně zabírá (skoro) celou obrazovku -- jinak to nepovažuje za
+  "jsem v Reels" a nechá scroll/DM na pokoji.
+- **Čtvereček přes ikonku:** přidána kontrola rozumné velikosti/pozice
+  (musí být malý a v dolním pruhu obrazovky) -- pokud detekce najde něco
+  podezřele velkého nebo jinde, overlay se radši vůbec nezobrazí, než
+  aby omylem zakryl/zablokoval něco jiného.
+- **Verze appky** je teď vidět v pravém horním rohu (`vX.Y`), čte se
+  přímo z `versionName` v `app/build.gradle` -- při každé další úpravě
+  kódu se bude zvyšovat, ať jde vždy poznat, jestli běží aktuální build.
+
+## v1.0 -- předchozí opravy
+
+- **Overlay zůstával viditelný i mimo Instagram:** konfigurace omezovala
+  příjem událostí jen na Instagram (`android:packageNames`), takže
+  appka se nikdy nedozvěděla, že jsi odešel jinam. Teď se sleduje
+  packageName aktivní appky přímo v kódu, takže se overlay schová hned
+  po přepnutí na cokoli jiného.
+- **Barva čtverečku neseděla:** místo odhadu podle systémového
+  světlý/tmavý režimu appka teď (na Androidu 11+) vezme skutečný
+  screenshot obrazovky a vzorkuje barvu pixelu těsně vedle ikonky, takže
+  se overlay barevně přizpůsobí i vlastnímu tématu Instagramu, ne jen
+  systémovému.
+- **Appka vyhazovala i ze scrollování feedu/DM:** rozpoznávání "jsem v
+  Reels" bylo příliš benevolentní (padalo i na text "Suggested reels"
+  vložený přímo do feedu). Teď se drží jen striktních resource ID
+  skutečného celoobrazovkového přehrávače.
+- **Místo "back" teď appka klikne na Home tab**, takže tě to vrátí do
+  feedu místo rizika úplného opuštění Instagramu (což hrozilo, pokud byl
+  přehrávač otevřený jako samostatná obrazovka bez back-stacku, např. z
+  DM odkazu).
+
 ## How it works (short version)
 
 Android's Accessibility API lets an app (with the user's explicit

@@ -23,6 +23,13 @@ class MainActivity : AppCompatActivity() {
         tvStatus = findViewById(R.id.tvPauseStatus)
         tvServiceStatus = findViewById(R.id.tvServiceStatus)
 
+        val versionName = try {
+            packageManager.getPackageInfo(packageName, 0).versionName
+        } catch (e: Exception) {
+            "?"
+        }
+        findViewById<TextView>(R.id.tvVersion).text = "v$versionName"
+
         findViewById<Button>(R.id.btnOpenAccessibility).setOnClickListener {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
