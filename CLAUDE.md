@@ -113,6 +113,15 @@ tabu, ne o logcat výstup.
    `.apk` z Artifacts, nainstalovat. Needěl si zbytečné závěry o tom, že
    umí věci, které nejsou pravda (např. že appka sama nainstaluje
    aktualizaci na telefon -- neumí).
+8. **Běhy GitHub Actions pojmenovávej podle verze.** Workflow
+   (`ReelsBlocker/.github/workflows/android.yml`, zrcadlený i v
+   `.github/workflows/android.yml` v rootu) má `run-name:` navázané na
+   `workflow_dispatch` input `version` -- při ručním spouštění buildu
+   (na feature větvi, kde se nespouští automaticky) vždy pošli input
+   `version` s aktuální verzí appky (např. `v1.14`), ať se běh v seznamu
+   Actions jmenuje podle verze, ne genericky "Build Android APK". Buildy
+   spuštěné pushem na `main` se pojmenují samy podle commit message
+   (GitHub default), tam se input nepoužívá.
 
 ## Design systém -- drž se ho, i v budoucích úpravách
 

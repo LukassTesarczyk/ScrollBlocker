@@ -1,9 +1,16 @@
 name: Build Android APK
 
+run-name: ${{ inputs.version != '' && inputs.version || github.event.head_commit.message || 'Build Android APK' }}
+
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'App version this run builds (e.g. v1.14) -- shown as the run name in the Actions list'
+        required: false
+        default: ''
 
 jobs:
   build:
