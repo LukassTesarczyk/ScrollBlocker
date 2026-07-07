@@ -76,13 +76,18 @@ tabu, ne o logcat výstup.
      `android.enableJetifier=true`) -- musí zůstat.
    - Od v1.13 má appka vlastní adaptivní ikonku (`@mipmap/ic_launcher`
      -> `res/mipmap-anydpi-v26/ic_launcher.xml` +
-     `res/drawable/ic_launcher_foreground.xml` (fialový obrys mozku
-     s gradientem) + `ic_launcher_background.xml`) -- fialový mozek na
-     tmavém pozadí, ručně nakreslená vektorová grafika podle referenční
-     fotky. Dřív tu byl systémový placeholder
+     `res/drawable-xxxhdpi/ic_launcher_foreground.png` +
+     `res/drawable/ic_launcher_background.xml`) -- fialový mozek na tmavém
+     pozadí. Od v1.14 je to skutečná fotka `Icon.jpg` (nahraná do rootu
+     `main` větve na GitHubu), automaticky zpracovaná (odstranění pozadí,
+     vystředění do bezpečné zóny) na PNG s průhledností, ne ruční
+     překreslení -- pokud se ikonka bude v budoucnu ještě měnit, zdrojová
+     fotka je `Icon.jpg` v rootu repa. Dřív tu byl systémový placeholder
      (`@android:drawable/sym_def_app_icon`), protože projekt neměl
      vygenerované mipmap zdroje -- teď má, takže tenhle bod už neplatí.
      Neměň ikonku zpátky na placeholder bez výslovného požadavku.
+     minSdk appky je 26 (stejná verze, co zavedla adaptivní ikonky), takže
+     žádné legacy mipmap PNG fallbacky nejsou potřeba.
    - `accessibility_service_config.xml` musí mít
      `android:canTakeScreenshot="true"` (bez toho tiše selhává
      vzorkování barvy overlaye -- byl to skutečný bug, který nás dlouho

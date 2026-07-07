@@ -6,6 +6,11 @@
     <string name="total_blocked">Celkovo zablokované</string>
     <string name="today">Dnes</string>
     <string name="last_7_days">Posledných 7 dní</string>
+    <string name="time_spent_title">Kde tráviš čas</string>
+    <string name="time_spent_dm">Správy</string>
+    <string name="time_spent_feed">Feed</string>
+    <string name="time_spent_stories">Príbehy</string>
+    <string name="time_spent_other">Ostatné</string>
     <string name="setup_open_accessibility">Otvoriť nastavenia zjednodušenia ovládania</string>
     <string name="setup_open_battery">Otvoriť nastavenia batérie appky</string>
     <string name="setup_open_other_permissions">Otvoriť info o appke (Ďalšie povolenia)</string>

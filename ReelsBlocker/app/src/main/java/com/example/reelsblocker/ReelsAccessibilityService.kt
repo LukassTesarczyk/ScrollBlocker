@@ -52,16 +52,13 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         private const val COOLDOWN_MS = 800L
         private const val COLOR_RESAMPLE_MS = 4000L
-        // Tab icon lookup can transiently miss for a frame or two while
+        // Tab icon lookup can transiently miss for a single frame while
         // Instagram rebinds unrelated parts of the screen -- hiding (and
         // then re-showing) the overlay on every such blip is what reads
-        // as "problikávání". This used to be set much higher (3s) to paper
-        // over flicker that turned out to be caused by a different bug
-        // (self-triggered accessibility events wiping session state, fixed
-        // in v1.10) -- now that the real cause is gone, a short grace is
-        // enough to bridge genuine transient misses without the overlay
-        // lingering noticeably after actually navigating to a DM thread.
-        private const val HIDE_GRACE_MS = 400L
+        // as "problikávání". Kept just large enough to bridge one missed
+        // frame; the disappearance itself is instant (see hideOverlay),
+        // so this no longer reads as a lingering delay in DMs.
+        private const val HIDE_GRACE_MS = 120L
         private const val FADE_MS = 140L
         private const val REPOSITION_THRESHOLD_PX = 14
         private const val MIN_REPOSITION_INTERVAL_MS = 200L
@@ -165,7 +162,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.sym_def_app_icon)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -369,16 +366,21 @@ class ReelsAccessibilityService : AccessibilityService() {
         if (!isInstagram) {
             hideOverlay()
             inReelsViewer = false
-            return
-        }
-
-        if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)) {
-            hideOverlay()
+            lastTimeTickAt = 0L
             return
         }
 
         val root = rootInActiveWindow ?: return
         try {
+            // Time tracking runs regardless of the Run/Stop toggle -- it's
+            // a passive usage insight, not part of the blocking feature.
+            tickTimeTracking(classifyScreen(root))
+
+            if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)) {
+                hideOverlay()
+                return
+            }
+
             updateOverlay(root)
             handleReelSession(root, event)
         } catch (e: Exception) {
@@ -386,6 +388,32 @@ class ReelsAccessibilityService : AccessibilityService() {
         } finally {
             root.recycle()
         }
+    }
+
+    // ---- Time-spent tracking ----
+
+    private var lastTimeTickAt = 0L
+    private var lastTimeCategory = TimeCategory.OTHER
+
+    // FEED reuses the already-validated home-tab resource id (same one
+    // exitToFeed clicks) just reading its selected state instead of
+    // clicking it -- low risk since that id is proven to work. DM/STORY
+    // have no validated resource ids yet, so unclassified time falls into
+    // OTHER rather than being guessed at (see CLAUDE.md rule 5).
+    private fun classifyScreen(root: AccessibilityNodeInfo): TimeCategory {
+        val homeNode = findHomeTabNode(root)
+        val isFeed = homeNode?.isSelected == true
+        homeNode?.recycle()
+        return if (isFeed) TimeCategory.FEED else TimeCategory.OTHER
+    }
+
+    private fun tickTimeTracking(category: TimeCategory) {
+        val now = System.currentTimeMillis()
+        if (lastTimeTickAt != 0L) {
+            TimeStats.addTime(this, lastTimeCategory, now - lastTimeTickAt)
+        }
+        lastTimeTickAt = now
+        lastTimeCategory = category
     }
 
     // ---- Bottom-nav Reels icon covering ----
@@ -478,6 +506,10 @@ class ReelsAccessibilityService : AccessibilityService() {
         maybeResampleColor(bounds)
     }
 
+    // Hiding is intentionally not animated -- a fade-out here is what read
+    // as the overlay "lingering" for a moment after actually leaving for a
+    // DM thread. Showing still fades in (see showOverlayAt) to avoid the
+    // original flicker; disappearing should feel immediate instead.
     private fun hideOverlay() {
         if (!overlayAdded) return
         val wm = windowManager ?: return
@@ -486,15 +518,14 @@ class ReelsAccessibilityService : AccessibilityService() {
         if (view.visibility == View.GONE) return
         lastAppliedBounds = null
         view.animate().cancel()
-        view.animate().alpha(0f).setDuration(FADE_MS).withEndAction {
-            view.visibility = View.GONE
-            params.width = 0
-            params.height = 0
-            try {
-                wm.updateViewLayout(view, params)
-            } catch (_: Exception) {
-            }
-        }.start()
+        view.alpha = 0f
+        view.visibility = View.GONE
+        params.width = 0
+        params.height = 0
+        try {
+            wm.updateViewLayout(view, params)
+        } catch (_: Exception) {
+        }
     }
 
     private fun fallbackColor(): Int = Color.parseColor("#1A1A1A")

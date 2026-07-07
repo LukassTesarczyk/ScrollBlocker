@@ -1,8 +1,6 @@
 package com.example.reelsblocker
 
 import android.Manifest
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -224,18 +222,20 @@ class MainActivity : AppCompatActivity() {
     // to relaunch itself moments later. Android brings the accessibility
     // service back once the app process restarts and the service is
     // still enabled in Settings, same as after any other process kill.
+    // A scheduled AlarmManager relaunch used to sit here, but on MIUI/
+    // HyperOS a non-exact alarm targeting an already-killed process is
+    // frequently deferred or dropped entirely by battery management --
+    // the app would just vanish and never come back. makeRestartActivityTask
+    // starts the fresh task synchronously, before the process actually dies,
+    // so it isn't subject to any of that scheduling.
     private fun restartApp() {
-        val restartIntent = Intent(this, MainActivity::class.java).apply {
-            action = ACTION_OPEN_HOME
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+        if (launchIntent != null) {
+            val restartIntent = Intent.makeRestartActivityTask(launchIntent.component)
+            restartIntent.action = ACTION_OPEN_HOME
+            startActivity(restartIntent)
         }
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, restartIntent,
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 300, pendingIntent)
-        android.os.Process.killProcess(android.os.Process.myPid())
+        Runtime.getRuntime().exit(0)
     }
 
     private val hubSlotIds = listOf(R.id.hubInstagram, R.id.hubTiktok, R.id.hubSnapchat)
@@ -579,11 +579,70 @@ class MainActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.tvTotalBlocked).text = "--"
             findViewById<TextView>(R.id.tvTodayBlocked).text = "--"
             findViewById<LinearLayout>(R.id.barsContainer).removeAllViews()
+            findViewById<DonutChartView>(R.id.timeDonutChart).setSegments(emptyList())
+            findViewById<LinearLayout>(R.id.timeLegendContainer).removeAllViews()
             return
         }
         findViewById<TextView>(R.id.tvTotalBlocked).text = Stats.total(this).toString()
         findViewById<TextView>(R.id.tvTodayBlocked).text = Stats.today(this).toString()
         renderChart(Stats.last7Days(this))
+        renderTimeChart()
+    }
+
+    private fun formatDuration(ms: Long): String {
+        val totalMinutes = ms / 60000
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+    }
+
+    private fun renderTimeChart() {
+        val density = resources.displayMetrics.density
+        val times = TimeStats.all(this)
+        val entries = listOf(
+            Triple(getString(R.string.time_spent_dm), times[TimeCategory.DM] ?: 0L, "#A8D8B9"),
+            Triple(getString(R.string.time_spent_feed), times[TimeCategory.FEED] ?: 0L, "#A8C8E8"),
+            Triple(getString(R.string.time_spent_stories), times[TimeCategory.STORY] ?: 0L, "#F2A8C0"),
+            Triple(getString(R.string.time_spent_other), times[TimeCategory.OTHER] ?: 0L, "#5A5A5A")
+        )
+
+        findViewById<DonutChartView>(R.id.timeDonutChart).setSegments(
+            entries.map { (_, value, color) -> DonutChartView.Segment(value, Color.parseColor(color)) }
+        )
+
+        val legend = findViewById<LinearLayout>(R.id.timeLegendContainer)
+        legend.removeAllViews()
+        for ((label, value, color) in entries) {
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = (8 * density).toInt() }
+            }
+            val dot = View(this).apply {
+                background = ContextCompat.getDrawable(this@MainActivity, R.drawable.bg_dot)
+                backgroundTintList = ColorStateList.valueOf(Color.parseColor(color))
+                layoutParams = LinearLayout.LayoutParams((10 * density).toInt(), (10 * density).toInt()).apply {
+                    marginEnd = (10 * density).toInt()
+                }
+            }
+            val labelView = TextView(this).apply {
+                text = label
+                textSize = 12f
+                setTextColor(Color.parseColor("#B0B0B0"))
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+            val valueView = TextView(this).apply {
+                text = formatDuration(value)
+                textSize = 12f
+                setTextColor(Color.parseColor("#FFFFFF"))
+            }
+            row.addView(dot)
+            row.addView(labelView)
+            row.addView(valueView)
+            legend.addView(row)
+        }
     }
 
     private fun renderChart(data: List<Pair<String, Int>>) {

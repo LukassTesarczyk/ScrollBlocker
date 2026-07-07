@@ -6,6 +6,11 @@
     <string name="total_blocked">Total bloqué</string>
     <string name="today">Aujourd\'hui</string>
     <string name="last_7_days">7 derniers jours</string>
+    <string name="time_spent_title">Temps passé</string>
+    <string name="time_spent_dm">Messages</string>
+    <string name="time_spent_feed">Fil</string>
+    <string name="time_spent_stories">Stories</string>
+    <string name="time_spent_other">Autre</string>
     <string name="setup_open_accessibility">Ouvrir les paramètres d\'accessibilité</string>
     <string name="setup_open_battery">Ouvrir les paramètres de batterie de l\'appli</string>
     <string name="setup_open_other_permissions">Ouvrir les infos de l\'appli (Autres autorisations)</string>

@@ -211,6 +211,45 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_card"
+                        android:padding="18dp"
+                        android:layout_marginTop="16dp">
+
+                        <TextView
+                            android:text="@string/time_spent_title"
+                            android:textColor="#808080"
+                            android:textSize="13sp"
+                            android:layout_marginBottom="14dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <com.example.reelsblocker.DonutChartView
+                                android:id="@+id/timeDonutChart"
+                                android:layout_width="120dp"
+                                android:layout_height="120dp"
+                                android:layout_marginEnd="20dp" />
+
+                            <LinearLayout
+                                android:id="@+id/timeLegendContainer"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <!-- Setup -->

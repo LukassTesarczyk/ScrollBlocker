@@ -6,6 +6,11 @@
     <string name="total_blocked">Insgesamt blockiert</string>
     <string name="today">Heute</string>
     <string name="last_7_days">Letzte 7 Tage</string>
+    <string name="time_spent_title">Zeit verbracht</string>
+    <string name="time_spent_dm">Nachrichten</string>
+    <string name="time_spent_feed">Feed</string>
+    <string name="time_spent_stories">Storys</string>
+    <string name="time_spent_other">Sonstiges</string>
     <string name="setup_open_accessibility">Bedienungshilfen-Einstellungen öffnen</string>
     <string name="setup_open_battery">Akku-Einstellungen der App öffnen</string>
     <string name="setup_open_other_permissions">App-Info öffnen (weitere Berechtigungen)</string>

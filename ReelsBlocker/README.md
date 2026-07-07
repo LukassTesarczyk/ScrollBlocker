@@ -119,6 +119,43 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.14 -- skutečná ikonka z fotky, graf "kde trávíš čas", spolehlivější restart
+
+- **Ikonka appky je teď opravdu z fotky, cos poslal.** Minule jsem si ji
+  musel ručně překreslit (obrázek vložený přímo do chatu se nedal stáhnout
+  jako soubor), což z toho udělalo trochu dětskou kopii. Tentokrát jsi
+  fotku (`Icon.jpg`) nahrál rovnou do GitHub repa, takže jsem z ní
+  automaticky vyřezal fialový mozek (odstranění pozadí, vystředění,
+  zmenšení na bezpečnou zónu adaptivní ikonky) a použil přímo tu -- žádné
+  ruční kreslení, je to 1:1 stejný motiv jako na fotce.
+- **Tlačítko "Restart App" teď skutečně funguje.** Předtím appka
+  naplánovala restart přes systémový alarm a hned se ukončila -- na
+  HyperOS/MIUI ale agresivní správa baterie takový alarm pro už mrtvý
+  proces často zahodí, takže appka zmizela a už se sama neotevřela.
+  Restart teď spustí nové okno appky rovnou, ještě než se starý proces
+  ukončí, takže na žádný naplánovaný alarm nezávisí.
+- **Notifikace o aktivním blokování má teď ikonku appky** (fialový mozek)
+  místo obecné systémové ikonky.
+- **Čtvereček přes ikonku Reels teď mizí prakticky okamžitě** místo aby
+  ještě chvíli doznívalo, když třeba přepneš do DMs -- zrychlil jsem i
+  krátkou toleranci, po které appka uzná, že ikonka Reels na obrazovce
+  fakt není.
+- **Nový graf "Kde trávíš čas" na Home tabu**, pod grafem posledních 7
+  dní -- prstencový (ne výsečový) graf s barevnými úseky podle toho, kde
+  v Instagramu trávíš čas, plus rozpis časů pod ním. Feed appka pozná
+  spolehlivě (stejná ikonka dolní lišty, kterou už roky používá na
+  klepnutí "zpět na feed", teď jen čte, jestli je zrovna aktivní).
+  **DMs a Historky ale zatím appka neumí rozeznat** -- nemám k dispozici
+  žádné ověřené resource ID pro tyhle obrazovky a nechci je hádat naslepo
+  (viz pravidlo v CLAUDE.md), takže ten čas prozatím padá do "Ostatní".
+  Až pošleš čerstvý log z Debug tabu, kde otevřeš DM vlákno a podíváš se
+  na něčí historku, dopíšu detekci i pro tyhle dvě kategorie.
+- **Swipe do Reels ze strany z DMs pořád obchází blokování** -- tohle
+  jsem tenhle kolo neřešil, protože bych zase jen hádal na slepo v
+  detekční logice Instagramu. Potřebuju k tomu stejný čerstvý log jako
+  výše (ideálně v jednom logu -- otevři DM vlákno, swipni stranou do
+  Reels, koukni na historku -- ať to vyřeším najednou).
+
 ## v1.13 -- vlastní ikonka appky, opravená pilulka po vyhození
 
 - **Appka má konečně vlastní ikonku** místo systémového placeholderu --

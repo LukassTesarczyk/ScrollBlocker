@@ -9,6 +9,11 @@
     <string name="total_blocked">Total blocked</string>
     <string name="today">Today</string>
     <string name="last_7_days">Last 7 days</string>
+    <string name="time_spent_title">Time spent</string>
+    <string name="time_spent_dm">DMs</string>
+    <string name="time_spent_feed">Feed</string>
+    <string name="time_spent_stories">Stories</string>
+    <string name="time_spent_other">Other</string>
 
     <string name="setup_open_accessibility">Open Accessibility Settings</string>
     <string name="setup_open_battery">Open App Battery Settings</string>
