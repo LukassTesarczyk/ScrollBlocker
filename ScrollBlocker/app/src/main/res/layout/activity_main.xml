@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvInstructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:id="@+id/tvServiceStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tvPauseStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnOpenAccessibility"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open Accessibility Settings"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnOpenBatterySettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open App Battery Settings"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnOpenOtherPermissions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Open App Info (Other permissions)"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnRun"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Run"
+        android:backgroundTint="#2E7D32"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop"
+        android:backgroundTint="#C62828" />
+
+</LinearLayout>
+</ScrollView>
