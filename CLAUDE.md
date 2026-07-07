@@ -88,6 +88,17 @@ tabu, ne o logcat výstup.
      Neměň ikonku zpátky na placeholder bez výslovného požadavku.
      minSdk appky je 26 (stejná verze, co zavedla adaptivní ikonky), takže
      žádné legacy mipmap PNG fallbacky nejsou potřeba.
+   - Od v1.15 appka používá pevný, do repa commitnutý debug keystore
+     (`ReelsBlocker/keystore/debug.keystore`, referencovaný z
+     `app/build.gradle` přes `signingConfigs.debug`) místo defaultního
+     keystore, co si Gradle sám generuje. GitHub Actions runner nemá
+     trvalé úložiště pro `~/.android/debug.keystore`, takže bez tohohle
+     by měl každý build jiný náhodný podpisový klíč a instalace
+     aktualizace přes starou verzi by tiše selhávala (Android to
+     odmítne bez odinstalace). Je to veřejně známé heslo/alias
+     (`android`/`androiddebugkey`), není to citlivý soubor -- commitnutí
+     do repa je běžná praxe přesně z tohohle důvodu. Neměň zpátky na
+     negenerovaný/defaultní keystore.
    - `accessibility_service_config.xml` musí mít
      `android:canTakeScreenshot="true"` (bez toho tiše selhává
      vzorkování barvy overlaye -- byl to skutečný bug, který nás dlouho

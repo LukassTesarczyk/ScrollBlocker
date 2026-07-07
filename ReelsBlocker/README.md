@@ -119,6 +119,53 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.15 -- skutečná příčina rozbité detekce (podruhé), spolehlivé updaty
+
+Log, cos poslal, ukázal přesně to, co bylo za tím vším: `miui.systemui.plugin`
+(systémová komponenta HyperOS) se v běhu proplétala s `com.instagram.android`
+i desítkykrát za vteřinu, a appka to brala jako "uživatel opustil Instagram" --
+což vynulovalo stav sezení v Reels. Tohle je stejná třída bugu, co v1.10
+opravovala pro vlastní balíček appky a v1.11 pro prázdný balíček -- tentokrát
+to ale bylo přes systémovou komponentu HyperOS, kterou appka neměla důvod
+podezřívat.
+
+- **Skutečná oprava:** appka teď nebere "jaký balíček to poslal" z každé
+  jednotlivé události (scroll, změna obsahu, cokoliv), ale sleduje jen
+  události typu "skutečně se přepnulo okno" (`TYPE_WINDOW_STATE_CHANGED`).
+  Krátké systémové probliknutí (hlasitost, gesta, cokoliv jiného od HyperOS)
+  se tak už nebere jako "opustil jsi Instagram".
+- **Tohle by mělo vysvětlit úplně všechno, co jsi popsal:** nekonzistentní
+  počet povolených reels (stav se resetoval a znova povolil "1 reel" pořád
+  dokola), blikání/mizení čtverečku, to, že v1.14 (kratší doba mizení)
+  najednou vypadalo hůř než v1.13 -- kratší tolerance na blbnutí, co už
+  předtím bylo skryté, ho jen zviditelnila. **A nejspíš i swipe z DMs do
+  Reels, co pořád obcházel blokování** -- pokud se stav resetoval pořád
+  dokola, appka se nikdy nedostala k bodu "swipnul jsi přes první reel,
+  konec". Uvidíme z dalšího logu, jestli tohle bylo opravdu to celé.
+- **Restart App tlačítko a obecně "proč zase nevidím novou verzi":** appka
+  se dosud na GitHub Actions podepisovala pokaždé jiným náhodným debug
+  klíčem (CI runner nemá trvalé úložiště pro `~/.android/debug.keystore`,
+  takže si ho Gradle při každém běhu vygeneroval znova). Android ale
+  odmítne nainstalovat aktualizaci podepsanou jiným klíčem, než měla
+  předchozí verze, dokud appku nejdřív neodinstaluješ -- takže tvoje
+  předchozí instalace klidně mohly tiše selhávat a ty jsi pořád koukal na
+  starou verzi bez restart tlačítka. Přidal jsem do repa pevný debug klíč,
+  který se bude používat na každém buildu od teď, takže by měly jít
+  instalovat načisto přes sebe.
+  **Jednorázově ale teď appku z telefonu odinstaluj ručně, než nainstaluješ
+  tenhle build** -- staré instalace mají ještě starý (náhodný) klíč, takže
+  první přechod na pevný klíč se sám neobejde bez odinstalace. Od příští
+  verze už by to mělo jít bez toho.
+- **Přidal jsem diagnostický log** (jaké resource ID přesně odpovídalo při
+  vstupu do Reels), aby příští log konečně obsahoval dost informací na to,
+  jestli si appka plete Historky s Reels kvůli sdílenému ID -- bez
+  hádání, jen čtu, co appka už teď najde.
+- **Graf "Kde trávíš čas" pořád ukazuje DMs/Historky jako 0** -- na to
+  pořád nemám ověřená resource ID, viz předchozí verze. Napiš prosím
+  ještě jeden log v tomhle pořadí: otevři DM vlákno, swipni stranou do
+  Reels, podívej se na historku -- ať mám z čeho vytáhnout ID pro obojí
+  najednou.
+
 ## v1.14 -- skutečná ikonka z fotky, graf "kde trávíš čas", spolehlivější restart
 
 - **Ikonka appky je teď opravdu z fotky, cos poslal.** Minule jsem si ji

@@ -84,6 +84,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var viewerMissCount = 0
     private var lastActionTime = 0L
     private var lastLoggedPackage: String? = null
+    private var currentForegroundPackage: String? = null
 
     private var windowManager: WindowManager? = null
 
@@ -361,7 +362,28 @@ class ReelsAccessibilityService : AccessibilityService() {
             AppLog.d(this, TAG, "Event package changed to: $eventPackage")
         }
 
-        val isInstagram = eventPackage == INSTAGRAM_PACKAGE
+        // v1.14's log showed "miui.systemui.plugin" interleaved with
+        // com.instagram.android dozens of times a second -- almost
+        // certainly HyperOS's own accessibility-overlay plumbing reporting
+        // itself under a system package instead of ours, which the
+        // same-package guard above can't catch. Every event type
+        // (scrolls, content changes) was being trusted for "what app is
+        // this," but only TYPE_WINDOW_STATE_CHANGED actually reflects a
+        // real foreground window switch -- everything else can fire from
+        // transient system chrome without the foreground app changing at
+        // all. Trusting those as "user left Instagram" reset the Reels
+        // session state constantly, which explains the erratic reel
+        // counts, the flickering overlay, and is the most likely cause of
+        // swipes-from-DMs bypassing the block too (the session kept
+        // getting wiped before the swipe-past-first-reel check could fire).
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            if (eventPackage != currentForegroundPackage) {
+                AppLog.d(this, TAG, "Foreground app changed to: $eventPackage")
+            }
+            currentForegroundPackage = eventPackage
+        }
+
+        val isInstagram = currentForegroundPackage == INSTAGRAM_PACKAGE
 
         if (!isInstagram) {
             hideOverlay()
@@ -587,7 +609,8 @@ class ReelsAccessibilityService : AccessibilityService() {
     // ---- One reel per session ----
 
     private fun handleReelSession(root: AccessibilityNodeInfo, event: AccessibilityEvent) {
-        val currentlyInViewer = isReelsViewerScreen(root)
+        val matchedId = matchedReelsViewerId(root)
+        val currentlyInViewer = matchedId != null
         val now = System.currentTimeMillis()
 
         if (currentlyInViewer) {
@@ -595,7 +618,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             if (!inReelsViewer) {
                 inReelsViewer = true
                 viewerEnteredAt = now
-                AppLog.d(this, TAG, "Entered reels viewer -- 1 reel allowed, next real swipe exits")
+                AppLog.d(this, TAG, "Entered reels viewer (matched id=$matchedId) -- 1 reel allowed, next real swipe exits")
             } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
                 if (now - viewerEnteredAt < ENTRY_GRACE_MS) {
                     AppLog.d(this, TAG, "Ignoring scroll ${now - viewerEnteredAt}ms after entry (likely settle, not a real swipe)")
@@ -622,7 +645,14 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun isReelsViewerScreen(root: AccessibilityNodeInfo): Boolean {
+    // Returns which candidate id matched (or null) instead of a plain
+    // boolean, so callers can log it -- needed to eventually tell whether
+    // Stories are wrongly matching the same viewer id as Reels, since
+    // Instagram is known to share view infrastructure between the two and
+    // there's no official documentation to check against (see CLAUDE.md
+    // rule 5: this only logs what already matches, it doesn't add new
+    // guesses).
+    private fun matchedReelsViewerId(root: AccessibilityNodeInfo): String? {
         for (id in VIEWER_RESOURCE_ID_CANDIDATES) {
             val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$id")
             var found = false
@@ -632,9 +662,9 @@ class ReelsAccessibilityService : AccessibilityService() {
                 if (isFullScreenBounds(bounds)) found = true
             }
             matches.forEach { it.recycle() }
-            if (found) return true
+            if (found) return id
         }
-        return false
+        return null
     }
 
     private fun isFullScreenBounds(bounds: Rect): Boolean {
