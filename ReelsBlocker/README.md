@@ -119,6 +119,23 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.4 -- hub appek, Debug log v appce, oprava nekonzistentního vyhazování, nová animace
+
+- **Oprava "vyhazuje mě někdy hned, někdy funguje":** appka teď 700ms po
+  vstupu do Reels ignoruje scroll události -- Instagram totiž občas sám
+  vygeneruje takovou událost, jen když se přehrávač usadí na obrazovce,
+  což appka dřív mylně brala za tvůj swipe.
+- **Debug log přímo v appce (Debug tab):** žádný adb/Termux potřeba.
+  Appka si loguje do souboru, tab má tlačítka Refresh / Copy / Clear.
+  Zkopíruj a pošli, když se něco pokazí.
+- **Hub appek dole** (jako u TikToku/Instagramu): Instagram, TikTok,
+  Snapchat. Instagram je plně funkční, ostatní dva zatím jen ukládají
+  přepínač Run/Stop pro budoucí detekci (upřímně řečeno: bez
+  implementace pro danou appku zatím nic neblokují ani nesledují --
+  appka na to jasně upozorní žlutou poznámkou).
+- **Nová animace při vyhození:** tmavý flash + bublina "↩ Zpět do
+  feedu" uprostřed obrazovky, žádná namodralá barva.
+
 ## v1.3 -- overlay flicker/position/color fixes, 1-reel bug, exit animation
 
 - **Overlay problikával:** teď se schová až po 3 po sobě jdoucích

@@ -1,218 +1,417 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#121212">
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="24dp">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <!-- Top bar: title + version -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="4dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Reels Blocker"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/tvVersion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="#808080" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvServiceStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:textColor="#808080"
-        android:layout_marginBottom="20dp" />
-
-    <!-- Run / Stop -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
-
-        <Button
-            android:id="@+id/btnRun"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="6dp"
-            android:text="Run"
-            android:backgroundTint="#26A69A" />
-
-        <Button
-            android:id="@+id/btnStop"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="6dp"
-            android:text="Stop"
-            android:backgroundTint="#3A3A3A" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvPauseStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="13sp"
-        android:textColor="#808080"
-        android:gravity="center"
-        android:layout_marginBottom="28dp" />
-
-    <!-- Tabs -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="20dp">
-
-        <Button
-            android:id="@+id/btnTabOverview"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Overview"
-            android:backgroundTint="#26A69A" />
-
-        <Button
-            android:id="@+id/btnTabSetup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Setup"
-            android:backgroundTint="#3A3A3A" />
-
-    </LinearLayout>
-
-    <!-- Overview tab content -->
-    <LinearLayout
-        android:id="@+id/overviewContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="4dp">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvSelectedApp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/tvTotalBlocked"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold"
-                    android:textSize="32sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:text="Total blocked"
-                    android:textColor="#808080"
-                    android:textSize="13sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+                android:text="Instagram"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp" />
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/tvTodayBlocked"
-                    android:textColor="#26A69A"
-                    android:textStyle="bold"
-                    android:textSize="32sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:text="Today"
-                    android:textColor="#808080"
-                    android:textSize="13sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+                android:textSize="13sp"
+                android:textColor="#808080" />
 
         </LinearLayout>
 
         <TextView
-            android:text="Last 7 days"
-            android:textColor="#808080"
-            android:textSize="13sp"
-            android:layout_marginBottom="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <LinearLayout
-            android:id="@+id/barsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:orientation="horizontal"
-            android:gravity="bottom" />
-
-    </LinearLayout>
-
-    <!-- Setup tab content (hidden by default) -->
-    <LinearLayout
-        android:id="@+id/setupContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/tvInstructions"
+            android:id="@+id/tvServiceStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textColor="#CCCCCC"
+            android:textSize="13sp"
+            android:textColor="#808080"
             android:layout_marginBottom="20dp" />
 
-        <Button
-            android:id="@+id/btnOpenAccessibility"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Accessibility Settings"
-            android:layout_marginBottom="12dp" />
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
-        <Button
-            android:id="@+id/btnOpenBatterySettings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Open App Battery Settings"
-            android:layout_marginBottom="12dp" />
+            <Button
+                android:id="@+id/btnRun"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="Run"
+                android:backgroundTint="#26A69A" />
 
-        <Button
-            android:id="@+id/btnOpenOtherPermissions"
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="Stop"
+                android:backgroundTint="#3A3A3A" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvPauseStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open App Info (Other permissions)" />
+            android:textSize="13sp"
+            android:textColor="#808080"
+            android:gravity="center"
+            android:layout_marginBottom="28dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/btnTabOverview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="Overview"
+                android:textSize="12sp"
+                android:backgroundTint="#26A69A" />
+
+            <Button
+                android:id="@+id/btnTabSetup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="Setup"
+                android:textSize="12sp"
+                android:backgroundTint="#3A3A3A" />
+
+            <Button
+                android:id="@+id/btnTabDebug"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="Debug"
+                android:textSize="12sp"
+                android:backgroundTint="#3A3A3A" />
+
+        </LinearLayout>
+
+        <!-- Overview -->
+        <LinearLayout
+            android:id="@+id/overviewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvNotImplementedNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#E0A030"
+                android:textSize="13sp"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvTotalBlocked"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="32sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:text="Total blocked"
+                        android:textColor="#808080"
+                        android:textSize="13sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvTodayBlocked"
+                        android:textColor="#26A69A"
+                        android:textStyle="bold"
+                        android:textSize="32sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:text="Today"
+                        android:textColor="#808080"
+                        android:textSize="13sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:text="Last 7 days"
+                android:textColor="#808080"
+                android:textSize="13sp"
+                android:layout_marginBottom="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/barsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:orientation="horizontal"
+                android:gravity="bottom" />
+
+        </LinearLayout>
+
+        <!-- Setup -->
+        <LinearLayout
+            android:id="@+id/setupContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvInstructions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="#CCCCCC"
+                android:layout_marginBottom="20dp" />
+
+            <Button
+                android:id="@+id/btnOpenAccessibility"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Open Accessibility Settings"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnOpenBatterySettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Open App Battery Settings"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnOpenOtherPermissions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Open App Info (Other permissions)" />
+
+        </LinearLayout>
+
+        <!-- Debug -->
+        <LinearLayout
+            android:id="@+id/debugContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:text="Log se ukládá lokálně v appce -- nic se nikam neposílá. Zkopíruj a pošli, když se něco pokazí."
+                android:textColor="#808080"
+                android:textSize="12sp"
+                android:layout_marginBottom="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <Button
+                    android:id="@+id/btnRefreshLog"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:text="Refresh"
+                    android:textSize="12sp"
+                    android:backgroundTint="#3A3A3A" />
+
+                <Button
+                    android:id="@+id/btnCopyLog"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="Copy"
+                    android:textSize="12sp"
+                    android:backgroundTint="#3A3A3A" />
+
+                <Button
+                    android:id="@+id/btnClearLog"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:text="Clear"
+                    android:textSize="12sp"
+                    android:backgroundTint="#C62828" />
+
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:background="#1A1A1A"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/tvLog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#B0B0B0"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:text="" />
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#2A2A2A" />
+
+    <!-- App hub -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="76dp"
+        android:orientation="horizontal"
+        android:background="#181818">
+
+        <LinearLayout
+            android:id="@+id/hubInstagram"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView
+                android:id="@+id/hubInstagramIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:text="IG" />
+            <TextView
+                android:text="Instagram"
+                android:textColor="#B0B0B0"
+                android:textSize="10sp"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/hubTiktok"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView
+                android:id="@+id/hubTiktokIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:text="TT" />
+            <TextView
+                android:text="TikTok"
+                android:textColor="#B0B0B0"
+                android:textSize="10sp"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/hubSnapchat"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView
+                android:id="@+id/hubSnapchatIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:text="SC" />
+            <TextView
+                android:text="Snapchat"
+                android:textColor="#B0B0B0"
+                android:textSize="10sp"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
     </LinearLayout>
 
 </LinearLayout>
-</ScrollView>
