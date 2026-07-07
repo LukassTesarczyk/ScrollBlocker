@@ -28,11 +28,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var overviewContainer: LinearLayout
     private lateinit var setupContainer: LinearLayout
     private lateinit var debugContainer: LinearLayout
-    private lateinit var btnTabOverview: Button
-    private lateinit var btnTabSetup: Button
-    private lateinit var btnTabDebug: Button
+    private lateinit var btnOpenMenu: TextView
+    private lateinit var drawerScrim: View
+    private lateinit var drawerPanel: LinearLayout
+    private lateinit var btnMenuOverview: TextView
+    private lateinit var btnMenuSetup: TextView
+    private lateinit var btnMenuDebug: TextView
 
     private var selectedApp: String = "instagram"
+    private var drawerOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,9 +50,12 @@ class MainActivity : AppCompatActivity() {
         overviewContainer = findViewById(R.id.overviewContainer)
         setupContainer = findViewById(R.id.setupContainer)
         debugContainer = findViewById(R.id.debugContainer)
-        btnTabOverview = findViewById(R.id.btnTabOverview)
-        btnTabSetup = findViewById(R.id.btnTabSetup)
-        btnTabDebug = findViewById(R.id.btnTabDebug)
+        btnOpenMenu = findViewById(R.id.btnOpenMenu)
+        drawerScrim = findViewById(R.id.drawerScrim)
+        drawerPanel = findViewById(R.id.drawerPanel)
+        btnMenuOverview = findViewById(R.id.btnMenuOverview)
+        btnMenuSetup = findViewById(R.id.btnMenuSetup)
+        btnMenuDebug = findViewById(R.id.btnMenuDebug)
 
         val versionName = try {
             packageManager.getPackageInfo(packageName, 0).versionName
@@ -76,9 +83,11 @@ class MainActivity : AppCompatActivity() {
             refreshStatus()
         }
 
-        btnTabOverview.setOnClickListener { showTab("overview") }
-        btnTabSetup.setOnClickListener { showTab("setup") }
-        btnTabDebug.setOnClickListener { showTab("debug") }
+        btnOpenMenu.setOnClickListener { if (drawerOpen) closeDrawer() else openDrawer() }
+        drawerScrim.setOnClickListener { closeDrawer() }
+        btnMenuOverview.setOnClickListener { showTab("overview"); closeDrawer() }
+        btnMenuSetup.setOnClickListener { showTab("setup"); closeDrawer() }
+        btnMenuDebug.setOnClickListener { showTab("debug"); closeDrawer() }
 
         findViewById<Button>(R.id.btnRefreshLog).setOnClickListener { renderLog() }
         findViewById<Button>(R.id.btnCopyLog).setOnClickListener {
@@ -101,9 +110,13 @@ class MainActivity : AppCompatActivity() {
                "No restrictions" and enable Autostart (Xiaomi/HyperOS specific).
             3. Same screen -> Other permissions -> allow "Display pop-up
                windows while running in the background".
-            4. Use Run/Stop above to pause blocking anytime, per app.
-            5. Debug tab has a log if something misbehaves -- copy it and
-               send it over so it can be fixed precisely.
+            4. Also open recent apps and tap the lock icon on Reels Blocker
+               so HyperOS doesn't kill it in the background -- if the service
+               ever shows as "not working" in Accessibility settings, this is
+               usually why, and re-enabling the toggle fixes it.
+            5. Use Run/Stop above to pause blocking anytime, per app.
+            6. Tap the arrow top-left -> Log if something misbehaves -- copy
+               it and send it over so it can be fixed precisely.
         """.trimIndent()
 
         showTab("overview")
@@ -270,21 +283,58 @@ class MainActivity : AppCompatActivity() {
         renderStats()
     }
 
-    // ---- Tabs ----
+    // ---- Tabs / drawer menu ----
 
     private fun showTab(tab: String) {
         overviewContainer.visibility = if (tab == "overview") View.VISIBLE else View.GONE
         setupContainer.visibility = if (tab == "setup") View.VISIBLE else View.GONE
         debugContainer.visibility = if (tab == "debug") View.VISIBLE else View.GONE
 
-        val active = "#26A69A"
-        val inactive = "#3A3A3A"
-        btnTabOverview.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (tab == "overview") active else inactive))
-        btnTabSetup.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (tab == "setup") active else inactive))
-        btnTabDebug.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (tab == "debug") active else inactive))
+        btnMenuOverview.setBackgroundResource(if (tab == "overview") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
+        btnMenuSetup.setBackgroundResource(if (tab == "setup") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
+        btnMenuDebug.setBackgroundResource(if (tab == "debug") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
 
         if (tab == "overview") renderStats()
         if (tab == "debug") renderLog()
+    }
+
+    // Panel is 252dp wide (fixed in the layout) -- computed in px instead
+    // of read from drawerPanel.width, since a GONE view reports width 0
+    // until after its first (async) layout pass.
+    private val drawerWidthPx: Float by lazy { 252f * resources.displayMetrics.density }
+
+    private fun openDrawer() {
+        drawerOpen = true
+        drawerScrim.visibility = View.VISIBLE
+        drawerScrim.alpha = 0f
+        drawerScrim.animate().alpha(1f).setDuration(180).start()
+
+        drawerPanel.translationX = -drawerWidthPx
+        drawerPanel.visibility = View.VISIBLE
+        drawerPanel.animate().translationX(0f).setDuration(220).start()
+
+        btnOpenMenu.animate().rotation(90f).setDuration(220).start()
+    }
+
+    private fun closeDrawer() {
+        drawerOpen = false
+        drawerScrim.animate().alpha(0f).setDuration(180).withEndAction {
+            drawerScrim.visibility = View.GONE
+        }.start()
+
+        drawerPanel.animate().translationX(-drawerWidthPx).setDuration(220).withEndAction {
+            drawerPanel.visibility = View.GONE
+        }.start()
+
+        btnOpenMenu.animate().rotation(0f).setDuration(220).start()
+    }
+
+    override fun onBackPressed() {
+        if (drawerOpen) {
+            closeDrawer()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     // ---- Status / stats / log ----
@@ -295,15 +345,15 @@ class MainActivity : AppCompatActivity() {
 
         val runBtn = findViewById<Button>(R.id.btnRun)
         val stopBtn = findViewById<Button>(R.id.btnStop)
-        runBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (enabled) "#26A69A" else "#3A3A3A"))
-        stopBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (enabled) "#3A3A3A" else "#C62828"))
+        runBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (enabled) "#26A69A" else "#2E2E2E"))
+        stopBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (enabled) "#2E2E2E" else "#C62828"))
 
         if (selectedApp == "instagram") {
             val serviceOn = isAccessibilityServiceEnabled()
             tvServiceStatus.text = if (serviceOn) {
                 "Accessibility service enabled"
             } else {
-                "Accessibility service NOT enabled -- see Setup tab"
+                "Accessibility service NOT enabled -- see Settings in the menu"
             }
         } else {
             tvServiceStatus.text = "Detekce zatím neimplementována"
@@ -350,7 +400,7 @@ class MainActivity : AppCompatActivity() {
 
             val barHeightDp = if (count == 0) 4 else (10 + (count.toFloat() / maxCount) * maxBarHeightDp).toInt()
             val bar = View(this).apply {
-                setBackgroundColor(Color.parseColor(if (count == 0) "#3A3A3A" else "#26A69A"))
+                setBackgroundColor(Color.parseColor(if (count == 0) "#2E2E2E" else "#26A69A"))
                 layoutParams = LinearLayout.LayoutParams(
                     (26 * density).toInt(),
                     (barHeightDp * density).toInt()

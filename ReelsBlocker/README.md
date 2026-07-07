@@ -119,6 +119,46 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.6 -- oprava problikávání/"not working", nové rozhraní se šipkou
+
+Tohle kolo bylo o spolehlivosti appky, ne o detekci Reels (tu jsem
+schválně nesahal bez čerstvého logu -- pravidlo, které tu platí, ať se
+znovu neháže tip do tmy na resource ID Instagramu).
+
+- **Problikávání čtverečku + appka "nefunguje":** appka si zapisovala
+  log na disk synchronně přímo na hlavním vlákně při každé jednotlivé
+  accessibility události -- a těch je při scrollování Reels hodně za
+  sekundu. To sekalo hlavní vlákno, což se navenek projevovalo jako
+  problikávání overlaye, a v horším případě jako ANR ("aplikace
+  neodpovídá"), který Android hlásí jako službu, co "nefunguje" v
+  Nastavení -- Přístupnost. Zápis logu teď běží na vlastním vlákně na
+  pozadí.
+- **Stejný důvod, druhá příčina:** vzorkování barvy čtverečku dělalo
+  kopii celé obrazovky (screenshot) přímo na hlavním vlákně každé 4
+  sekundy. Přesunuto taky na pozadí.
+- **Čtvereček se schovával moc rychle:** stačilo, aby Instagram na
+  jeden snímek "nenašel" ikonku (typicky při překreslení jinde na
+  obrazovce), a appka ho hned schovala a zase ukázala. Teď se schová
+  až po 500ms nepřetržité nepřítomnosti, ne po pár chybějících
+  snímcích.
+- **Ochrana proti duplicitnímu překryvu:** pokud systém službu znovu
+  napojí (typicky po tom, co ji HyperOS na chvíli zabil), appka teď
+  nejdřív uklidí starý overlay, než založí nový -- dřív mohlo dojít k
+  duplicitě/pádu.
+- Do konfigurace přístupnostní služby přidán doporučený atribut
+  `android:isAccessibilityTool="true"`.
+- **Nové rozhraní:** záložky Overview/Setup/Debug nahoře zmizely,
+  místo nich je vlevo nahoře malá šipka -- klepnutím vyjede boční
+  panel s Overview / Settings / Log. Karty se zaoblenými rohy, plošší
+  tlačítka bez CAPS LOCK textu -- celkově minimalističtější vzhled.
+- V Setup instrukcích přidán krok: uzamkni appku v posledních
+  aplikacích (ikonka zámku), ať ji HyperOS neukončuje na pozadí -- to
+  je nejčastější důvod, proč se služba časem ukáže jako "not working".
+
+Pokud po týhle verzi pořád problikává nebo se detekce Reels chová
+divně, pošli prosím čerstvý log z menu -> Log -- bez něj bych jen
+znovu hádal resource ID a to se historicky nevyplácelo.
+
 ## v1.5 -- opravy z reálného logu + reorder hubu + výchozí Stop
 
 Díky poslanému logu se konečně potvrdily dvě konkrétní příčiny:

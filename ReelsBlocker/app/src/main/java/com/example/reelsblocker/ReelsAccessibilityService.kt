@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.view.Display
 import android.view.Gravity
 import android.view.View
@@ -15,6 +17,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
 import android.widget.TextView
+import java.util.concurrent.Executors
 
 class ReelsAccessibilityService : AccessibilityService() {
 
@@ -40,7 +43,12 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         private const val COOLDOWN_MS = 800L
         private const val COLOR_RESAMPLE_MS = 4000L
-        private const val MISS_TOLERANCE = 3
+        // Tab icon lookup can transiently miss for a frame or two while
+        // Instagram rebinds unrelated parts of the screen -- hiding (and
+        // then re-showing) the overlay on every such blip is what reads
+        // as "problikávání". Only actually hide once it's been missing
+        // continuously for this long.
+        private const val HIDE_GRACE_MS = 500L
         private const val REPOSITION_THRESHOLD_PX = 14
         private const val MIN_REPOSITION_INTERVAL_MS = 200L
         // How many consecutive "not in viewer" reads before we actually
@@ -65,13 +73,17 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var overlayAdded = false
     private var lastAppliedBounds: Rect? = null
     private var lastRepositionAt = 0L
-    private var missCount = 0
-    private var sampledColor: Int? = null
+    private var lastSeenTabAt = 0L
+    @Volatile private var sampledColor: Int? = null
     private var lastColorSampleTime = 0L
+    @Volatile private var colorSampleInFlight = false
     private var statusBarHeightPx = 0
 
     private var transitionRoot: FrameLayout? = null
     private var transitionLabel: TextView? = null
+
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val colorSampleExecutor = Executors.newSingleThreadExecutor()
 
     private lateinit var prefs: SharedPreferences
 
@@ -80,8 +92,29 @@ class ReelsAccessibilityService : AccessibilityService() {
         AppLog.d(this, TAG, "Service connected")
         prefs = getSharedPreferences(PrefsKeys.PREFS_NAME, MODE_PRIVATE)
         statusBarHeightPx = getStatusBarHeight()
+        // onServiceConnected can fire again if the system rebinds the
+        // service (e.g. after it was briefly killed on HyperOS) -- tear
+        // down any overlay windows from a previous connection first,
+        // otherwise adding a second TYPE_ACCESSIBILITY_OVERLAY window
+        // silently duplicates it and can throw on some OEM skins.
+        teardownOverlays()
         setupOverlay()
         setupTransitionOverlay()
+    }
+
+    private fun teardownOverlays() {
+        try {
+            overlayView?.let { windowManager?.removeView(it) }
+        } catch (_: Exception) {
+        }
+        try {
+            transitionRoot?.let { windowManager?.removeView(it) }
+        } catch (_: Exception) {
+        }
+        overlayView = null
+        transitionRoot = null
+        transitionLabel = null
+        overlayAdded = false
     }
 
     private fun getStatusBarHeight(): Int {
@@ -200,13 +233,13 @@ class ReelsAccessibilityService : AccessibilityService() {
         val isInstagram = event.packageName?.toString() == INSTAGRAM_PACKAGE
 
         if (!isInstagram) {
-            hideOverlay(force = true)
+            hideOverlay()
             inReelsViewer = false
             return
         }
 
         if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)) {
-            hideOverlay(force = true)
+            hideOverlay()
             return
         }
 
@@ -227,16 +260,13 @@ class ReelsAccessibilityService : AccessibilityService() {
         if (!overlayAdded) return
         val tabNode = findTabIconNode(root)
         if (tabNode != null) {
-            missCount = 0
+            lastSeenTabAt = System.currentTimeMillis()
             val bounds = Rect()
             tabNode.getBoundsInScreen(bounds)
             tabNode.recycle()
             showOverlayAt(bounds)
-        } else {
-            missCount++
-            if (missCount >= MISS_TOLERANCE) {
-                hideOverlay(force = false)
-            }
+        } else if (System.currentTimeMillis() - lastSeenTabAt >= HIDE_GRACE_MS) {
+            hideOverlay()
         }
     }
 
@@ -304,12 +334,11 @@ class ReelsAccessibilityService : AccessibilityService() {
         maybeResampleColor(bounds)
     }
 
-    private fun hideOverlay(force: Boolean) {
+    private fun hideOverlay() {
         if (!overlayAdded) return
         val wm = windowManager ?: return
         val view = overlayView ?: return
         val params = overlayParams ?: return
-        if (!force && missCount < MISS_TOLERANCE) return
         if (view.visibility != View.GONE) {
             view.visibility = View.GONE
             params.width = 0
@@ -320,7 +349,6 @@ class ReelsAccessibilityService : AccessibilityService() {
             }
         }
         lastAppliedBounds = null
-        missCount = 0
     }
 
     private fun fallbackColor(): Int = Color.parseColor("#1A1A1A")
@@ -330,10 +358,16 @@ class ReelsAccessibilityService : AccessibilityService() {
         val now = System.currentTimeMillis()
         val isFirstSample = sampledColor == null
         if (!isFirstSample && now - lastColorSampleTime < COLOR_RESAMPLE_MS) return
+        if (colorSampleInFlight) return
         lastColorSampleTime = now
+        colorSampleInFlight = true
 
         try {
-            takeScreenshot(Display.DEFAULT_DISPLAY, mainExecutor, object : TakeScreenshotCallback {
+            // Decoding the hardware buffer into a plain bitmap is the
+            // expensive part -- run the whole callback on a background
+            // thread (not mainExecutor) so a full-screen copy never
+            // blocks the accessibility event loop on the main thread.
+            takeScreenshot(Display.DEFAULT_DISPLAY, colorSampleExecutor, object : TakeScreenshotCallback {
                 override fun onSuccess(result: ScreenshotResult) {
                     try {
                         val hb = result.hardwareBuffer
@@ -348,22 +382,28 @@ class ReelsAccessibilityService : AccessibilityService() {
                                     .coerceIn(0, safeBitmap.width - 1)
                             }
                             val color = safeBitmap.getPixel(x, y)
-                            sampledColor = color
-                            overlayView?.setBackgroundColor(color)
                             safeBitmap.recycle()
                             AppLog.d(this@ReelsAccessibilityService, TAG, "Sampled color at x=$x y=$y = #${Integer.toHexString(color)}")
+                            mainHandler.post {
+                                sampledColor = color
+                                overlayView?.setBackgroundColor(color)
+                            }
                         }
                     } catch (e: Exception) {
                         AppLog.w(this@ReelsAccessibilityService, TAG, "Color sample decode failed: ${e.message}")
+                    } finally {
+                        colorSampleInFlight = false
                     }
                 }
 
                 override fun onFailure(errorCode: Int) {
                     AppLog.w(this@ReelsAccessibilityService, TAG, "Screenshot for color sampling failed: code=$errorCode")
+                    colorSampleInFlight = false
                 }
             })
         } catch (e: Exception) {
             AppLog.w(this, TAG, "takeScreenshot call failed: ${e.message}")
+            colorSampleInFlight = false
         }
     }
 
@@ -486,14 +526,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            overlayView?.let { windowManager?.removeView(it) }
-        } catch (_: Exception) {
-        }
-        try {
-            transitionRoot?.let { windowManager?.removeView(it) }
-        } catch (_: Exception) {
-        }
-        overlayAdded = false
+        teardownOverlays()
+        colorSampleExecutor.shutdownNow()
     }
 }

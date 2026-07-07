@@ -3,5 +3,16 @@
         <item name="android:windowBackground">#121212</item>
         <item name="colorPrimary">#26A69A</item>
         <item name="colorAccent">#26A69A</item>
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+    </style>
+
+    <!-- Flatter, rounder, lower-case buttons: swaps the default
+         Material all-caps/elevated look for something more minimal. -->
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">14dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:elevation">0dp</item>
+        <item name="rippleColor">#33FFFFFF</item>
     </style>
 </resources>
