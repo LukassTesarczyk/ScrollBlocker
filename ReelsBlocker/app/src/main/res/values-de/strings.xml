@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Bedienungshilfen-Einstellungen öffnen</string>
     <string name="setup_open_battery">Akku-Einstellungen der App öffnen</string>
     <string name="setup_open_other_permissions">App-Info öffnen (weitere Berechtigungen)</string>
-    <string name="setup_instructions">1. Tippe auf „Bedienungshilfen-Einstellungen öffnen“ und aktiviere „Reels Blocker Service“. Bleibt der Schalter nicht an: App-Info -&gt; ⋮-Menü (oben rechts) -&gt; „Eingeschränkte Einstellungen zulassen“.
-
-2. Tippe auf „Akku-Einstellungen der App öffnen“, stelle den Akkuverbrauch auf „Keine Einschränkungen“ und aktiviere Autostart (Xiaomi/HyperOS-spezifisch).
-
-3. Gleicher Bildschirm -&gt; Weitere Berechtigungen -&gt; „Pop-up-Fenster im Hintergrund anzeigen“ erlauben.
-
-4. Öffne außerdem die zuletzt verwendeten Apps und tippe beim Reels Blocker auf das Schloss-Symbol, damit HyperOS ihn nicht im Hintergrund beendet -- wenn der Dienst jemals als „nicht funktionsfähig“ in den Bedienungshilfen angezeigt wird, liegt es meist daran, und erneutes Aktivieren des Schalters behebt es.
-
-5. Mit Run/Stop oben kannst du die Blockierung jederzeit pro App pausieren.
-
-6. Tippe oben links auf den Pfeil -&gt; Log, wenn etwas nicht funktioniert -- kopiere ihn und schicke ihn, damit es gezielt behoben werden kann.</string>
+    <string name="setup_instructions">1. Tippe auf „Bedienungshilfen-Einstellungen öffnen“ und aktiviere „Reels Blocker Service“. Bleibt der Schalter nicht an: App-Info -&gt; ⋮-Menü (oben rechts) -&gt; „Eingeschränkte Einstellungen zulassen“.\n\n2. Tippe auf „Akku-Einstellungen der App öffnen“, stelle den Akkuverbrauch auf „Keine Einschränkungen“ und aktiviere Autostart (Xiaomi/HyperOS-spezifisch).\n\n3. Gleicher Bildschirm -&gt; Weitere Berechtigungen -&gt; „Pop-up-Fenster im Hintergrund anzeigen“ erlauben.\n\n4. Öffne außerdem die zuletzt verwendeten Apps und tippe beim Reels Blocker auf das Schloss-Symbol, damit HyperOS ihn nicht im Hintergrund beendet -- wenn der Dienst jemals als „nicht funktionsfähig“ in den Bedienungshilfen angezeigt wird, liegt es meist daran, und erneutes Aktivieren des Schalters behebt es.\n\n5. Mit Run/Stop oben kannst du die Blockierung jederzeit pro App pausieren.\n\n6. Tippe oben links auf den Pfeil -&gt; Log, wenn etwas nicht funktioniert -- kopiere ihn und schicke ihn, damit es gezielt behoben werden kann.</string>
     <string name="debug_intro">Das Log wird nur lokal auf diesem Gerät gespeichert -- es wird nichts irgendwohin gesendet. Kopiere und teile es, wenn etwas nicht funktioniert.</string>
     <string name="refresh">Aktualisieren</string>
     <string name="copy">Kopieren</string>

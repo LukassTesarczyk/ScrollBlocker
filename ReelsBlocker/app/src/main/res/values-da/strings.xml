@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Åbn indstillinger for tilgængelighed</string>
     <string name="setup_open_battery">Åbn appens batteriindstillinger</string>
     <string name="setup_open_other_permissions">Åbn app-info (andre tilladelser)</string>
-    <string name="setup_instructions">1. Tryk på “Åbn indstillinger for tilgængelighed” og aktivér “Reels Blocker Service”. Hvis kontakten ikke bliver ved med at være aktiveret: App-info -&gt; ⋮-menu (øverst til højre) -&gt; “Tillad begrænsede indstillinger”.
-
-2. Tryk på “Åbn appens batteriindstillinger”, sæt batteriforbrug til “Ingen begrænsninger”, og aktivér Autostart (specifikt for Xiaomi/HyperOS).
-
-3. Samme skærm -&gt; Andre tilladelser -&gt; tillad “Vis pop op-vinduer, mens appen kører i baggrunden”.
-
-4. Åbn også seneste apps, og tryk på hængelåsikonet ved Reels Blocker, så HyperOS ikke lukker den i baggrunden -- hvis tjenesten nogensinde viser “fungerer ikke” under tilgængelighed, skyldes det som regel dette, og det løses ved at slå kontakten til igen.
-
-5. Brug Run/Stop ovenfor til at sætte blokeringen på pause når som helst, pr. app.
-
-6. Tryk på pilen øverst til venstre -&gt; Log, hvis noget driller -- kopiér den, og send den, så det kan rettes præcist.</string>
+    <string name="setup_instructions">1. Tryk på “Åbn indstillinger for tilgængelighed” og aktivér “Reels Blocker Service”. Hvis kontakten ikke bliver ved med at være aktiveret: App-info -&gt; ⋮-menu (øverst til højre) -&gt; “Tillad begrænsede indstillinger”.\n\n2. Tryk på “Åbn appens batteriindstillinger”, sæt batteriforbrug til “Ingen begrænsninger”, og aktivér Autostart (specifikt for Xiaomi/HyperOS).\n\n3. Samme skærm -&gt; Andre tilladelser -&gt; tillad “Vis pop op-vinduer, mens appen kører i baggrunden”.\n\n4. Åbn også seneste apps, og tryk på hængelåsikonet ved Reels Blocker, så HyperOS ikke lukker den i baggrunden -- hvis tjenesten nogensinde viser “fungerer ikke” under tilgængelighed, skyldes det som regel dette, og det løses ved at slå kontakten til igen.\n\n5. Brug Run/Stop ovenfor til at sætte blokeringen på pause når som helst, pr. app.\n\n6. Tryk på pilen øverst til venstre -&gt; Log, hvis noget driller -- kopiér den, og send den, så det kan rettes præcist.</string>
     <string name="debug_intro">Loggen gemmes kun lokalt på denne enhed -- der sendes ikke noget nogen steder hen. Kopiér og del den, hvis noget går i stykker.</string>
     <string name="refresh">Opdater</string>
     <string name="copy">Kopiér</string>

@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Otevřít nastavení přístupnosti</string>
     <string name="setup_open_battery">Otevřít nastavení baterie appky</string>
     <string name="setup_open_other_permissions">Otevřít info o appce (Další oprávnění)</string>
-    <string name="setup_instructions">1. Klepni na „Otevřít nastavení přístupnosti“ a zapni „Reels Blocker Service“. Pokud přepínač nezůstane zapnutý: Info o appce -&gt; nabídka ⋮ (vpravo nahoře) -&gt; „Povolit omezená nastavení“.
-
-2. Klepni na „Otevřít nastavení baterie appky“ a nastav využití baterie na „Bez omezení“ a zapni Autostart (specifické pro Xiaomi/HyperOS).
-
-3. Na stejné obrazovce -&gt; Další oprávnění -&gt; povol „Zobrazovat vyskakovací okna na pozadí“.
-
-4. Otevři taky poslední aplikace a klepni na ikonku zámku u appky Reels Blocker, ať ji HyperOS neukončuje na pozadí -- pokud se služba někdy ukáže jako „nefunkční“ v nastavení přístupnosti, je to obvykle tímhle a pomůže znovu zapnout přepínač.
-
-5. Přepínačem Run/Stop nahoře můžeš blokování kdykoli pozastavit, pro každou appku zvlášť.
-
-6. Klepni na šipku vlevo nahoře -&gt; Log, pokud něco nefunguje -- zkopíruj ho a pošli, ať se to dá přesně opravit.</string>
+    <string name="setup_instructions">1. Klepni na „Otevřít nastavení přístupnosti“ a zapni „Reels Blocker Service“. Pokud přepínač nezůstane zapnutý: Info o appce -&gt; nabídka ⋮ (vpravo nahoře) -&gt; „Povolit omezená nastavení“.\n\n2. Klepni na „Otevřít nastavení baterie appky“ a nastav využití baterie na „Bez omezení“ a zapni Autostart (specifické pro Xiaomi/HyperOS).\n\n3. Na stejné obrazovce -&gt; Další oprávnění -&gt; povol „Zobrazovat vyskakovací okna na pozadí“.\n\n4. Otevři taky poslední aplikace a klepni na ikonku zámku u appky Reels Blocker, ať ji HyperOS neukončuje na pozadí -- pokud se služba někdy ukáže jako „nefunkční“ v nastavení přístupnosti, je to obvykle tímhle a pomůže znovu zapnout přepínač.\n\n5. Přepínačem Run/Stop nahoře můžeš blokování kdykoli pozastavit, pro každou appku zvlášť.\n\n6. Klepni na šipku vlevo nahoře -&gt; Log, pokud něco nefunguje -- zkopíruj ho a pošli, ať se to dá přesně opravit.</string>
     <string name="debug_intro">Log se ukládá lokálně jen v tomto zařízení -- nic se nikam neposílá. Zkopíruj a pošli ho, když se něco pokazí.</string>
     <string name="refresh">Obnovit</string>
     <string name="copy">Kopírovat</string>

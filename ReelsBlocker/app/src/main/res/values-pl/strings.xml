@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Otwórz ustawienia ułatwień dostępu</string>
     <string name="setup_open_battery">Otwórz ustawienia baterii aplikacji</string>
     <string name="setup_open_other_permissions">Otwórz informacje o aplikacji (inne uprawnienia)</string>
-    <string name="setup_instructions">1. Dotknij „Otwórz ustawienia ułatwień dostępu” i włącz „Reels Blocker Service”. Jeśli przełącznik nie zostaje włączony: Informacje o aplikacji -&gt; menu ⋮ (prawy górny róg) -&gt; „Zezwól na ograniczone ustawienia”.
-
-2. Dotknij „Otwórz ustawienia baterii aplikacji”, ustaw zużycie baterii na „Brak ograniczeń” i włącz autostart (specyficzne dla Xiaomi/HyperOS).
-
-3. Na tym samym ekranie -&gt; Inne uprawnienia -&gt; zezwól na „Wyświetlanie okienek podczas działania w tle”.
-
-4. Otwórz też ostatnie aplikacje i dotknij ikony kłódki przy Reels Blocker, żeby HyperOS nie zamykał go w tle -- jeśli usługa kiedykolwiek pokaże się jako „nie działa” w ułatwieniach dostępu, zwykle to właśnie z tego powodu, a ponowne włączenie przełącznika to naprawia.
-
-5. Użyj Run/Stop u góry, aby wstrzymać blokowanie w dowolnym momencie, osobno dla każdej aplikacji.
-
-6. Dotknij strzałki w lewym górnym rogu -&gt; Log, jeśli coś nie działa -- skopiuj go i wyślij, aby można było to precyzyjnie naprawić.</string>
+    <string name="setup_instructions">1. Dotknij „Otwórz ustawienia ułatwień dostępu” i włącz „Reels Blocker Service”. Jeśli przełącznik nie zostaje włączony: Informacje o aplikacji -&gt; menu ⋮ (prawy górny róg) -&gt; „Zezwól na ograniczone ustawienia”.\n\n2. Dotknij „Otwórz ustawienia baterii aplikacji”, ustaw zużycie baterii na „Brak ograniczeń” i włącz autostart (specyficzne dla Xiaomi/HyperOS).\n\n3. Na tym samym ekranie -&gt; Inne uprawnienia -&gt; zezwól na „Wyświetlanie okienek podczas działania w tle”.\n\n4. Otwórz też ostatnie aplikacje i dotknij ikony kłódki przy Reels Blocker, żeby HyperOS nie zamykał go w tle -- jeśli usługa kiedykolwiek pokaże się jako „nie działa” w ułatwieniach dostępu, zwykle to właśnie z tego powodu, a ponowne włączenie przełącznika to naprawia.\n\n5. Użyj Run/Stop u góry, aby wstrzymać blokowanie w dowolnym momencie, osobno dla każdej aplikacji.\n\n6. Dotknij strzałki w lewym górnym rogu -&gt; Log, jeśli coś nie działa -- skopiuj go i wyślij, aby można było to precyzyjnie naprawić.</string>
     <string name="debug_intro">Log jest zapisywany wyłącznie lokalnie na tym urządzeniu -- nic nie jest nigdzie wysyłane. Skopiuj i wyślij go, gdy coś się zepsuje.</string>
     <string name="refresh">Odśwież</string>
     <string name="copy">Kopiuj</string>

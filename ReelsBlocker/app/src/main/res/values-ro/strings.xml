@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Deschide setările de accesibilitate</string>
     <string name="setup_open_battery">Deschide setările bateriei aplicației</string>
     <string name="setup_open_other_permissions">Deschide informațiile aplicației (Alte permisiuni)</string>
-    <string name="setup_instructions">1. Atinge „Deschide setările de accesibilitate” și activează „Reels Blocker Service”. Dacă comutatorul nu rămâne activat: Informații aplicație -&gt; meniul ⋮ (dreapta sus) -&gt; „Permite setările restricționate”.
-
-2. Atinge „Deschide setările bateriei aplicației”, setează utilizarea bateriei pe „Fără restricții” și activează Pornirea automată (specific Xiaomi/HyperOS).
-
-3. Pe același ecran -&gt; Alte permisiuni -&gt; permite „Afișarea ferestrelor pop-up în fundal”.
-
-4. Deschide și aplicațiile recente și atinge iconița de lacăt de la Reels Blocker, ca HyperOS să nu o închidă în fundal -- dacă serviciul apare vreodată ca „nu funcționează” la accesibilitate, de obicei acesta este motivul, iar reactivarea comutatorului rezolvă problema.
-
-5. Folosește Run/Stop de mai sus pentru a pune blocarea pe pauză oricând, pentru fiecare aplicație.
-
-6. Atinge săgeata din stânga sus -&gt; Log dacă ceva nu funcționează -- copiază-l și trimite-l pentru a putea fi reparat cu precizie.</string>
+    <string name="setup_instructions">1. Atinge „Deschide setările de accesibilitate” și activează „Reels Blocker Service”. Dacă comutatorul nu rămâne activat: Informații aplicație -&gt; meniul ⋮ (dreapta sus) -&gt; „Permite setările restricționate”.\n\n2. Atinge „Deschide setările bateriei aplicației”, setează utilizarea bateriei pe „Fără restricții” și activează Pornirea automată (specific Xiaomi/HyperOS).\n\n3. Pe același ecran -&gt; Alte permisiuni -&gt; permite „Afișarea ferestrelor pop-up în fundal”.\n\n4. Deschide și aplicațiile recente și atinge iconița de lacăt de la Reels Blocker, ca HyperOS să nu o închidă în fundal -- dacă serviciul apare vreodată ca „nu funcționează” la accesibilitate, de obicei acesta este motivul, iar reactivarea comutatorului rezolvă problema.\n\n5. Folosește Run/Stop de mai sus pentru a pune blocarea pe pauză oricând, pentru fiecare aplicație.\n\n6. Atinge săgeata din stânga sus -&gt; Log dacă ceva nu funcționează -- copiază-l și trimite-l pentru a putea fi reparat cu precizie.</string>
     <string name="debug_intro">Jurnalul este stocat doar local pe acest dispozitiv -- nimic nu este trimis nicăieri. Copiază-l și trimite-l dacă ceva se strică.</string>
     <string name="refresh">Reîmprospătează</string>
     <string name="copy">Copiază</string>

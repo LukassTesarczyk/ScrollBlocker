@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Abrir ajustes de accesibilidad</string>
     <string name="setup_open_battery">Abrir ajustes de batería de la app</string>
     <string name="setup_open_other_permissions">Abrir info de la app (Otros permisos)</string>
-    <string name="setup_instructions">1. Toca «Abrir ajustes de accesibilidad» y activa «Reels Blocker Service». Si el interruptor no se queda activado: Info de la app -&gt; menú ⋮ (arriba a la derecha) -&gt; «Permitir ajustes restringidos».
-
-2. Toca «Abrir ajustes de batería de la app» y pon el uso de batería en «Sin restricciones» y activa el inicio automático (específico de Xiaomi/HyperOS).
-
-3. En la misma pantalla -&gt; Otros permisos -&gt; permite «Mostrar ventanas emergentes en segundo plano».
-
-4. Abre también las apps recientes y toca el icono de candado en Reels Blocker para que HyperOS no la cierre en segundo plano -- si el servicio alguna vez aparece como «no funciona» en Accesibilidad, suele ser por esto, y volver a activar el interruptor lo soluciona.
-
-5. Usa Run/Stop arriba para pausar el bloqueo cuando quieras, por app.
-
-6. Toca la flecha arriba a la izquierda -&gt; Log si algo falla -- cópialo y envíalo para poder solucionarlo con precisión.</string>
+    <string name="setup_instructions">1. Toca «Abrir ajustes de accesibilidad» y activa «Reels Blocker Service». Si el interruptor no se queda activado: Info de la app -&gt; menú ⋮ (arriba a la derecha) -&gt; «Permitir ajustes restringidos».\n\n2. Toca «Abrir ajustes de batería de la app» y pon el uso de batería en «Sin restricciones» y activa el inicio automático (específico de Xiaomi/HyperOS).\n\n3. En la misma pantalla -&gt; Otros permisos -&gt; permite «Mostrar ventanas emergentes en segundo plano».\n\n4. Abre también las apps recientes y toca el icono de candado en Reels Blocker para que HyperOS no la cierre en segundo plano -- si el servicio alguna vez aparece como «no funciona» en Accesibilidad, suele ser por esto, y volver a activar el interruptor lo soluciona.\n\n5. Usa Run/Stop arriba para pausar el bloqueo cuando quieras, por app.\n\n6. Toca la flecha arriba a la izquierda -&gt; Log si algo falla -- cópialo y envíalo para poder solucionarlo con precisión.</string>
     <string name="debug_intro">El registro se guarda solo en este dispositivo -- no se envía a ningún sitio. Cópialo y compártelo si algo se rompe.</string>
     <string name="refresh">Actualizar</string>
     <string name="copy">Copiar</string>

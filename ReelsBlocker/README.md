@@ -119,6 +119,36 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.8 -- opravy zpětné vazby z v1.7
+
+- **Rozbitý návod v jiných jazycích:** body v Setup návodu (1. 2. 3. ...)
+  se u přeložených jazyků (čeština a další) nezobrazovaly pod sebou --
+  příčina byla technická chyba při generování překladů (do textu se
+  dostaly syrové znaky nového řádku místo správně escapované sekvence),
+  což Android při kompilaci stringů polámal. Opraveno ve všech 31
+  jazykových souborech.
+- **Čtvereček přes Reels pořád mizel moc často:** místo drobného
+  zpomalení teď zůstává vidět mnohem déle -- schová se, až když ikonka
+  Reels na obrazovce opravdu není (chaty/DM, celoobrazovkový přehrávač),
+  ne při každé krátké výpadce detekce.
+- **Zvýraznění vybraného jazyka** v seznamu Languages.
+- **Barevné Run/Stop:** v action sheetu appky v hubu je teď "Run"
+  zeleně a "Stop" červeně. Hlavní tlačítka Run/Stop nahoře navíc teď
+  ukazují stav rovnou v textu -- aktivní appka má na svém tlačítku
+  "Running"/"Stopped", to druhé zůstává "Run"/"Stop" jako akce.
+- **Ikonky v bočním menu:** ozubené kolečko u Settings, dokument u Log,
+  glóbus u Languages, sloupcový graf u Overview.
+- **Stahování logu přepracováno:** místo sdílecího dialogu (co se na
+  HyperOS chovalo jako "Sdílet", ne jako stažení) appka teď otevře
+  systémové okno "Uložit jako" -- vybereš si přímo místo a appka tam
+  soubor zapíše sama, žádné sdílení přes další appku.
+
+**Detekce Reels pořád nefunguje spolehlivě** -- do samotné detekční
+logiky jsem v tomhle kole vůbec nesahal (nic z výše uvedeného se jí
+netýká), takže pokud nefunguje, potřebuju nový log z Debug/Log
+záložky přímo z chvíle, kdy se to stalo, abych věděl, co se přesně
+děje -- bez toho bych zase jen hádal.
+
 ## v1.7 -- jazyky, přepracovaný hub appek, export logu, nová animace
 
 Log poslaný po v1.6 potvrdil, že problikávání se zmírnilo, ale úplně

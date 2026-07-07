@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Mở cài đặt trợ năng</string>
     <string name="setup_open_battery">Mở cài đặt pin của ứng dụng</string>
     <string name="setup_open_other_permissions">Mở thông tin ứng dụng (Quyền khác)</string>
-    <string name="setup_instructions">1. Nhấn “Mở cài đặt trợ năng” và bật “Reels Blocker Service”. Nếu công tắc không giữ được trạng thái bật: Thông tin ứng dụng -&gt; menu ⋮ (trên cùng bên phải) -&gt; “Cho phép cài đặt bị hạn chế”.
-
-2. Nhấn “Mở cài đặt pin của ứng dụng”, đặt mức sử dụng pin thành “Không hạn chế” và bật Tự khởi động (dành riêng cho Xiaomi/HyperOS).
-
-3. Cùng màn hình đó -&gt; Quyền khác -&gt; cho phép “Hiển thị cửa sổ bật lên khi chạy ở chế độ nền”.
-
-4. Mở thêm các ứng dụng gần đây và nhấn biểu tượng khóa trên Reels Blocker để HyperOS không tắt nó ở chế độ nền -- nếu dịch vụ từng hiển thị là “không hoạt động” trong phần trợ năng, thường là do lý do này, và bật lại công tắc sẽ khắc phục.
-
-5. Dùng Run/Stop ở trên để tạm dừng việc chặn bất cứ lúc nào, cho từng ứng dụng.
-
-6. Nhấn mũi tên ở trên cùng bên trái -&gt; Log nếu có gì đó không ổn -- sao chép và gửi để có thể sửa chính xác.</string>
+    <string name="setup_instructions">1. Nhấn “Mở cài đặt trợ năng” và bật “Reels Blocker Service”. Nếu công tắc không giữ được trạng thái bật: Thông tin ứng dụng -&gt; menu ⋮ (trên cùng bên phải) -&gt; “Cho phép cài đặt bị hạn chế”.\n\n2. Nhấn “Mở cài đặt pin của ứng dụng”, đặt mức sử dụng pin thành “Không hạn chế” và bật Tự khởi động (dành riêng cho Xiaomi/HyperOS).\n\n3. Cùng màn hình đó -&gt; Quyền khác -&gt; cho phép “Hiển thị cửa sổ bật lên khi chạy ở chế độ nền”.\n\n4. Mở thêm các ứng dụng gần đây và nhấn biểu tượng khóa trên Reels Blocker để HyperOS không tắt nó ở chế độ nền -- nếu dịch vụ từng hiển thị là “không hoạt động” trong phần trợ năng, thường là do lý do này, và bật lại công tắc sẽ khắc phục.\n\n5. Dùng Run/Stop ở trên để tạm dừng việc chặn bất cứ lúc nào, cho từng ứng dụng.\n\n6. Nhấn mũi tên ở trên cùng bên trái -&gt; Log nếu có gì đó không ổn -- sao chép và gửi để có thể sửa chính xác.</string>
     <string name="debug_intro">Nhật ký chỉ được lưu cục bộ trên thiết bị này -- không có gì được gửi đi đâu cả. Sao chép và chia sẻ nếu có sự cố.</string>
     <string name="refresh">Làm mới</string>
     <string name="copy">Sao chép</string>

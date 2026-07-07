@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Ouvrir les paramètres d\'accessibilité</string>
     <string name="setup_open_battery">Ouvrir les paramètres de batterie de l\'appli</string>
     <string name="setup_open_other_permissions">Ouvrir les infos de l\'appli (Autres autorisations)</string>
-    <string name="setup_instructions">1. Appuie sur «Ouvrir les paramètres d\'accessibilité» et active «Reels Blocker Service». Si l\'interrupteur ne reste pas activé : Infos de l\'appli -&gt; menu ⋮ (en haut à droite) -&gt; «Autoriser les paramètres restreints».
-
-2. Appuie sur «Ouvrir les paramètres de batterie de l\'appli», règle l\'utilisation de la batterie sur «Aucune restriction» et active le démarrage automatique (spécifique Xiaomi/HyperOS).
-
-3. Même écran -&gt; Autres autorisations -&gt; autorise «Afficher des fenêtres pop-up en arrière-plan».
-
-4. Ouvre aussi les applications récentes et appuie sur l\'icône de cadenas sur Reels Blocker pour que HyperOS ne le ferme pas en arrière-plan -- si le service s\'affiche un jour comme «ne fonctionne pas» dans les paramètres d\'accessibilité, c\'est généralement pour cette raison, et réactiver l\'interrupteur règle le problème.
-
-5. Utilise Run/Stop en haut pour mettre le blocage en pause à tout moment, par application.
-
-6. Appuie sur la flèche en haut à gauche -&gt; Log si quelque chose ne va pas -- copie-le et envoie-le pour que ce soit corrigé précisément.</string>
+    <string name="setup_instructions">1. Appuie sur «Ouvrir les paramètres d\'accessibilité» et active «Reels Blocker Service». Si l\'interrupteur ne reste pas activé : Infos de l\'appli -&gt; menu ⋮ (en haut à droite) -&gt; «Autoriser les paramètres restreints».\n\n2. Appuie sur «Ouvrir les paramètres de batterie de l\'appli», règle l\'utilisation de la batterie sur «Aucune restriction» et active le démarrage automatique (spécifique Xiaomi/HyperOS).\n\n3. Même écran -&gt; Autres autorisations -&gt; autorise «Afficher des fenêtres pop-up en arrière-plan».\n\n4. Ouvre aussi les applications récentes et appuie sur l\'icône de cadenas sur Reels Blocker pour que HyperOS ne le ferme pas en arrière-plan -- si le service s\'affiche un jour comme «ne fonctionne pas» dans les paramètres d\'accessibilité, c\'est généralement pour cette raison, et réactiver l\'interrupteur règle le problème.\n\n5. Utilise Run/Stop en haut pour mettre le blocage en pause à tout moment, par application.\n\n6. Appuie sur la flèche en haut à gauche -&gt; Log si quelque chose ne va pas -- copie-le et envoie-le pour que ce soit corrigé précisément.</string>
     <string name="debug_intro">Le journal est stocké uniquement en local sur cet appareil -- rien n\'est envoyé ailleurs. Copie-le et partage-le en cas de problème.</string>
     <string name="refresh">Actualiser</string>
     <string name="copy">Copier</string>

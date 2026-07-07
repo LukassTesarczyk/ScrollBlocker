@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Erişilebilirlik ayarlarını aç</string>
     <string name="setup_open_battery">Uygulama pil ayarlarını aç</string>
     <string name="setup_open_other_permissions">Uygulama bilgisini aç (Diğer izinler)</string>
-    <string name="setup_instructions">1. “Erişilebilirlik ayarlarını aç” seçeneğine dokun ve “Reels Blocker Service”i etkinleştir. Anahtar açık kalmıyorsa: Uygulama bilgisi -&gt; ⋮ menüsü (sağ üstte) -&gt; “Kısıtlı ayarlara izin ver”.
-
-2. “Uygulama pil ayarlarını aç” seçeneğine dokun, pil kullanımını “Kısıtlama yok” olarak ayarla ve Otomatik başlatmayı etkinleştir (Xiaomi/HyperOS\'a özgü).
-
-3. Aynı ekranda -&gt; Diğer izinler -&gt; “Arka planda çalışırken açılır pencereleri göster”e izin ver.
-
-4. Ayrıca son kullanılan uygulamaları aç ve Reels Blocker\'daki kilit simgesine dokun, böylece HyperOS onu arka planda kapatmaz -- hizmet erişilebilirlikte “çalışmıyor” olarak görünürse genellikle sebebi budur ve anahtarı tekrar açmak sorunu çözer.
-
-5. Yukarıdaki Run/Stop ile engellemeyi uygulama başına istediğin zaman duraklatabilirsin.
-
-6. Bir şey ters giderse sol üstteki oka -&gt; Log dokun -- kopyala ve gönder, böylece sorun tam olarak çözülebilir.</string>
+    <string name="setup_instructions">1. “Erişilebilirlik ayarlarını aç” seçeneğine dokun ve “Reels Blocker Service”i etkinleştir. Anahtar açık kalmıyorsa: Uygulama bilgisi -&gt; ⋮ menüsü (sağ üstte) -&gt; “Kısıtlı ayarlara izin ver”.\n\n2. “Uygulama pil ayarlarını aç” seçeneğine dokun, pil kullanımını “Kısıtlama yok” olarak ayarla ve Otomatik başlatmayı etkinleştir (Xiaomi/HyperOS\'a özgü).\n\n3. Aynı ekranda -&gt; Diğer izinler -&gt; “Arka planda çalışırken açılır pencereleri göster”e izin ver.\n\n4. Ayrıca son kullanılan uygulamaları aç ve Reels Blocker\'daki kilit simgesine dokun, böylece HyperOS onu arka planda kapatmaz -- hizmet erişilebilirlikte “çalışmıyor” olarak görünürse genellikle sebebi budur ve anahtarı tekrar açmak sorunu çözer.\n\n5. Yukarıdaki Run/Stop ile engellemeyi uygulama başına istediğin zaman duraklatabilirsin.\n\n6. Bir şey ters giderse sol üstteki oka -&gt; Log dokun -- kopyala ve gönder, böylece sorun tam olarak çözülebilir.</string>
     <string name="debug_intro">Günlük yalnızca bu cihazda yerel olarak saklanır -- hiçbir yere gönderilmez. Bir şey bozulursa kopyala ve paylaş.</string>
     <string name="refresh">Yenile</string>
     <string name="copy">Kopyala</string>

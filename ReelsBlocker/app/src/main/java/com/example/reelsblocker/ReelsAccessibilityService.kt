@@ -48,9 +48,12 @@ class ReelsAccessibilityService : AccessibilityService() {
         // Tab icon lookup can transiently miss for a frame or two while
         // Instagram rebinds unrelated parts of the screen -- hiding (and
         // then re-showing) the overlay on every such blip is what reads
-        // as "problikávání". Only actually hide once it's been missing
-        // continuously for this long.
-        private const val HIDE_GRACE_MS = 900L
+        // as "problikávání", and it also opens a real window where the
+        // Reels icon becomes tappable. The overlay should stay put through
+        // anything short of actually navigating to a screen without a tab
+        // bar (a DM thread, a fullscreen Reel) -- so the grace period here
+        // is deliberately generous rather than tuned for snappy hiding.
+        private const val HIDE_GRACE_MS = 3000L
         private const val FADE_MS = 140L
         private const val REPOSITION_THRESHOLD_PX = 14
         private const val MIN_REPOSITION_INTERVAL_MS = 200L

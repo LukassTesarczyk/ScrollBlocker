@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Åpne tilgjengelighetsinnstillinger</string>
     <string name="setup_open_battery">Åpne appens batteriinnstillinger</string>
     <string name="setup_open_other_permissions">Åpne appinfo (andre tillatelser)</string>
-    <string name="setup_instructions">1. Trykk på «Åpne tilgjengelighetsinnstillinger» og slå på «Reels Blocker Service». Hvis bryteren ikke forblir på: Appinfo -&gt; ⋮-meny (øverst til høyre) -&gt; «Tillat begrensede innstillinger».
-
-2. Trykk på «Åpne appens batteriinnstillinger», sett batteribruk til «Ingen begrensninger» og slå på autostart (spesifikt for Xiaomi/HyperOS).
-
-3. Samme skjerm -&gt; Andre tillatelser -&gt; tillat «Vis sprettoppvinduer mens appen kjører i bakgrunnen».
-
-4. Åpne også nylige apper og trykk på hengelåsikonet ved Reels Blocker, slik at HyperOS ikke lukker den i bakgrunnen -- hvis tjenesten noen gang vises som «fungerer ikke» under tilgjengelighet, skyldes det som regel dette, og det løses ved å slå bryteren på igjen.
-
-5. Bruk Run/Stop over til å sette blokkeringen på pause når som helst, per app.
-
-6. Trykk på pilen øverst til venstre -&gt; Log hvis noe ikke fungerer -- kopier den og send den så det kan rettes presist.</string>
+    <string name="setup_instructions">1. Trykk på «Åpne tilgjengelighetsinnstillinger» og slå på «Reels Blocker Service». Hvis bryteren ikke forblir på: Appinfo -&gt; ⋮-meny (øverst til høyre) -&gt; «Tillat begrensede innstillinger».\n\n2. Trykk på «Åpne appens batteriinnstillinger», sett batteribruk til «Ingen begrensninger» og slå på autostart (spesifikt for Xiaomi/HyperOS).\n\n3. Samme skjerm -&gt; Andre tillatelser -&gt; tillat «Vis sprettoppvinduer mens appen kjører i bakgrunnen».\n\n4. Åpne også nylige apper og trykk på hengelåsikonet ved Reels Blocker, slik at HyperOS ikke lukker den i bakgrunnen -- hvis tjenesten noen gang vises som «fungerer ikke» under tilgjengelighet, skyldes det som regel dette, og det løses ved å slå bryteren på igjen.\n\n5. Bruk Run/Stop over til å sette blokkeringen på pause når som helst, per app.\n\n6. Trykk på pilen øverst til venstre -&gt; Log hvis noe ikke fungerer -- kopier den og send den så det kan rettes presist.</string>
     <string name="debug_intro">Loggen lagres kun lokalt på denne enheten -- ingenting sendes noe sted. Kopier og del den hvis noe går galt.</string>
     <string name="refresh">Oppdater</string>
     <string name="copy">Kopier</string>

@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
@@ -17,7 +18,12 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,10 +40,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerPanel: LinearLayout
     private lateinit var languagesContainer: LinearLayout
     private lateinit var languageList: LinearLayout
-    private lateinit var btnMenuOverview: TextView
-    private lateinit var btnMenuSetup: TextView
-    private lateinit var btnMenuDebug: TextView
-    private lateinit var btnMenuLanguages: TextView
+    private lateinit var btnMenuOverview: View
+    private lateinit var btnMenuSetup: View
+    private lateinit var btnMenuDebug: View
+    private lateinit var btnMenuLanguages: View
     private lateinit var hubSheetScrim: View
     private lateinit var hubActionSheet: LinearLayout
     private lateinit var tvHubSheetTitle: TextView
@@ -208,7 +214,13 @@ class MainActivity : AppCompatActivity() {
         val appId = hubOrder[slotIndex]
         tvHubSheetTitle.text = PrefsKeys.displayNameFor(appId)
         val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor(appId), false)
-        btnHubToggleRun.text = if (enabled) getString(R.string.stop) else getString(R.string.run)
+        if (enabled) {
+            btnHubToggleRun.text = getString(R.string.stop)
+            btnHubToggleRun.setTextColor(Color.parseColor("#C62828"))
+        } else {
+            btnHubToggleRun.text = getString(R.string.run)
+            btnHubToggleRun.setTextColor(Color.parseColor("#26A69A"))
+        }
 
         hubSheetScrim.visibility = View.VISIBLE
         hubSheetScrim.alpha = 0f
@@ -376,34 +388,38 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupLanguages() {
         languageList.removeAllViews()
-        addLanguageRow(getString(R.string.language_system_default), null)
+        val currentLocales = AppCompatDelegate.getApplicationLocales()
+        val currentTag = if (currentLocales.isEmpty) null else currentLocales[0]?.toLanguageTag()
+
+        addLanguageRow(getString(R.string.language_system_default), null, currentTag == null)
         for (lang in supportedLanguages) {
             val label = if (lang.englishName == lang.nativeName) {
                 lang.englishName
             } else {
                 "${lang.englishName} — ${lang.nativeName}"
             }
-            addLanguageRow(label, lang.tag)
+            val active = currentTag != null && currentTag.equals(lang.tag, ignoreCase = true)
+            addLanguageRow(label, lang.tag, active)
         }
     }
 
-    private fun addLanguageRow(label: String, tag: String?) {
+    private fun addLanguageRow(label: String, tag: String?, active: Boolean) {
         val density = resources.displayMetrics.density
         val row = TextView(this).apply {
             text = label
             setTextColor(Color.WHITE)
             textSize = 15f
             setPadding((14 * density).toInt(), (14 * density).toInt(), (14 * density).toInt(), (14 * density).toInt())
-            setBackgroundResource(R.drawable.bg_menu_item)
+            setBackgroundResource(if (active) R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
             isClickable = true
             isFocusable = true
             setOnClickListener {
                 val locales = if (tag == null) {
-                    androidx.core.os.LocaleListCompat.getEmptyLocaleList()
+                    LocaleListCompat.getEmptyLocaleList()
                 } else {
-                    androidx.core.os.LocaleListCompat.forLanguageTags(tag)
+                    LocaleListCompat.forLanguageTags(tag)
                 }
-                androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(locales)
+                AppCompatDelegate.setApplicationLocales(locales)
             }
         }
         val params = LinearLayout.LayoutParams(
@@ -480,6 +496,8 @@ class MainActivity : AppCompatActivity() {
         val stopBtn = findViewById<Button>(R.id.btnStop)
         runBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (enabled) "#26A69A" else "#2E2E2E"))
         stopBtn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(if (enabled) "#2E2E2E" else "#C62828"))
+        runBtn.text = if (enabled) getString(R.string.status_running) else getString(R.string.run)
+        stopBtn.text = if (enabled) getString(R.string.stop) else getString(R.string.status_stopped)
 
         if (selectedApp == "instagram") {
             val serviceOn = isAccessibilityServiceEnabled()
@@ -558,21 +576,18 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvLog).text = AppLog.readAll(this)
     }
 
-    private fun exportLog() {
-        val file = AppLog.exportToCache(this)
-        if (file == null) {
+    private val createLogDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri: Uri? ->
+        if (uri == null) return@registerForActivityResult
+        try {
+            contentResolver.openOutputStream(uri)?.use { it.write(AppLog.readAll(this).toByteArray()) }
+        } catch (e: Exception) {
             Toast.makeText(this, getString(R.string.export_failed_toast), Toast.LENGTH_SHORT).show()
-            return
         }
-        val uri = androidx.core.content.FileProvider.getUriForFile(
-            this, "$packageName.fileprovider", file
-        )
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        startActivity(Intent.createChooser(intent, getString(R.string.export_chooser_title)))
+    }
+
+    private fun exportLog() {
+        val stamp = SimpleDateFormat("yyyy-MM-dd_HHmm", Locale.US).format(java.util.Date())
+        createLogDocument.launch("reels_blocker_log_$stamp.txt")
     }
 
     private fun isAccessibilityServiceEnabled(): Boolean {

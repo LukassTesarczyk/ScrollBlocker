@@ -569,56 +569,104 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <TextView
+        <LinearLayout
             android:id="@+id/btnMenuOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu_overview"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:padding="14dp"
             android:background="@drawable/bg_menu_item"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="4dp">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="14dp"
+                android:tint="#FFFFFF"
+                android:src="@drawable/ic_menu_overview" />
+            <TextView
+                android:text="@string/menu_overview"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-        <TextView
+        <LinearLayout
             android:id="@+id/btnMenuSetup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu_settings"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:padding="14dp"
             android:background="@drawable/bg_menu_item"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="4dp">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="14dp"
+                android:tint="#FFFFFF"
+                android:src="@drawable/ic_menu_settings" />
+            <TextView
+                android:text="@string/menu_settings"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-        <TextView
+        <LinearLayout
             android:id="@+id/btnMenuDebug"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu_log"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:padding="14dp"
             android:background="@drawable/bg_menu_item"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="4dp">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="14dp"
+                android:tint="#FFFFFF"
+                android:src="@drawable/ic_menu_log" />
+            <TextView
+                android:text="@string/menu_log"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-        <TextView
+        <LinearLayout
             android:id="@+id/btnMenuLanguages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/menu_languages"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:padding="14dp"
             android:background="@drawable/bg_menu_item"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="14dp"
+                android:tint="#FFFFFF"
+                android:src="@drawable/ic_menu_languages" />
+            <TextView
+                android:text="@string/menu_languages"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
     </LinearLayout>
 

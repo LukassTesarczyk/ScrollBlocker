@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Apri impostazioni di accessibilità</string>
     <string name="setup_open_battery">Apri impostazioni batteria dell\'app</string>
     <string name="setup_open_other_permissions">Apri info app (Altre autorizzazioni)</string>
-    <string name="setup_instructions">1. Tocca «Apri impostazioni di accessibilità» e attiva «Reels Blocker Service». Se l\'interruttore non resta attivo: Info app -&gt; menu ⋮ (in alto a destra) -&gt; «Consenti impostazioni con restrizioni».
-
-2. Tocca «Apri impostazioni batteria dell\'app», imposta l\'uso della batteria su «Nessuna restrizione» e attiva l\'avvio automatico (specifico Xiaomi/HyperOS).
-
-3. Nella stessa schermata -&gt; Altre autorizzazioni -&gt; consenti «Mostra popup mentre è in esecuzione in background».
-
-4. Apri anche le app recenti e tocca l\'icona del lucchetto su Reels Blocker così HyperOS non lo chiude in background -- se il servizio appare come «non funzionante» nell\'accessibilità, di solito è per questo, e riattivare l\'interruttore risolve il problema.
-
-5. Usa Run/Stop in alto per mettere in pausa il blocco in qualsiasi momento, per ogni app.
-
-6. Tocca la freccia in alto a sinistra -&gt; Log se qualcosa non funziona -- copialo e invialo per poterlo correggere con precisione.</string>
+    <string name="setup_instructions">1. Tocca «Apri impostazioni di accessibilità» e attiva «Reels Blocker Service». Se l\'interruttore non resta attivo: Info app -&gt; menu ⋮ (in alto a destra) -&gt; «Consenti impostazioni con restrizioni».\n\n2. Tocca «Apri impostazioni batteria dell\'app», imposta l\'uso della batteria su «Nessuna restrizione» e attiva l\'avvio automatico (specifico Xiaomi/HyperOS).\n\n3. Nella stessa schermata -&gt; Altre autorizzazioni -&gt; consenti «Mostra popup mentre è in esecuzione in background».\n\n4. Apri anche le app recenti e tocca l\'icona del lucchetto su Reels Blocker così HyperOS non lo chiude in background -- se il servizio appare come «non funzionante» nell\'accessibilità, di solito è per questo, e riattivare l\'interruttore risolve il problema.\n\n5. Usa Run/Stop in alto per mettere in pausa il blocco in qualsiasi momento, per ogni app.\n\n6. Tocca la freccia in alto a sinistra -&gt; Log se qualcosa non funziona -- copialo e invialo per poterlo correggere con precisione.</string>
     <string name="debug_intro">Il log viene salvato solo localmente su questo dispositivo -- non viene inviato da nessuna parte. Copialo e condividilo se qualcosa si rompe.</string>
     <string name="refresh">Aggiorna</string>
     <string name="copy">Copia</string>

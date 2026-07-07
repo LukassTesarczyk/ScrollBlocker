@@ -9,17 +9,7 @@
     <string name="setup_open_accessibility">Avaa esteettömyysasetukset</string>
     <string name="setup_open_battery">Avaa sovelluksen akkuasetukset</string>
     <string name="setup_open_other_permissions">Avaa sovellustiedot (muut käyttöoikeudet)</string>
-    <string name="setup_instructions">1. Napauta “Avaa esteettömyysasetukset” ja ota käyttöön “Reels Blocker Service”. Jos kytkin ei pysy päällä: Sovellustiedot -&gt; ⋮-valikko (oikeassa yläkulmassa) -&gt; “Salli rajoitetut asetukset”.
-
-2. Napauta “Avaa sovelluksen akkuasetukset”, aseta akun käyttö tilaan “Ei rajoituksia” ja ota käyttöön automaattinen käynnistys (Xiaomi/HyperOS-kohtainen).
-
-3. Samalla näytöllä -&gt; Muut käyttöoikeudet -&gt; salli “Näytä ponnahdusikkunoita taustalla suoritettaessa”.
-
-4. Avaa myös viimeisimmät sovellukset ja napauta lukkokuvaketta Reels Blockerin kohdalla, jotta HyperOS ei sulje sitä taustalla -- jos palvelu joskus näkyy tilassa “ei toimi” esteettömyysasetuksissa, syy on yleensä tämä, ja kytkimen uudelleen käynnistäminen korjaa sen.
-
-5. Käytä yllä olevaa Run/Stop-kytkintä keskeyttääksesi eston milloin tahansa, sovelluskohtaisesti.
-
-6. Napauta nuolta vasemmassa yläkulmassa -&gt; Log, jos jokin ei toimi -- kopioi se ja lähetä, jotta ongelma voidaan korjata tarkasti.</string>
+    <string name="setup_instructions">1. Napauta “Avaa esteettömyysasetukset” ja ota käyttöön “Reels Blocker Service”. Jos kytkin ei pysy päällä: Sovellustiedot -&gt; ⋮-valikko (oikeassa yläkulmassa) -&gt; “Salli rajoitetut asetukset”.\n\n2. Napauta “Avaa sovelluksen akkuasetukset”, aseta akun käyttö tilaan “Ei rajoituksia” ja ota käyttöön automaattinen käynnistys (Xiaomi/HyperOS-kohtainen).\n\n3. Samalla näytöllä -&gt; Muut käyttöoikeudet -&gt; salli “Näytä ponnahdusikkunoita taustalla suoritettaessa”.\n\n4. Avaa myös viimeisimmät sovellukset ja napauta lukkokuvaketta Reels Blockerin kohdalla, jotta HyperOS ei sulje sitä taustalla -- jos palvelu joskus näkyy tilassa “ei toimi” esteettömyysasetuksissa, syy on yleensä tämä, ja kytkimen uudelleen käynnistäminen korjaa sen.\n\n5. Käytä yllä olevaa Run/Stop-kytkintä keskeyttääksesi eston milloin tahansa, sovelluskohtaisesti.\n\n6. Napauta nuolta vasemmassa yläkulmassa -&gt; Log, jos jokin ei toimi -- kopioi se ja lähetä, jotta ongelma voidaan korjata tarkasti.</string>
     <string name="debug_intro">Loki tallennetaan vain paikallisesti tähän laitteeseen -- mitään ei lähetetä minnekään. Kopioi ja jaa se, jos jokin menee rikki.</string>
     <string name="refresh">Päivitä</string>
     <string name="copy">Kopioi</string>
