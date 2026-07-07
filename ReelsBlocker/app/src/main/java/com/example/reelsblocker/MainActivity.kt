@@ -106,7 +106,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun refreshStatus() {
         val enabled = prefs.getBoolean(PrefsKeys.KEY_ENABLED, true)
-        tvPauseStatus.text = if (enabled) "● Running" else "○ Stopped (paused)"
+        tvPauseStatus.text = if (enabled) "Running" else "Stopped"
+
+        val runBtn = findViewById<Button>(R.id.btnRun)
+        val stopBtn = findViewById<Button>(R.id.btnStop)
+        runBtn.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            Color.parseColor(if (enabled) "#26A69A" else "#3A3A3A")
+        )
+        stopBtn.backgroundTintList = android.content.res.ColorStateList.valueOf(
+            Color.parseColor(if (enabled) "#3A3A3A" else "#C62828")
+        )
 
         val serviceOn = isAccessibilityServiceEnabled()
         tvServiceStatus.text = if (serviceOn) {

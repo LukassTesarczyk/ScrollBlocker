@@ -2,7 +2,6 @@ package com.example.reelsblocker
 
 import android.accessibilityservice.AccessibilityService
 import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PixelFormat
@@ -16,32 +15,12 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 
-/**
- * Two independent behaviors, both togglable at runtime via
- * PrefsKeys (set from MainActivity's Run/Stop switch):
- *
- * 1. "One reel per session" -- lets you watch a single reel in the
- *    FULL-SCREEN reels viewer, then, on the next swipe, redirects you to
- *    the Home tab (feed) instead of just pressing "back" (which could
- *    exit Instagram entirely if the viewer was opened from a deep link).
- *    Only triggers for the real full-screen viewer -- not for "Suggested
- *    reels" carousels embedded inside the Feed or DMs.
- *
- * 2. Bottom-nav Reels icon covering -- draws a small overlay, color
- *    sampled from the actual screen (via takeScreenshot) so it blends
- *    with whatever theme Instagram is using, over the Reels tab icon.
- *    This overlay is a floating window independent of which app is in
- *    the foreground, so the service listens to ALL apps' events (not
- *    just Instagram's) purely to know when to hide it once you leave
- *    Instagram.
- */
 class ReelsAccessibilityService : AccessibilityService() {
 
     companion object {
         private const val TAG = "ReelsBlocker"
         private const val INSTAGRAM_PACKAGE = "com.instagram.android"
 
-        // Strict IDs for the real full-screen reel viewer only.
         private val VIEWER_RESOURCE_ID_CANDIDATES = listOf(
             "clips_viewer_view_pager",
             "reel_viewer_root"
@@ -59,20 +38,32 @@ class ReelsAccessibilityService : AccessibilityService() {
         )
 
         private const val COOLDOWN_MS = 800L
-        private const val COLOR_RESAMPLE_MS = 3000L
+        private const val COLOR_RESAMPLE_MS = 4000L
+        // How many consecutive "not found" checks before actually hiding the
+        // overlay -- avoids flicker from a single missed frame.
+        private const val MISS_TOLERANCE = 3
+        // Only reposition if the icon moved more than this (px) since last draw.
+        private const val REPOSITION_THRESHOLD_PX = 6
     }
 
     private var inReelsViewer = false
-    private var allowedReelConsumed = false
     private var lastActionTime = 0L
 
     private var windowManager: WindowManager? = null
+
+    // Icon-cover overlay
     private var overlayView: View? = null
     private var overlayParams: WindowManager.LayoutParams? = null
     private var overlayAdded = false
-
+    private var lastAppliedBounds: Rect? = null
+    private var missCount = 0
     private var sampledColor: Int? = null
     private var lastColorSampleTime = 0L
+    private var statusBarHeightPx = 0
+
+    // Full-screen flash overlay used only for the exit animation
+    private var transitionView: View? = null
+    private var transitionParams: WindowManager.LayoutParams? = null
 
     private lateinit var prefs: SharedPreferences
 
@@ -80,7 +71,14 @@ class ReelsAccessibilityService : AccessibilityService() {
         super.onServiceConnected()
         Log.d(TAG, "Service connected")
         prefs = getSharedPreferences(PrefsKeys.PREFS_NAME, MODE_PRIVATE)
+        statusBarHeightPx = getStatusBarHeight()
         setupOverlay()
+        setupTransitionOverlay()
+    }
+
+    private fun getStatusBarHeight(): Int {
+        val resId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (resId > 0) resources.getDimensionPixelSize(resId) else 0
     }
 
     private fun setupOverlay() {
@@ -112,21 +110,63 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
+    private fun setupTransitionOverlay() {
+        try {
+            val wm = windowManager ?: (getSystemService(WINDOW_SERVICE) as WindowManager)
+            windowManager = wm
+            val metrics = resources.displayMetrics
+
+            val view = View(this).apply {
+                setBackgroundColor(Color.parseColor("#26A69A"))
+                alpha = 0f
+                visibility = View.GONE
+            }
+
+            val params = WindowManager.LayoutParams(
+                metrics.widthPixels,
+                metrics.heightPixels,
+                0,
+                0,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                PixelFormat.TRANSLUCENT
+            ).apply { gravity = Gravity.TOP or Gravity.START }
+
+            wm.addView(view, params)
+            transitionView = view
+            transitionParams = params
+        } catch (e: Exception) {
+            Log.w(TAG, "Transition overlay setup failed: ${e.message}")
+        }
+    }
+
+    private fun playExitAnimation() {
+        val view = transitionView ?: return
+        try {
+            view.visibility = View.VISIBLE
+            view.alpha = 0f
+            view.animate().alpha(0.5f).setDuration(120).withEndAction {
+                view.animate().alpha(0f).setDuration(250).withEndAction {
+                    view.visibility = View.GONE
+                }.start()
+            }.start()
+        } catch (e: Exception) {
+            Log.w(TAG, "Exit animation failed: ${e.message}")
+        }
+    }
+
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         val isInstagram = event.packageName?.toString() == INSTAGRAM_PACKAGE
 
         if (!isInstagram) {
-            // Any other app in the foreground -- make sure the overlay
-            // (which is an independent floating window and doesn't
-            // disappear on its own) gets hidden, and reset session state.
-            hideOverlay()
+            hideOverlay(force = true)
             inReelsViewer = false
-            allowedReelConsumed = false
             return
         }
 
         if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.KEY_ENABLED, true)) {
-            hideOverlay()
+            hideOverlay(force = true)
             return
         }
 
@@ -147,12 +187,18 @@ class ReelsAccessibilityService : AccessibilityService() {
         if (!overlayAdded) return
         val tabNode = findTabIconNode(root)
         if (tabNode != null) {
+            missCount = 0
             val bounds = Rect()
             tabNode.getBoundsInScreen(bounds)
             tabNode.recycle()
             showOverlayAt(bounds)
         } else {
-            hideOverlay()
+            missCount++
+            if (missCount >= MISS_TOLERANCE) {
+                hideOverlay(force = false)
+            }
+            // else: keep showing at the last known position -- a single
+            // missed frame shouldn't make it blink off.
         }
     }
 
@@ -165,8 +211,6 @@ class ReelsAccessibilityService : AccessibilityService() {
                 if (isPlausibleTabIconBounds(bounds)) {
                     for (other in matches) if (other !== m) other.recycle()
                     return m
-                } else if (matches.isNotEmpty()) {
-                    Log.d(TAG, "Rejected tab candidate id=$id bounds=$bounds (implausible size/position)")
                 }
             }
             matches.forEach { it.recycle() }
@@ -174,17 +218,13 @@ class ReelsAccessibilityService : AccessibilityService() {
         return null
     }
 
-    // Guards against a misidentified match (e.g. a full-screen container
-    // that happens to share a resource id) turning into a giant overlay
-    // that blocks scrolling/taps everywhere. A real tab bar icon is small
-    // and sits in the bottom strip of the screen -- nothing else qualifies.
     private fun isPlausibleTabIconBounds(bounds: Rect): Boolean {
         if (bounds.width() <= 0 || bounds.height() <= 0) return false
         val metrics = resources.displayMetrics
-        val maxIconPx = (120 * metrics.density).toInt() // generous cap for a nav icon touch target
+        val maxIconPx = (120 * metrics.density).toInt()
         if (bounds.width() > maxIconPx || bounds.height() > maxIconPx) return false
         val screenHeight = metrics.heightPixels
-        if (bounds.top < screenHeight * 0.70) return false // must be in the bottom nav strip
+        if (bounds.top < screenHeight * 0.70) return false
         return true
     }
 
@@ -193,26 +233,43 @@ class ReelsAccessibilityService : AccessibilityService() {
         val view = overlayView ?: return
         val params = overlayParams ?: return
         if (bounds.width() <= 0 || bounds.height() <= 0) return
-        params.x = bounds.left
-        params.y = bounds.top
-        params.width = bounds.width()
-        params.height = bounds.height()
-        try {
-            wm.updateViewLayout(view, params)
-            view.setBackgroundColor(sampledColor ?: fallbackColor())
-            view.visibility = View.VISIBLE
-        } catch (e: Exception) {
-            Log.w(TAG, "Overlay update failed: ${e.message}")
-            return
+
+        val last = lastAppliedBounds
+        val movedEnough = last == null ||
+            Math.abs(last.left - bounds.left) > REPOSITION_THRESHOLD_PX ||
+            Math.abs(last.top - bounds.top) > REPOSITION_THRESHOLD_PX ||
+            last.width() != bounds.width() || last.height() != bounds.height()
+
+        if (movedEnough || view.visibility != View.VISIBLE) {
+            // Correct for the status bar: getBoundsInScreen() already
+            // measures from the true top of the screen, but this overlay
+            // window type ends up drawn *below* the status bar inset, so
+            // without this correction everything lands too low by
+            // roughly the status bar's height.
+            params.x = bounds.left
+            params.y = bounds.top - statusBarHeightPx
+            params.width = bounds.width()
+            params.height = bounds.height()
+            try {
+                wm.updateViewLayout(view, params)
+                lastAppliedBounds = Rect(bounds)
+            } catch (e: Exception) {
+                Log.w(TAG, "Overlay update failed: ${e.message}")
+                return
+            }
         }
+
+        view.setBackgroundColor(sampledColor ?: fallbackColor())
+        view.visibility = View.VISIBLE
         maybeResampleColor(bounds)
     }
 
-    private fun hideOverlay() {
+    private fun hideOverlay(force: Boolean) {
         if (!overlayAdded) return
         val wm = windowManager ?: return
         val view = overlayView ?: return
         val params = overlayParams ?: return
+        if (!force && missCount < MISS_TOLERANCE) return
         if (view.visibility != View.GONE) {
             view.visibility = View.GONE
             params.width = 0
@@ -222,22 +279,20 @@ class ReelsAccessibilityService : AccessibilityService() {
             } catch (_: Exception) {
             }
         }
+        lastAppliedBounds = null
+        missCount = 0
     }
 
-    private fun fallbackColor(): Int {
-        val isDark = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
-        return if (isDark) Color.BLACK else Color.WHITE
-    }
+    private fun fallbackColor(): Int = Color.parseColor("#1A1A1A")
 
-    // Samples the actual pixel color just above the tab icon (still
-    // inside the nav bar background, outside the icon glyph itself) so
-    // the overlay blends regardless of Instagram's own theme setting.
-    // Throttled since taking a screenshot isn't free.
+    // Samples the actual pixel color just beside the icon (same row,
+    // just past its edge -- more reliably plain nav-bar background than
+    // a point above/below it, which can catch dividers or content).
     private fun maybeResampleColor(bounds: Rect) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
         val now = System.currentTimeMillis()
-        if (now - lastColorSampleTime < COLOR_RESAMPLE_MS) return
+        val isFirstSample = sampledColor == null
+        if (!isFirstSample && now - lastColorSampleTime < COLOR_RESAMPLE_MS) return
         lastColorSampleTime = now
 
         try {
@@ -249,8 +304,12 @@ class ReelsAccessibilityService : AccessibilityService() {
                         val safeBitmap = raw?.copy(Bitmap.Config.ARGB_8888, false)
                         hb.close()
                         if (safeBitmap != null) {
-                            val x = bounds.centerX().coerceIn(0, safeBitmap.width - 1)
-                            val y = (bounds.top - 6).coerceIn(0, safeBitmap.height - 1)
+                            val y = bounds.centerY().coerceIn(0, safeBitmap.height - 1)
+                            var x = bounds.right + (12 * resources.displayMetrics.density).toInt()
+                            if (x >= safeBitmap.width) {
+                                x = (bounds.left - (12 * resources.displayMetrics.density).toInt())
+                                    .coerceIn(0, safeBitmap.width - 1)
+                            }
                             val color = safeBitmap.getPixel(x, y)
                             sampledColor = color
                             overlayView?.setBackgroundColor(color)
@@ -278,41 +337,27 @@ class ReelsAccessibilityService : AccessibilityService() {
         when {
             currentlyInViewer && !inReelsViewer -> {
                 inReelsViewer = true
-                allowedReelConsumed = false
-                Log.d(TAG, "Entered reels viewer -- session start, 1 reel allowed")
+                Log.d(TAG, "Entered reels viewer -- 1 reel allowed, next swipe exits")
             }
 
             !currentlyInViewer && inReelsViewer -> {
                 inReelsViewer = false
-                allowedReelConsumed = false
                 Log.d(TAG, "Left reels viewer -- session reset")
             }
 
             currentlyInViewer && inReelsViewer && event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
                 val now = System.currentTimeMillis()
-                if (!allowedReelConsumed) {
-                    allowedReelConsumed = true
-                    Log.d(TAG, "First reel shown, next scroll will exit")
-                } else if (now - lastActionTime > COOLDOWN_MS) {
-                    Log.d(TAG, "Second reel detected -- exiting to Home feed")
+                if (now - lastActionTime > COOLDOWN_MS) {
+                    Log.d(TAG, "Swiped past the first reel -- exiting to Home feed")
                     lastActionTime = now
+                    playExitAnimation()
                     exitToFeed(root)
                     inReelsViewer = false
-                    allowedReelConsumed = false
                 }
             }
         }
     }
 
-    // Strict: only the real full-screen viewer, identified purely by its
-    // dedicated resource IDs. Deliberately does NOT fall back to generic
-    // text matching -- that previously misfired on things like the
-    // "Suggested reels" carousel embedded directly in the Feed.
-    // Strict: only the real full-screen viewer. Instagram appears to
-    // reuse the same "clips_viewer_view_pager" resource id for the
-    // "Suggested reels" carousel embedded directly in the Feed, so a
-    // plain id match isn't enough -- it must also actually occupy
-    // (almost) the whole screen, which the embedded carousel does not.
     private fun isReelsViewerScreen(root: AccessibilityNodeInfo): Boolean {
         for (id in VIEWER_RESOURCE_ID_CANDIDATES) {
             val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$id")
@@ -394,12 +439,14 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (overlayAdded) {
-            try {
-                windowManager?.removeView(overlayView)
-            } catch (_: Exception) {
-            }
-            overlayAdded = false
+        try {
+            overlayView?.let { windowManager?.removeView(it) }
+        } catch (_: Exception) {
         }
+        try {
+            transitionView?.let { windowManager?.removeView(it) }
+        } catch (_: Exception) {
+        }
+        overlayAdded = false
     }
 }

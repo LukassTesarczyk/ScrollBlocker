@@ -119,6 +119,28 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.3 -- overlay flicker/position/color fixes, 1-reel bug, exit animation
+
+- **Overlay problikával:** teď se schová až po 3 po sobě jdoucích
+  "nenalezeno" místo okamžitě při první chybějící snímku, a
+  přepočítává pozici jen když se ikonka reálně posunula o víc než pár
+  pixelů -- žádné zbytečné blikání.
+- **Overlay byl níž, než měl:** accessibility overlay okna se u tohoto
+  typu (`TYPE_ACCESSIBILITY_OVERLAY`) vykreslují posunutá o výšku
+  status baru navíc oproti tomu, co vrací `getBoundsInScreen()` --
+  teď se to o tuhle výšku koriguje.
+- **Barva pořád špatně:** vzorkování pixelu přesunuto vedle ikonky
+  (ne nad ni), kde je mnohem větší šance narazit na čisté pozadí lišty
+  místo náhodného prvku.
+- **Bug: appka nechávala projít 2 reely místo 1** -- "spotřebování"
+  prvního reelu se počítalo až při prvním scrollu, ne hned při vstupu
+  do přehrávače. Opraveno -- teď vyhodí hned na první swipe po prvním
+  reelu.
+- **Run/Stop:** aktivní stav se teď zvýrazňuje barvou tlačítka
+  (zelená = běží, červená = zastaveno), text stavu bez závorek.
+- **Animace při vyhození z Reels:** krátký barevný flash přes celou
+  obrazovku (~350ms) v momentě, kdy appka přesměruje zpět do feedu.
+
 ## v1.2 -- nové rozhraní + statistiky
 
 - Overlay čtvereček: rozvolněná kontrola velikosti/pozice (byla moc
