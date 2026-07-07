@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Bedienungshilfe ist NICHT aktiviert -- siehe Einstellungen im Menü</string>
     <string name="service_not_implemented">Erkennung noch nicht implementiert</string>
     <string name="not_implemented_note">Die Erkennung für %1$s ist noch nicht implementiert -- Run/Stop wird für später gespeichert, aktuell wird aber noch nichts blockiert oder erfasst.</string>
+    <string name="notification_channel_name">Blockierung aktiv</string>
+    <string name="notification_title">Reels Blocker ist aktiv</string>
+    <string name="notification_text">Blockiert Instagram Reels. Zum Pausieren in der App auf Stopp tippen.</string>
 </resources>

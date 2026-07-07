@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Tillgänglighetstjänst INTE aktiverad -- se Inställningar i menyn</string>
     <string name="service_not_implemented">Identifiering inte implementerad än</string>
     <string name="not_implemented_note">Identifiering för %1$s är inte implementerad än -- Run/Stop sparas till senare, men just nu blockeras eller registreras inget.</string>
+    <string name="notification_channel_name">Blockering aktiv</string>
+    <string name="notification_title">Reels Blocker är aktiv</string>
+    <string name="notification_text">Blockerar Instagram Reels. Tryck på Stopp i appen för att pausa.</string>
 </resources>

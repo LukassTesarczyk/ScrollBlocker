@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Esteettömyyspalvelu EI ole käytössä -- katso Asetukset valikosta</string>
     <string name="service_not_implemented">Tunnistusta ei ole vielä toteutettu</string>
     <string name="not_implemented_note">Kohteen %1$s tunnistusta ei ole vielä toteutettu -- Run/Stop tallennetaan myöhempää varten, mutta toistaiseksi mitään ei estetä eikä seurata.</string>
+    <string name="notification_channel_name">Esto käytössä</string>
+    <string name="notification_title">Reels Blocker on aktiivinen</string>
+    <string name="notification_text">Estää Instagram Reelsiä. Napauta Pysäytä sovelluksessa keskeyttääksesi.</string>
 </resources>

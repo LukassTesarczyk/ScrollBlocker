@@ -33,4 +33,7 @@
     <string name="service_not_enabled">שירות הנגישות אינו מופעל -- ראה הגדרות בתפריט</string>
     <string name="service_not_implemented">הזיהוי עדיין לא מומש</string>
     <string name="not_implemented_note">הזיהוי עבור %1$s עדיין לא מומש -- Run/Stop נשמר לשימוש עתידי, אך כרגע שום דבר לא נחסם ולא נעקב.</string>
+    <string name="notification_channel_name">חסימה פעילה</string>
+    <string name="notification_title">Reels Blocker פעיל</string>
+    <string name="notification_text">חוסם את Instagram Reels. הקש על עצור באפליקציה כדי להשהות.</string>
 </resources>

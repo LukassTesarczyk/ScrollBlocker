@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Layanan aksesibilitas TIDAK aktif -- lihat Pengaturan di menu</string>
     <string name="service_not_implemented">Deteksi belum diterapkan</string>
     <string name="not_implemented_note">Deteksi untuk %1$s belum diterapkan -- Run/Stop disimpan untuk nanti, tetapi saat ini belum ada yang diblokir atau dilacak.</string>
+    <string name="notification_channel_name">Pemblokiran aktif</string>
+    <string name="notification_title">Reels Blocker aktif</string>
+    <string name="notification_text">Memblokir Instagram Reels. Ketuk Hentikan di aplikasi untuk menjeda.</string>
 </resources>

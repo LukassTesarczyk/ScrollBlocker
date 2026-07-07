@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Tilgjengelighetstjeneste IKKE aktivert -- se Innstillinger i menyen</string>
     <string name="service_not_implemented">Deteksjon er ikke implementert ennå</string>
     <string name="not_implemented_note">Deteksjon for %1$s er ikke implementert ennå -- Run/Stop lagres til senere, men foreløpig blokkeres eller registreres ingenting.</string>
+    <string name="notification_channel_name">Blokkering aktiv</string>
+    <string name="notification_title">Reels Blocker er aktiv</string>
+    <string name="notification_text">Blokkerer Instagram Reels. Trykk på Stopp i appen for å sette på pause.</string>
 </resources>

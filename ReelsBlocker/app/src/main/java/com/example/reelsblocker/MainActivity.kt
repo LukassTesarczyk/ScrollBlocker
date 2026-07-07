@@ -1,13 +1,16 @@
 package com.example.reelsblocker
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
@@ -21,6 +24,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -102,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnRun).setOnClickListener {
+            ensureNotificationPermission()
             prefs.edit().putBoolean(PrefsKeys.enabledKeyFor(selectedApp), true).apply()
             refreshStatus()
         }
@@ -137,6 +142,7 @@ class MainActivity : AppCompatActivity() {
             if (slot != null) {
                 val appId = hubOrder[slot]
                 val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor(appId), false)
+                if (!enabled) ensureNotificationPermission()
                 prefs.edit().putBoolean(PrefsKeys.enabledKeyFor(appId), !enabled).apply()
                 if (appId == selectedApp) refreshStatus()
             }
@@ -168,6 +174,19 @@ class MainActivity : AppCompatActivity() {
         refreshStatus()
         if (overviewContainer.visibility == View.VISIBLE) renderStats()
         if (debugContainer.visibility == View.VISIBLE) renderLog()
+    }
+
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+
+    private fun ensureNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        val granted = ContextCompat.checkSelfPermission(
+            this, Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+        if (!granted) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     private fun openAppInfo() {

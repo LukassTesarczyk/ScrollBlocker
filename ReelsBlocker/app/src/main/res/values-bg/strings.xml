@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Услугата за достъпност НЕ е включена -- виж Настройки в менюто</string>
     <string name="service_not_implemented">Разпознаването все още не е реализирано</string>
     <string name="not_implemented_note">Разпознаването за %1$s все още не е реализирано -- Run/Stop се запазва за по-късно, но засега нищо не се блокира и не се проследява.</string>
+    <string name="notification_channel_name">Активно блокиране</string>
+    <string name="notification_title">Reels Blocker е активен</string>
+    <string name="notification_text">Блокира Instagram Reels. Докосни Спри в приложението, за да поставиш на пауза.</string>
 </resources>

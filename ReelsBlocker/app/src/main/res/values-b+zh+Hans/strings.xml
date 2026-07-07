@@ -33,4 +33,7 @@
     <string name="service_not_enabled">无障碍服务未启用 -- 请查看菜单中的设置</string>
     <string name="service_not_implemented">检测功能尚未实现</string>
     <string name="not_implemented_note">%1$s 的检测功能尚未实现 -- Run/Stop 状态会被保存以备将来使用，但目前不会屏蔽或跟踪任何内容。</string>
+    <string name="notification_channel_name">屏蔽已启用</string>
+    <string name="notification_title">Reels Blocker 正在运行</string>
+    <string name="notification_text">正在屏蔽 Instagram Reels。在应用中点击停止即可暂停。</string>
 </resources>

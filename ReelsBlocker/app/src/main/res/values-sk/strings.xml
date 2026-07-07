@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Služba zjednodušenia ovládania NIE JE zapnutá -- pozri Nastavenia v menu</string>
     <string name="service_not_implemented">Detekcia zatiaľ nie je implementovaná</string>
     <string name="not_implemented_note">%1$s zatiaľ nemá implementovanú detekciu -- Run/Stop sa ukladá na neskôr, ale zatiaľ nič neblokuje ani nesleduje.</string>
+    <string name="notification_channel_name">Aktívne blokovanie</string>
+    <string name="notification_title">Reels Blocker je aktívny</string>
+    <string name="notification_text">Blokuje Instagram Reels. Zastavíš to tlačidlom Stop v appke.</string>
 </resources>

@@ -119,6 +119,42 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.10 -- konečně skutečná příčina blbnutí Reels detekce
+
+Poslaný log (RbLog2) ukázal jasný vzorec: appka hlásila "Entered reels
+viewer" znovu a znovu během pár desítek milisekund, bez odpovídajícího
+"Left reels viewer" mezi tím -- a pokaždé hned po řádku "Overlay
+placed". To byla stopa.
+
+- **Skutečná příčina nekonzistentního "jednou pustí víc reelů, jednou
+  míň":** accessibility služba není omezená jen na Instagram (schválně,
+  viz v1.0 -- jinak by nevěděla, žes odešel jinam) -- ale to znamená, že
+  jí chodí i vlastní události appky samotné (typicky když se náš
+  čtvereček přesune nebo změní průhlednost, Android to nahlásí jako
+  events). Appka takovou vlastní událost mylně brala jako "uživatel
+  odešel z Instagramu" a potichu (bez logu) vynulovala celou session
+  "jsem v Reels" -- klidně desetkrát za sekundu, jen tím, že přemístila
+  vlastní overlay. Proto to bylo tak nahodilé: časování shody s reálným
+  swipem bylo prakticky náhodné. Opraveno -- appka teď vlastní události
+  ignoruje místo aby si na jejich základě myslela, žes odešel.
+- **Čtvereček teď doopravdy blokuje klepnutí** (viz v1.9) -- v
+  kombinaci s opravou výše by tohle mělo být výrazně stabilnější.
+
+Tohle byla oprava přímo v našem kódu (na rozdíl od hádání o resource ID
+Instagramu), takže tentokrát jsem si dovolil zasáhnout i bez dalšího
+kola logů -- log z RbLog2 ale přesně ukázal, kde to bylo, díky za něj.
+Pokud to i po týhle verzi zlobí, sem s dalším logem.
+
+- **Trvalé oznámení při zapnutém blokování:** appka teď při zapnutí
+  Run zobrazí notifikaci, kterou nejde odstranit tažením (zmizí, až
+  vypneš Stop). Na Androidu 13+ appka při prvním zapnutí požádá o
+  oprávnění na notifikace.
+- **Hub appek: Instagram uprostřed** jako výchozí pořadí u nové
+  instalace (TikTok/Instagram/Snapchat zleva doprava). Kdo má appku
+  už nainstalovanou a přeuspořádal si pořadí sám, tomu se nic nemění.
+- Ikonky appek (foťák/nota/duch) beze změny -- to už bylo přesně to,
+  cos chtěl, jen jsi to možná ještě neviděl v novější verzi.
+
 ## v1.9 -- čtvereček fyzicky blokuje klepnutí, Home tab
 
 - **Čtvereček přes Reels ikonku teď doopravdy blokuje klepnutí:**

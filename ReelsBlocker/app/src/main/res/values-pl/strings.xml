@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Usługa ułatwień dostępu NIE jest włączona -- zobacz Ustawienia w menu</string>
     <string name="service_not_implemented">Wykrywanie jeszcze niezaimplementowane</string>
     <string name="not_implemented_note">Wykrywanie dla %1$s nie zostało jeszcze zaimplementowane -- Run/Stop jest zapisywane na później, ale na razie nic nie jest blokowane ani śledzone.</string>
+    <string name="notification_channel_name">Blokowanie aktywne</string>
+    <string name="notification_title">Reels Blocker jest aktywny</string>
+    <string name="notification_text">Blokowanie Instagram Reels. Dotknij Zatrzymaj w aplikacji, aby wstrzymać.</string>
 </resources>

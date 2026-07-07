@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Erişilebilirlik hizmeti etkin DEĞİL -- menüdeki Ayarlar\'a bak</string>
     <string name="service_not_implemented">Algılama henüz uygulanmadı</string>
     <string name="not_implemented_note">%1$s için algılama henüz uygulanmadı -- Run/Stop daha sonrası için kaydediliyor, ancak şimdilik hiçbir şey engellenmiyor veya izlenmiyor.</string>
+    <string name="notification_channel_name">Engelleme etkin</string>
+    <string name="notification_title">Reels Blocker etkin</string>
+    <string name="notification_text">Instagram Reels engelleniyor. Duraklatmak için uygulamada Durdur\'a dokun.</string>
 </resources>

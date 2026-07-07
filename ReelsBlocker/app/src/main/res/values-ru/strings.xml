@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Служба специальных возможностей НЕ включена -- см. Настройки в меню</string>
     <string name="service_not_implemented">Определение пока не реализовано</string>
     <string name="not_implemented_note">Определение для %1$s пока не реализовано -- переключатель Run/Stop сохраняется на будущее, но пока ничего не блокируется и не отслеживается.</string>
+    <string name="notification_channel_name">Блокировка активна</string>
+    <string name="notification_title">Reels Blocker активен</string>
+    <string name="notification_text">Блокировка Instagram Reels. Нажмите «Остановить» в приложении, чтобы приостановить.</string>
 </resources>

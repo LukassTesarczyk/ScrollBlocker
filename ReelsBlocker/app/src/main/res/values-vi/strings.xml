@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Dịch vụ trợ năng CHƯA bật -- xem Cài đặt trong menu</string>
     <string name="service_not_implemented">Tính năng phát hiện chưa được triển khai</string>
     <string name="not_implemented_note">Tính năng phát hiện cho %1$s chưa được triển khai -- Run/Stop được lưu lại để dùng sau, nhưng hiện tại chưa có gì bị chặn hay theo dõi.</string>
+    <string name="notification_channel_name">Đang chặn</string>
+    <string name="notification_title">Reels Blocker đang hoạt động</string>
+    <string name="notification_text">Đang chặn Instagram Reels. Nhấn Dừng trong ứng dụng để tạm dừng.</string>
 </resources>

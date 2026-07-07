@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Service d\'accessibilité NON activé -- voir Paramètres dans le menu</string>
     <string name="service_not_implemented">Détection pas encore implémentée</string>
     <string name="not_implemented_note">La détection pour %1$s n\'est pas encore implémentée -- Run/Stop est enregistré pour plus tard, mais rien n\'est encore bloqué ni suivi.</string>
+    <string name="notification_channel_name">Blocage actif</string>
+    <string name="notification_title">Reels Blocker est actif</string>
+    <string name="notification_text">Bloque Instagram Reels. Appuie sur Arrêter dans l\'appli pour mettre en pause.</string>
 </resources>

@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Usluga pristupačnosti NIJE uključena -- pogledaj Postavke u izborniku</string>
     <string name="service_not_implemented">Otkrivanje još nije implementirano</string>
     <string name="not_implemented_note">Otkrivanje za %1$s još nije implementirano -- Run/Stop se sprema za kasnije, ali trenutačno se ništa ne blokira niti prati.</string>
+    <string name="notification_channel_name">Blokiranje aktivno</string>
+    <string name="notification_title">Reels Blocker je aktivan</string>
+    <string name="notification_text">Blokira Instagram Reels. Dodirni Zaustavi u aplikaciji za pauzu.</string>
 </resources>

@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Η υπηρεσία προσβασιμότητας ΔΕΝ είναι ενεργή -- δείτε Ρυθμίσεις στο μενού</string>
     <string name="service_not_implemented">Ο εντοπισμός δεν έχει υλοποιηθεί ακόμη</string>
     <string name="not_implemented_note">Ο εντοπισμός για %1$s δεν έχει υλοποιηθεί ακόμη -- το Run/Stop αποθηκεύεται για αργότερα, αλλά προς το παρόν δεν αποκλείεται ούτε παρακολουθείται τίποτα.</string>
+    <string name="notification_channel_name">Ενεργός αποκλεισμός</string>
+    <string name="notification_title">Το Reels Blocker είναι ενεργό</string>
+    <string name="notification_text">Αποκλεισμός Instagram Reels. Πάτησε Διακοπή στην εφαρμογή για παύση.</string>
 </resources>

@@ -33,4 +33,7 @@
     <string name="service_not_enabled">บริการการเข้าถึงยังไม่ได้เปิดใช้งาน -- ดูการตั้งค่าในเมนู</string>
     <string name="service_not_implemented">ยังไม่รองรับการตรวจจับ</string>
     <string name="not_implemented_note">ยังไม่รองรับการตรวจจับสำหรับ %1$s -- ระบบบันทึกค่า Run/Stop ไว้สำหรับใช้ในอนาคต แต่ตอนนี้ยังไม่มีการบล็อกหรือติดตามใด ๆ</string>
+    <string name="notification_channel_name">กำลังบล็อกอยู่</string>
+    <string name="notification_title">Reels Blocker กำลังทำงาน</string>
+    <string name="notification_text">กำลังบล็อก Instagram Reels แตะหยุดในแอปเพื่อหยุดชั่วคราว</string>
 </resources>

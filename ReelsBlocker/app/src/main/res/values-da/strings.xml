@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Tilgængelighedstjeneste IKKE aktiveret -- se Indstillinger i menuen</string>
     <string name="service_not_implemented">Registrering endnu ikke implementeret</string>
     <string name="not_implemented_note">Registrering for %1$s er endnu ikke implementeret -- Run/Stop gemmes til senere, men lige nu blokeres eller registreres intet.</string>
+    <string name="notification_channel_name">Blokering aktiv</string>
+    <string name="notification_title">Reels Blocker er aktiv</string>
+    <string name="notification_text">Blokerer Instagram Reels. Tryk på Stop i appen for at sætte på pause.</string>
 </resources>

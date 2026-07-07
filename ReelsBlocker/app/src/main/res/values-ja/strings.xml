@@ -33,4 +33,7 @@
     <string name="service_not_enabled">ユーザー補助サービスが無効です -- メニューの設定を確認してください</string>
     <string name="service_not_implemented">検出機能は未実装です</string>
     <string name="not_implemented_note">%1$sの検出機能はまだ実装されていません -- Run/Stopは今後のために保存されますが、現時点ではブロックや記録は行われません。</string>
+    <string name="notification_channel_name">ブロック中</string>
+    <string name="notification_title">Reels Blockerが有効です</string>
+    <string name="notification_text">Instagram Reelsをブロック中です。一時停止するにはアプリで停止をタップしてください。</string>
 </resources>

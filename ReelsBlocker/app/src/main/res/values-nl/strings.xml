@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Toegankelijkheidsservice NIET ingeschakeld -- zie Instellingen in het menu</string>
     <string name="service_not_implemented">Detectie nog niet geïmplementeerd</string>
     <string name="not_implemented_note">Detectie voor %1$s is nog niet geïmplementeerd -- Run/Stop wordt bewaard voor later, maar er wordt nog niets geblokkeerd of bijgehouden.</string>
+    <string name="notification_channel_name">Blokkering actief</string>
+    <string name="notification_title">Reels Blocker is actief</string>
+    <string name="notification_text">Instagram Reels wordt geblokkeerd. Tik op Stop in de app om te pauzeren.</string>
 </resources>

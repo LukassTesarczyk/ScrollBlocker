@@ -33,4 +33,7 @@
     <string name="service_not_enabled">خدمة إمكانية الوصول غير مفعّلة -- راجع الإعدادات في القائمة</string>
     <string name="service_not_implemented">الكشف غير متوفر بعد</string>
     <string name="not_implemented_note">الكشف الخاص بـ %1$s غير متوفر بعد -- يُحفظ إعداد Run/Stop لوقت جاهزيته، لكن لا يوجد حاليًا أي حظر أو تتبع.</string>
+    <string name="notification_channel_name">الحظر نشط</string>
+    <string name="notification_title">Reels Blocker نشط</string>
+    <string name="notification_text">يتم حظر Instagram Reels. اضغط على إيقاف في التطبيق للإيقاف المؤقت.</string>
 </resources>

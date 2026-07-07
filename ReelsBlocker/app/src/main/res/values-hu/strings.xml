@@ -33,4 +33,7 @@
     <string name="service_not_enabled">A kisegítő szolgáltatás NINCS engedélyezve -- lásd Beállítások a menüben</string>
     <string name="service_not_implemented">A felismerés még nincs megvalósítva</string>
     <string name="not_implemented_note">A(z) %1$s felismerése még nincs megvalósítva -- a Run/Stop elmentődik későbbre, de egyelőre semmi nincs blokkolva vagy követve.</string>
+    <string name="notification_channel_name">Blokkolás aktív</string>
+    <string name="notification_title">A Reels Blocker aktív</string>
+    <string name="notification_text">Instagram Reels blokkolása. Koppints a Leállításra az appban a szüneteltetéshez.</string>
 </resources>

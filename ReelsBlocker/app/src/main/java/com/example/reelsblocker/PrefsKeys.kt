@@ -10,7 +10,10 @@ object PrefsKeys {
     const val KEY_ENABLED = "enabled"
     const val KEY_HUB_ORDER = "hub_order"
 
-    val KNOWN_APPS = listOf("instagram", "tiktok", "snapchat")
+    // Order here is the default hub layout for fresh installs --
+    // Instagram in the middle slot, since it's the only one that's
+    // actually implemented.
+    val KNOWN_APPS = listOf("tiktok", "instagram", "snapchat")
 
     fun enabledKeyFor(appId: String): String =
         if (appId == "instagram") KEY_ENABLED else "enabled_$appId"

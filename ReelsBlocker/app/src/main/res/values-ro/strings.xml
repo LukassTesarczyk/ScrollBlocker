@@ -33,4 +33,7 @@
     <string name="service_not_enabled">Serviciul de accesibilitate NU este activat -- vezi Setări în meniu</string>
     <string name="service_not_implemented">Detecția nu este încă implementată</string>
     <string name="not_implemented_note">Detecția pentru %1$s nu este încă implementată -- Run/Stop este salvat pentru mai târziu, dar deocamdată nimic nu este blocat sau urmărit.</string>
+    <string name="notification_channel_name">Blocare activă</string>
+    <string name="notification_title">Reels Blocker este activ</string>
+    <string name="notification_text">Se blochează Instagram Reels. Atinge Oprește în aplicație pentru a întrerupe.</string>
 </resources>
