@@ -31,6 +31,10 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        const val ACTION_OPEN_HOME = "com.example.reelsblocker.OPEN_HOME"
+    }
+
     private lateinit var prefs: SharedPreferences
     private lateinit var tvPauseStatus: TextView
     private lateinit var tvServiceStatus: TextView
@@ -165,8 +169,25 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.tvInstructions).text = getString(R.string.setup_instructions)
 
-        showTab("overview")
         selectApp("instagram")
+        // Jump straight to Setup if the service still needs to be enabled
+        // manually -- Android won't let us grant that one for you, but we
+        // can at least land you on the screen with the exact steps.
+        showTab(if (isAccessibilityServiceEnabled()) "overview" else "setup")
+        ensureNotificationPermission()
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == ACTION_OPEN_HOME) {
+            showTab("overview")
+        }
     }
 
     override fun onResume() {

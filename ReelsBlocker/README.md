@@ -119,6 +119,41 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.11 -- oznámení doopravdy vyskočí, méně manuálního klikání
+
+- **Oznámení o zapnutém blokování teď doopravdy vyskočí** (heads-up),
+  ne že jen tiše sedí v roletě -- a klepnutím na něj se appka otevře
+  rovnou na Home tabu. (Technická poznámka: aby se nová důležitost
+  projevila i lidem, co appku měli nainstalovanou už na v1.10, muselo
+  se přejít na nový notifikační kanál -- Android neumí důležitost
+  existujícího kanálu změnit zpětně.)
+- **Appka si teď o oprávnění na oznámení řekne sama při otevření**,
+  nemusíš na Run/Stop, aby se o to přihlásila (platí pro Android 13+).
+  Přístupnost a bateriové výjimky appka pořád nemůže udělit sama --
+  to Android z bezpečnostních důvodů nedovoluje žádné appce -- ale
+  aspoň tě teď při prvním otevření rovnou hodí na Setup záložku
+  s přesným návodem, pokud služba ještě není zapnutá.
+- **Overlay čtvereček zmizí rychleji** v DMs a kdekoliv, kde není
+  vidět spodní lišta -- tolerance snížena z 3s na 400ms, protože
+  hlavní příčina problikávání (viz níže) už je pryč a tak dlouhá
+  tolerance nebyla potřeba.
+- **Další obrana proti nulování session:** kromě vlastních událostí
+  appky (opraveno v v1.10) appka teď ignoruje i accessibility události
+  bez uvedeného balíčku (`packageName == null`) místo aby je brala
+  jako "odešel jsi z Instagramu" -- stejná kategorie chyby, jen jiný
+  spouštěč.
+- Přidáno tiché ladicí logování při každé změně balíčku, ze kterého
+  přichází accessibility událost -- pokud se příště appka zase
+  "nezapne" a log bude prázdný, tohle by mělo ukázat, jestli appce
+  vůbec nějaké události chodí, nebo ne.
+
+**Swipe do Reels ze strany (z DMs) pořád obchází blokování** podle
+poslední zprávy -- ale je dost možné, že to byl taky jen vedlejší
+projev stejné chyby opravené v v1.10 (vynulovaná session = neomezené
+reely). Otestuj to prosím znovu na týhle verzi, než do samotné detekce
+začnu sahat naslepo -- pokud to pořád dělá, pošli mi log přesně z
+momentu swipnutí do Reels ze strany.
+
 ## v1.10 -- konečně skutečná příčina blbnutí Reels detekce
 
 Poslaný log (RbLog2) ukázal jasný vzorec: appka hlásila "Entered reels

@@ -3,6 +3,8 @@ package com.example.reelsblocker
 import android.accessibilityservice.AccessibilityService
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -51,12 +53,13 @@ class ReelsAccessibilityService : AccessibilityService() {
         // Tab icon lookup can transiently miss for a frame or two while
         // Instagram rebinds unrelated parts of the screen -- hiding (and
         // then re-showing) the overlay on every such blip is what reads
-        // as "problikávání", and it also opens a real window where the
-        // Reels icon becomes tappable. The overlay should stay put through
-        // anything short of actually navigating to a screen without a tab
-        // bar (a DM thread, a fullscreen Reel) -- so the grace period here
-        // is deliberately generous rather than tuned for snappy hiding.
-        private const val HIDE_GRACE_MS = 3000L
+        // as "problikávání". This used to be set much higher (3s) to paper
+        // over flicker that turned out to be caused by a different bug
+        // (self-triggered accessibility events wiping session state, fixed
+        // in v1.10) -- now that the real cause is gone, a short grace is
+        // enough to bridge genuine transient misses without the overlay
+        // lingering noticeably after actually navigating to a DM thread.
+        private const val HIDE_GRACE_MS = 400L
         private const val FADE_MS = 140L
         private const val REPOSITION_THRESHOLD_PX = 14
         private const val MIN_REPOSITION_INTERVAL_MS = 200L
@@ -69,7 +72,11 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         private const val ENTRY_GRACE_MS = 700L
 
-        private const val NOTIFICATION_CHANNEL_ID = "blocking_active"
+        // _v2 because a channel's importance can't be changed by editing
+        // this code once it exists on someone's device -- switching to a
+        // new id is the only way to make the heads-up (HIGH) importance
+        // actually apply for people who already had the old LOW channel.
+        private const val NOTIFICATION_CHANNEL_ID = "blocking_active_v2"
         private const val NOTIFICATION_ID = 1
     }
 
@@ -77,6 +84,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var viewerEnteredAt = 0L
     private var viewerMissCount = 0
     private var lastActionTime = 0L
+    private var lastLoggedPackage: String? = null
 
     private var windowManager: WindowManager? = null
 
@@ -128,14 +136,16 @@ class ReelsAccessibilityService : AccessibilityService() {
         val channel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
             getString(R.string.notification_channel_name),
-            NotificationManager.IMPORTANCE_LOW
+            NotificationManager.IMPORTANCE_HIGH
         )
         manager.createNotificationChannel(channel)
     }
 
     // A plain ongoing notification while blocking is on -- not a
     // foreground-service notification, just a visible, non-swipeable
-    // reminder that the service is actively watching Instagram.
+    // reminder that the service is actively watching Instagram. HIGH
+    // channel importance makes it pop up as heads-up instead of sitting
+    // silently in the shade; tapping it opens the app on the Home tab.
     private fun updateNotification() {
         val manager = getSystemService(NotificationManager::class.java) ?: return
         val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)
@@ -144,12 +154,22 @@ class ReelsAccessibilityService : AccessibilityService() {
             return
         }
         try {
+            val openIntent = Intent(this, MainActivity::class.java).apply {
+                action = MainActivity.ACTION_OPEN_HOME
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val pendingIntent = PendingIntent.getActivity(
+                this, 0, openIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
             val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.sym_def_app_icon)
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .setOngoing(true)
-                .setSilent(true)
+                .setContentIntent(pendingIntent)
                 .build()
             manager.notify(NOTIFICATION_ID, notification)
         } catch (e: SecurityException) {
@@ -311,6 +331,16 @@ class ReelsAccessibilityService : AccessibilityService() {
         // sometimes several" behavior: the session state was getting
         // reset dozens of times a second while just sitting in a Reel.
         if (eventPackage == packageName) return
+        // A null packageName carries no information about what app the
+        // user is in -- treating it as "left Instagram" was the same
+        // class of bug as the self-package one above (some system/IME
+        // events don't report a package at all). Skip instead of guessing.
+        if (eventPackage == null) return
+
+        if (eventPackage != lastLoggedPackage) {
+            lastLoggedPackage = eventPackage
+            AppLog.d(this, TAG, "Event package changed to: $eventPackage")
+        }
 
         val isInstagram = eventPackage == INSTAGRAM_PACKAGE
 
