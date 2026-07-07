@@ -119,6 +119,17 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.2 -- nové rozhraní + statistiky
+
+- Overlay čtvereček: rozvolněná kontrola velikosti/pozice (byla moc
+  přísná a odmítala i správné nálezy) + logování odmítnutých kandidátů
+  do logcatu pro snadnější ladění příště.
+- Appka teď má dvě záložky: **Overview** (celkový počet zablokovaných
+  reels, dnešní počet, graf posledních 7 dní) a **Setup** (schované
+  instrukce a tlačítka na oprávnění).
+- Run/Stop zůstává vždy nahoře, mimo záložky.
+- Minimalistické tmavé rozhraní (#121212 pozadí, teal akcent).
+
 ## v1.1 -- opravy scrollování a overlaye
 
 - **Zásadní příčina "nejde scrollovat feed/DMs":** Instagram zřejmě

@@ -165,6 +165,8 @@ class ReelsAccessibilityService : AccessibilityService() {
                 if (isPlausibleTabIconBounds(bounds)) {
                     for (other in matches) if (other !== m) other.recycle()
                     return m
+                } else if (matches.isNotEmpty()) {
+                    Log.d(TAG, "Rejected tab candidate id=$id bounds=$bounds (implausible size/position)")
                 }
             }
             matches.forEach { it.recycle() }
@@ -179,10 +181,10 @@ class ReelsAccessibilityService : AccessibilityService() {
     private fun isPlausibleTabIconBounds(bounds: Rect): Boolean {
         if (bounds.width() <= 0 || bounds.height() <= 0) return false
         val metrics = resources.displayMetrics
-        val maxIconPx = (72 * metrics.density).toInt() // generous cap for a nav icon touch target
+        val maxIconPx = (120 * metrics.density).toInt() // generous cap for a nav icon touch target
         if (bounds.width() > maxIconPx || bounds.height() > maxIconPx) return false
         val screenHeight = metrics.heightPixels
-        if (bounds.top < screenHeight * 0.80) return false // must be in the bottom nav strip
+        if (bounds.top < screenHeight * 0.70) return false // must be in the bottom nav strip
         return true
     }
 
@@ -333,6 +335,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     }
 
     private fun exitToFeed(root: AccessibilityNodeInfo) {
+        Stats.recordBlock(this)
         val homeNode = findHomeTabNode(root)
         val clicked = homeNode?.let { clickNodeOrAncestor(it) } ?: false
         homeNode?.recycle()

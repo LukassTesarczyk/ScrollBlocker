@@ -1,3 +1,7 @@
 <resources>
-    <style name="Theme.ReelsBlocker" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Theme.ReelsBlocker" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowBackground">#121212</item>
+        <item name="colorPrimary">#26A69A</item>
+        <item name="colorAccent">#26A69A</item>
+    </style>
 </resources>
