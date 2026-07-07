@@ -18,7 +18,7 @@
     <string name="log_copied_toast">تم نسخ السجل</string>
     <string name="export_failed_toast">فشل تصدير السجل</string>
     <string name="export_chooser_title">حفظ السجل كملف .txt</string>
-    <string name="menu_overview">نظرة عامة</string>
+    <string name="menu_overview">الرئيسية</string>
     <string name="menu_settings">الإعدادات</string>
     <string name="menu_log">السجل</string>
     <string name="menu_languages">اللغات</string>

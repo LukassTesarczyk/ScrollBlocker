@@ -18,7 +18,7 @@
     <string name="log_copied_toast">Napló kimásolva</string>
     <string name="export_failed_toast">A napló exportálása sikertelen</string>
     <string name="export_chooser_title">Napló mentése .txt fájlként</string>
-    <string name="menu_overview">Áttekintés</string>
+    <string name="menu_overview">Kezdőlap</string>
     <string name="menu_settings">Beállítások</string>
     <string name="menu_log">Napló</string>
     <string name="menu_languages">Nyelvek</string>

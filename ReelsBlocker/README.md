@@ -119,6 +119,32 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.9 -- čtvereček fyzicky blokuje klepnutí, Home tab
+
+- **Čtvereček přes Reels ikonku teď doopravdy blokuje klepnutí:**
+  dosavadní overlay neměl nastavené `isClickable`, takže na dotyk
+  nijak nereagoval -- v praxi to fungovalo nespolehlivě (systém ho
+  někdy vzal jako "nic tam není" a klepnutí propustil na Instagram pod
+  ním). Teď je explicitně klikací s prázdným click listenerem, takže
+  dotyk se zaručeně zastaví na něm.
+- **Overview tab je teď Home** (ikonka domečku). Karta se stavem a
+  tlačítky Run/Stop se přestěhovala dovnitř Home tabu -- není vidět na
+  Setup/Log/Languages, jen tady, jak jsi chtěl.
+- **Klepnutí na appku v hubu (Instagram/TikTok/Snapchat) tě teď hodí
+  rovnou na Home tab**, i když jsi byl na jiné záložce.
+
+**Detekce Reels (kick-out při scrollu) pořád nefunguje spolehlivě.**
+Do detekční logiky jsem znovu nesahal -- nic v tomhle kole se jí
+netýká a bez dat bych jen hádal, což už se v historii projektu
+nevyplatilo (viz starší verze). Potřebuju čerstvý log, který pokrývá
+přesně tohle:
+1. otevři Instagram, jdi do Reels,
+2. scrolluj na druhý reel (mělo by tě to vyhodit zpět na Home feed),
+3. pokud vyhodí/nevyhodí, hned potom otevři Reels Blocker -> menu ->
+   Log a pošli mi ho -- ideálně i s poznámkou, jestli šlo o první
+   otevření appky po restartu telefonu/appky, nebo o appku, co běžela
+   už delší dobu.
+
 ## v1.8 -- opravy zpětné vazby z v1.7
 
 - **Rozbitý návod v jiných jazycích:** body v Setup návodu (1. 2. 3. ...)

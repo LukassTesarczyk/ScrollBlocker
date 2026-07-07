@@ -18,7 +18,7 @@
     <string name="log_copied_toast">Registro copiado</string>
     <string name="export_failed_toast">Error al exportar el registro</string>
     <string name="export_chooser_title">Guardar registro como .txt</string>
-    <string name="menu_overview">Resumen</string>
+    <string name="menu_overview">Inicio</string>
     <string name="menu_settings">Ajustes</string>
     <string name="menu_log">Registro</string>
     <string name="menu_languages">Idiomas</string>

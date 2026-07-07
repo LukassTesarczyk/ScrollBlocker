@@ -18,7 +18,7 @@
     <string name="log_copied_toast">Log skopírovaný</string>
     <string name="export_failed_toast">Export logu zlyhal</string>
     <string name="export_chooser_title">Uložiť log ako .txt</string>
-    <string name="menu_overview">Prehľad</string>
+    <string name="menu_overview">Domov</string>
     <string name="menu_settings">Nastavenia</string>
     <string name="menu_log">Log</string>
     <string name="menu_languages">Jazyky</string>

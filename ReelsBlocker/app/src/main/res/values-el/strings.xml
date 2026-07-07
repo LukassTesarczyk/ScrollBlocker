@@ -18,7 +18,7 @@
     <string name="log_copied_toast">Το αρχείο καταγραφής αντιγράφηκε</string>
     <string name="export_failed_toast">Η εξαγωγή απέτυχε</string>
     <string name="export_chooser_title">Αποθήκευση αρχείου καταγραφής ως .txt</string>
-    <string name="menu_overview">Επισκόπηση</string>
+    <string name="menu_overview">Αρχική</string>
     <string name="menu_settings">Ρυθμίσεις</string>
     <string name="menu_log">Log</string>
     <string name="menu_languages">Γλώσσες</string>

@@ -67,67 +67,66 @@
                 android:paddingEnd="20dp"
                 android:paddingBottom="24dp">
 
-                <!-- Status + Run/Stop card -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@drawable/bg_card"
-                    android:padding="18dp"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView
-                        android:id="@+id/tvServiceStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:textColor="#909090"
-                        android:layout_marginBottom="16dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="10dp">
-
-                        <Button
-                            android:id="@+id/btnRun"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="6dp"
-                            android:text="@string/run"
-                            android:textColor="#FFFFFF"
-                            android:backgroundTint="#26A69A" />
-
-                        <Button
-                            android:id="@+id/btnStop"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="6dp"
-                            android:text="@string/stop"
-                            android:textColor="#FFFFFF"
-                            android:backgroundTint="#2E2E2E" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvPauseStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="13sp"
-                        android:textColor="#909090"
-                        android:gravity="center" />
-
-                </LinearLayout>
-
-                <!-- Overview -->
+                <!-- Home (Run/Stop status card lives only on this tab) -->
                 <LinearLayout
                     android:id="@+id/overviewContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_card"
+                        android:padding="18dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:id="@+id/tvServiceStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:textColor="#909090"
+                            android:layout_marginBottom="16dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="10dp">
+
+                            <Button
+                                android:id="@+id/btnRun"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="6dp"
+                                android:text="@string/run"
+                                android:textColor="#FFFFFF"
+                                android:backgroundTint="#26A69A" />
+
+                            <Button
+                                android:id="@+id/btnStop"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="6dp"
+                                android:text="@string/stop"
+                                android:textColor="#FFFFFF"
+                                android:backgroundTint="#2E2E2E" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvPauseStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:textColor="#909090"
+                            android:gravity="center" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvNotImplementedNote"
@@ -585,7 +584,7 @@
                 android:layout_height="20dp"
                 android:layout_marginEnd="14dp"
                 android:tint="#FFFFFF"
-                android:src="@drawable/ic_menu_overview" />
+                android:src="@drawable/ic_menu_home" />
             <TextView
                 android:text="@string/menu_overview"
                 android:textColor="#FFFFFF"

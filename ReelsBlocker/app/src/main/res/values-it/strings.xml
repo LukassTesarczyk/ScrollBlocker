@@ -18,7 +18,7 @@
     <string name="log_copied_toast">Log copiato</string>
     <string name="export_failed_toast">Esportazione log non riuscita</string>
     <string name="export_chooser_title">Salva log come .txt</string>
-    <string name="menu_overview">Panoramica</string>
+    <string name="menu_overview">Home</string>
     <string name="menu_settings">Impostazioni</string>
     <string name="menu_log">Log</string>
     <string name="menu_languages">Lingue</string>

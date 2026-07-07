@@ -18,7 +18,7 @@
     <string name="log_copied_toast">ログをコピーしました</string>
     <string name="export_failed_toast">ログのエクスポートに失敗しました</string>
     <string name="export_chooser_title">ログを.txtとして保存</string>
-    <string name="menu_overview">概要</string>
+    <string name="menu_overview">ホーム</string>
     <string name="menu_settings">設定</string>
     <string name="menu_log">ログ</string>
     <string name="menu_languages">言語</string>

@@ -136,6 +136,12 @@ class ReelsAccessibilityService : AccessibilityService() {
             val view = View(this).apply {
                 setBackgroundColor(fallbackColor())
                 visibility = View.GONE
+                // A plain View with no listener returns false from
+                // onTouchEvent and doesn't actually consume the tap --
+                // that let taps through to the Reels icon underneath it.
+                // Being explicitly clickable guarantees the touch stops here.
+                isClickable = true
+                setOnClickListener { }
             }
 
             val params = WindowManager.LayoutParams(

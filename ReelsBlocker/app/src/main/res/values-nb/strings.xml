@@ -18,7 +18,7 @@
     <string name="log_copied_toast">Logg kopiert</string>
     <string name="export_failed_toast">Eksport av logg mislyktes</string>
     <string name="export_chooser_title">Lagre logg som .txt</string>
-    <string name="menu_overview">Oversikt</string>
+    <string name="menu_overview">Hjem</string>
     <string name="menu_settings">Innstillinger</string>
     <string name="menu_log">Logg</string>
     <string name="menu_languages">Språk</string>

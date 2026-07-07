@@ -198,6 +198,7 @@ class MainActivity : AppCompatActivity() {
                     exitReorderMode()
                 } else {
                     selectApp(hubOrder[i])
+                    showTab("overview")
                 }
             }
 

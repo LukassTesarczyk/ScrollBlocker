@@ -18,7 +18,7 @@
     <string name="log_copied_toast">लॉग कॉपी हो गया</string>
     <string name="export_failed_toast">लॉग एक्सपोर्ट विफल रहा</string>
     <string name="export_chooser_title">लॉग को .txt के रूप में सहेजें</string>
-    <string name="menu_overview">अवलोकन</string>
+    <string name="menu_overview">होम</string>
     <string name="menu_settings">सेटिंग्स</string>
     <string name="menu_log">लॉग</string>
     <string name="menu_languages">भाषाएँ</string>

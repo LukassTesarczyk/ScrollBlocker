@@ -18,7 +18,7 @@
     <string name="log_copied_toast">로그가 복사되었습니다</string>
     <string name="export_failed_toast">로그 내보내기에 실패했습니다</string>
     <string name="export_chooser_title">로그를 .txt로 저장</string>
-    <string name="menu_overview">개요</string>
+    <string name="menu_overview">홈</string>
     <string name="menu_settings">설정</string>
     <string name="menu_log">로그</string>
     <string name="menu_languages">언어</string>

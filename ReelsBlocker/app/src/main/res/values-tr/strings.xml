@@ -18,7 +18,7 @@
     <string name="log_copied_toast">Günlük kopyalandı</string>
     <string name="export_failed_toast">Günlük dışa aktarma başarısız oldu</string>
     <string name="export_chooser_title">Günlüğü .txt olarak kaydet</string>
-    <string name="menu_overview">Genel Bakış</string>
+    <string name="menu_overview">Ana Sayfa</string>
     <string name="menu_settings">Ayarlar</string>
     <string name="menu_log">Günlük</string>
     <string name="menu_languages">Diller</string>

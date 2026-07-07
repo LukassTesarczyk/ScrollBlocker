@@ -18,7 +18,7 @@
     <string name="log_copied_toast">Jurnal copiat</string>
     <string name="export_failed_toast">Exportul jurnalului a eșuat</string>
     <string name="export_chooser_title">Salvează jurnalul ca .txt</string>
-    <string name="menu_overview">Prezentare generală</string>
+    <string name="menu_overview">Acasă</string>
     <string name="menu_settings">Setări</string>
     <string name="menu_log">Jurnal</string>
     <string name="menu_languages">Limbi</string>
