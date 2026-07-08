@@ -119,6 +119,28 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.21 -- konečná oprava "not IG" i přes to, že jsi byl v Reels
+
+Log z v1.20 (díky novému štítku i bez něj) ukázal přesně to, co jsi
+popsal -- appka na 33 vteřin v kuse hlásila "not IG", i když jsi
+prokazatelně pořád seděl v Reels.
+
+- **Příčina:** `miui.systemui.plugin` (systémová komponenta HyperOS) v
+  logu jednou vyvolala *doopravdy skutečné* přepnutí okna (ne jen
+  "šum" z jiných typů událostí, jak jsem si myslel u opravy v v1.15) --
+  appka to tedy oprávněně vzala jako "uživatel odešel z Instagramu" a
+  zůstala v tomhle přesvědčení 33 vteřin, dokud nepřišla další skutečná
+  změna. Po celou tu dobu appka Reels vůbec nesledovala.
+- **Tohle vysvětluje obě věci, co sis myslel, že si odporují:** "vyhodilo
+  mě to hned" (detekce se zrovna vzpamatovala a doběhla normální
+  toleranci) i "nevyhodilo mě to vůbec" (appka celou dobu myslela, že
+  není v Instagramu, takže limit "1 reel" neměl šanci se vůbec spustit)
+  -- je to jeden a tentýž bug.
+- **Oprava:** appka teď `miui.systemui.plugin` ignoruje úplně, ve všech
+  případech -- nikdy ho nebere jako důkaz, že jsi odešel z Instagramu,
+  bez ohledu na to, jaký typ události to nahlásí. Je to čistě systémová
+  komponenta HyperOS, nikdy ne appka, kterou bys skutečně používal.
+
 ## v1.20 -- živý debug štítek na obrazovce (nový přístup k ladění)
 
 Poslední log měl navíc appku `com.miui.screenrecorder` prolínající se s

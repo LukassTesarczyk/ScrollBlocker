@@ -422,6 +422,20 @@ class ReelsAccessibilityService : AccessibilityService() {
         // class of bug as the self-package one above (some system/IME
         // events don't report a package at all). Skip instead of guessing.
         if (eventPackage == null) return
+        // The v1.14 log showed "miui.systemui.plugin" as pure noise from
+        // non-window-state event types, which the TYPE_WINDOW_STATE_CHANGED
+        // filter below was supposed to handle. The v1.20 log proved that
+        // wrong: it fired a genuine TYPE_WINDOW_STATE_CHANGED to this same
+        // package, which got trusted as a real "user left Instagram" and
+        // stuck currentForegroundPackage there for 33 straight seconds
+        // while the user was still actually sitting in a Reel the whole
+        // time -- explaining both "kicked out instantly" (detection
+        // resumed right as grace expired) and "never kicked out" (stuck
+        // reporting not-Instagram, so the 1-reel limit never got a chance
+        // to run at all) as the same root cause. This is HyperOS's own
+        // system UI plugin, never a real app the user is using -- skip it
+        // outright rather than ever trusting it as a foreground app.
+        if (eventPackage == "miui.systemui.plugin") return
 
         // The service logs every foreground-app hop it sees, all day, not
         // just during active testing -- with no package filter, that's
