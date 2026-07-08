@@ -119,6 +119,36 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.18 -- storky se přestanou plést s Reels, delší tolerance na první video
+
+Nový log (díky opravě z v1.17 konečně obsahoval to důležité) ukázal dvě
+konkrétní věci:
+
+- **`reel_viewer_root` (jedno ze dvou ID, podle kterých appka poznávala
+  "jsem v Reels") se v logu pokaždé objevilo těsně po tom, co zmizela
+  ikonka dolní lišty -- což platí pro JAKÝKOLI celoobrazovkový obsah,
+  včetně Historek. Instagram měl Historky interně pojmenované "Reel" ještě
+  předtím, než vznikla dnešní (TikToku podobná) funkce Reels, která
+  používá jiné interní názvy ("clips_*") -- proto appka dosud omylem
+  reagovala na Historky stejně jako na Reels. Odebral jsem `reel_viewer_root`
+  z detekce úplně, zůstává jen `clips_viewer_view_pager` (skutečná
+  Reels záložka). Vedlejší dopad: reel vložený přímo do feedu nebo sdílený
+  v DM (což taky používalo tohle ID) appka teď nezastaví -- to je zatím
+  přijatelná cena za to, že tě to přestane vyhazovat z historek.
+- **Appka někdy vyhodnotila jako "druhé swipnutí" ještě doznívající
+  posun z toho, jak ses do Reels teprve dostal** -- log ukázal, že tohle
+  doznívání jednou trvalo 683 ms, těsně pod tehdejším limitem 700 ms, a
+  hned další pohyb appka vzala jako tvoje druhé swipnutí a vyhodila tě,
+  i když jsi první video ještě nedokoukal. Zvedl jsem limit na 1200 ms.
+- **Tlačítko "Otevřít nastavení baterie" teď žádá o výjimku z omezování
+  na pozadí rovnou jedním potvrzením** (systémový dialog), místo aby tě
+  posílalo do App Info hledat "Bez omezení" ručně o pár menu dál. Log
+  ukázal, že appka se v půlce session sama znovu připojovala ("Service
+  connected" podruhé) -- to je HyperOS, co appku na pozadí zabil; tohle by
+  to mělo omezit, i když stoprocentní záruka to není (je to chování
+  HyperOS, ne appky) -- pomůže i zamknutí appky v Recent apps (viz návod
+  v appce).
+
 ## v1.17 -- opravený skutečný důvod, proč log "nefungoval"
 
 Napsal jsi, že jsi obě věci (návrat do Instagramu po minimalizaci appky i

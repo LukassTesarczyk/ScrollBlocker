@@ -34,9 +34,22 @@ class ReelsAccessibilityService : AccessibilityService() {
         private const val TAG = "ReelsBlocker"
         private const val INSTAGRAM_PACKAGE = "com.instagram.android"
 
+        // "reel_viewer_root" used to be in here too, but the v1.17.2 log
+        // showed it matching right after "Tab icon missing" every single
+        // time -- consistent with any full-screen immersive viewer, not
+        // just Reels. Instagram's Stories feature was internally codenamed
+        // "Reel" long before the separate TikTok-style feature borrowed
+        // the public name (which is why Stories/DMs code tends to use
+        // "reel_*" ids while the actual Reels tab uses "clips_*" ids, as
+        // clips_viewer_view_pager and clips_tab below do) -- so this was
+        // very likely matching Stories, not Reels, which is exactly what
+        // "vyhazovalo mě to i ze storyček" described. Feed-embedded/DM-
+        // shared reels (which also used this id) won't get the forced
+        // "1 reel" exit anymore as a result -- an accepted trade until
+        // there's a real distinguishing signal, since wrongly interrupting
+        // Stories is worse than missing that one bypass route.
         private val VIEWER_RESOURCE_ID_CANDIDATES = listOf(
-            "clips_viewer_view_pager",
-            "reel_viewer_root"
+            "clips_viewer_view_pager"
         )
 
         private val TAB_ICON_RESOURCE_ID_CANDIDATES = listOf(
@@ -69,7 +82,14 @@ class ReelsAccessibilityService : AccessibilityService() {
         // too often the longer someone scrolled.
         private const val VIEWER_MISS_TOLERANCE = 2
 
-        private const val ENTRY_GRACE_MS = 700L
+        // The v1.17.2 log showed Instagram's own settle/lazy-load scrolls
+        // landing as late as 683ms after entry -- right at the edge of the
+        // old 700ms window -- with the next real event then misread as a
+        // deliberate second swipe only ~800ms after entry, kicking the
+        // user out before they'd finished watching the first reel at all.
+        // More headroom here trades away catching a handful of genuinely
+        // very fast swipe-throughs in exchange for not doing that.
+        private const val ENTRY_GRACE_MS = 1200L
 
         // _v2 because a channel's importance can't be changed by editing
         // this code once it exists on someone's device -- switching to a

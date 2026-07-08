@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
         findViewById<Button>(R.id.btnOpenBatterySettings).setOnClickListener {
-            openAppInfo()
+            requestIgnoreBatteryOptimizations()
         }
         findViewById<Button>(R.id.btnOpenOtherPermissions).setOnClickListener {
             openAppInfo()
@@ -215,6 +215,28 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = android.net.Uri.parse("package:$packageName")
         startActivity(intent)
+    }
+
+    // A direct one-tap "allow to ignore battery optimizations" system
+    // dialog is far more likely to actually get granted than sending
+    // someone into App Info to hunt for "No restrictions" manually a few
+    // menus deep -- and HyperOS killing the service mid-session (it shows
+    // up in the log as a second "Service connected") is almost always a
+    // battery-management kill. Falls back to App Info if the OEM blocks
+    // the direct intent or it's already granted.
+    private fun requestIgnoreBatteryOptimizations() {
+        val powerManager = getSystemService(POWER_SERVICE) as android.os.PowerManager
+        if (powerManager.isIgnoringBatteryOptimizations(packageName)) {
+            openAppInfo()
+            return
+        }
+        try {
+            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+            intent.data = android.net.Uri.parse("package:$packageName")
+            startActivity(intent)
+        } catch (e: Exception) {
+            openAppInfo()
+        }
     }
 
     // Full app restart -- kills this process (which the accessibility
