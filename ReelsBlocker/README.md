@@ -119,6 +119,36 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.25 -- diagnostika pro poslední zbylý zdroj problémů
+
+Nejdřív dobrá zpráva: oprava úniku paměti z v1.24 drží -- v novém logu
+už není ten "vyhazuje skoro pořád hned" vzorec, první reel se ve většině
+případů odkoukal celý (jednou dokonce 15 vteřin), přesně jak má být.
+
+Co v logu pořád je: **appka opakovaně nenajde tlačítko Home dole v
+Instagramu** ("Home tab not found -- falling back to back button", 3×
+v jednom logu) a musí sáhnout po záložním tlačítku zpět, které tě
+občas vrátí ne na feed, ale rovnou do dalšího reelu -- a to pak vypadá
+jako "vyhodilo mě to, i když nemělo".
+
+**Proč to rovnou natvrdo neopravím:** appka teď hledá tlačítko Home
+podle dvou konkrétních ID (`feed_tab`, `home_tab`), co jsou z dřívějška
+odhadnutá z chování v logu -- ne z oficiální dokumentace Instagramu
+(žádná neexistuje). Pokud tahle ID přestala sedět (Instagram si mezi
+verzemi mění vnitřní názvy), jediný poctivý způsob, jak najít ty
+správné, je podívat se, co tam ve skutečnosti je -- ne hádat další ID
+naslepo a riskovat, že pokazím i tu část, co teď funguje.
+
+Přidal jsem tedy log, který přesně tohle udělá: pokaždé, když appka
+tlačítko Home nenajde, si zapíše, jaká klikatelná tlačítka skutečně
+jsou dole na obrazovce (jejich ID, popisek, souřadnice). Až mi pošleš
+další log z chvíle, kdy se tohle stane, uvidím černé na bílém, jak se
+tlačítko Home doopravdy jmenuje, a opravím to najisto -- ne naslepo.
+
+Chápu, že chceš appku dotaženou k dokonalosti -- shoduju se s tebou, že
+tohle je poslední velký kus skládačky. Nejde to ale uhodnout, jde to
+jen změřit.
+
 ## v1.24 -- oprava mojí vlastní chyby z v1.23 (únik paměti)
 
 Měl jsi pravdu, v1.23 bylo skutečně horší -- a tentokrát to byla moje

@@ -835,9 +835,53 @@ class ReelsAccessibilityService : AccessibilityService() {
         homeNode?.recycle()
         if (!clicked) {
             AppLog.d(this, TAG, "Home tab not found -- falling back to back button")
+            dumpBottomNavCandidates(root)
             performGlobalAction(GLOBAL_ACTION_BACK)
         }
         return clicked
+    }
+
+    // "Home tab not found" has shown up repeatedly across logs, forcing
+    // the less reliable back-button fallback (which doesn't always land on
+    // the feed). Guessing a replacement resource id without data would be
+    // exactly the kind of blind Instagram-UI edit CLAUDE.md rule 5 warns
+    // against -- this just logs what's actually clickable near the bottom
+    // of the screen at the moment the lookup failed, so the real id can be
+    // read off a future log instead of guessed at.
+    private fun dumpBottomNavCandidates(root: AccessibilityNodeInfo) {
+        try {
+            val screenHeight = resources.displayMetrics.heightPixels
+            val found = mutableListOf<String>()
+            collectBottomNavCandidates(root, screenHeight, found, depth = 0)
+            if (found.isEmpty()) {
+                AppLog.d(this, TAG, "Bottom nav dump: no clickable nodes found in bottom 20% of screen")
+            } else {
+                AppLog.d(this, TAG, "Bottom nav dump: ${found.joinToString(" | ")}")
+            }
+        } catch (e: Exception) {
+            AppLog.w(this, TAG, "Bottom nav dump failed: ${e.message}")
+        }
+    }
+
+    private fun collectBottomNavCandidates(
+        node: AccessibilityNodeInfo,
+        screenHeight: Int,
+        out: MutableList<String>,
+        depth: Int
+    ) {
+        if (depth > 25 || out.size >= 10) return
+        val bounds = Rect()
+        node.getBoundsInScreen(bounds)
+        if (node.isClickable && bounds.top >= screenHeight * 0.80) {
+            val id = node.viewIdResourceName ?: "(no id)"
+            val desc = node.contentDescription?.toString() ?: "(no desc)"
+            out.add("id=$id desc=$desc bounds=$bounds")
+        }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            collectBottomNavCandidates(child, screenHeight, out, depth + 1)
+            child.recycle()
+        }
     }
 
     private fun findHomeTabNode(root: AccessibilityNodeInfo): AccessibilityNodeInfo? {
