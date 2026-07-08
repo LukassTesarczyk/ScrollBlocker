@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">Reels Blocker</string>
-    <string name="accessibility_service_description">
-        Watches for the Instagram Reels tab and automatically backs out of it.
-        Only reads on-screen content from Instagram -- does not read or store
-        any personal data, and does not act in any other app.
-    </string>
-</resources>
