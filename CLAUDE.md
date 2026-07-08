@@ -58,6 +58,22 @@ k `adb logcat` (řešili jsme to přes Termux + wireless debugging, je to
 otravné) -- pokud něco potřebuješ zjistit, napiš si o export z Debug
 tabu, ne o logcat výstup.
 
+## Editace CLAUDE.md a stavový soubor pro předání mezi session
+
+- **Tenhle soubor needituj sám od sebe.** Pokud narazíš na něco, co by
+  sem podle tebe mělo přibýt (nová konvence, nové zjištění, nové
+  pravidlo), navrhni mi přesné znění a počkej na schválení -- teprve pak
+  to sem zapiš. Výjimka jsou věci, který si výslovně řeknu, ať sem
+  přidáš (jako tahle sekce právě teď).
+- **Po každé dokončené aktualizaci appky** (nová verze, commit, push)
+  aktualizuj `ReelsBlocker/PROJECT_STATE.md` -- volný textový popis toho,
+  o čem appka je, co všechno umí, v jakém je stavu, co je hotové, co
+  rozdělané a co zbývá. Účel: když přejdu do nové Claude Code session
+  (nová konverzace, nový kontext bez historie týhle konverzace), ať se
+  dá z jednoho souboru rychle zorientovat bez nutnosti mi to znovu
+  vysvětlovat. Piš ho tak, aby dával smysl i bez znalosti historie
+  konverzace, ve které vznikl.
+
 ## Nutné konvence -- drž se jich
 
 1. **Vždy zvyšuj verzi** v `app/build.gradle` (`versionCode` +1,
