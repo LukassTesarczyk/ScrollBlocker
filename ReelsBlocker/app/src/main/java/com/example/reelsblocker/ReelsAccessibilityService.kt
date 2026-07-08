@@ -357,9 +357,22 @@ class ReelsAccessibilityService : AccessibilityService() {
         // events don't report a package at all). Skip instead of guessing.
         if (eventPackage == null) return
 
+        // The service logs every foreground-app hop it sees, all day, not
+        // just during active testing -- with no package filter, that's
+        // every notification check, every home-screen tap, everything.
+        // Against a 200KB log budget that noise was crowding out the
+        // Instagram-relevant history within minutes of normal phone use,
+        // so by the time a log got exported, exactly the events being
+        // asked about were already the ones trimmed away. Only log
+        // transitions that actually involve Instagram (entering or
+        // leaving it) -- hops between two unrelated apps (keyboard,
+        // launcher, this app itself) tell us nothing useful anyway.
+        val relevantToInstagram = eventPackage == INSTAGRAM_PACKAGE || lastLoggedPackage == INSTAGRAM_PACKAGE
         if (eventPackage != lastLoggedPackage) {
+            if (relevantToInstagram) {
+                AppLog.d(this, TAG, "Event package changed to: $eventPackage")
+            }
             lastLoggedPackage = eventPackage
-            AppLog.d(this, TAG, "Event package changed to: $eventPackage")
         }
 
         // v1.14's log showed "miui.systemui.plugin" interleaved with
@@ -378,7 +391,10 @@ class ReelsAccessibilityService : AccessibilityService() {
         // getting wiped before the swipe-past-first-reel check could fire).
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             if (eventPackage != currentForegroundPackage) {
-                AppLog.d(this, TAG, "Foreground app changed to: $eventPackage")
+                val fgRelevant = eventPackage == INSTAGRAM_PACKAGE || currentForegroundPackage == INSTAGRAM_PACKAGE
+                if (fgRelevant) {
+                    AppLog.d(this, TAG, "Foreground app changed to: $eventPackage")
+                }
             }
             currentForegroundPackage = eventPackage
         }

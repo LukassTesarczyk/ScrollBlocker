@@ -19,7 +19,7 @@ import java.util.concurrent.Executors
  */
 object AppLog {
     private const val FILE_NAME = "reels_blocker_log.txt"
-    private const val MAX_BYTES = 200_000
+    private const val MAX_BYTES = 500_000
 
     private val writer = Executors.newSingleThreadExecutor()
 

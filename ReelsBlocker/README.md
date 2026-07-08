@@ -119,6 +119,31 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.17 -- opravený skutečný důvod, proč log "nefungoval"
+
+Napsal jsi, že jsi obě věci (návrat do Instagramu po minimalizaci appky i
+swipe z DMs do Reels) udělal, ale log to nezachytil -- to byla stopa k
+dalšímu skutečnému bugu, ne že bys něco udělal špatně.
+
+- **Log si zapisoval úplně KAŽDÝ přechod mezi appkama, celý den, ne jen
+  během testování.** Appka nemá (záměrně) filtr na balíček, takže
+  zaznamenává i to, když si zkontroluješ Discord, otevřeš klávesnici,
+  přepneš na appku Claude atd. V logu, cos poslal, tvořily tyhle
+  irelevantní přechody (klávesnice, launcher, appka Claude, výběr
+  souborů) přes 90 % všech řádků. Log má strop 200 KB, po jeho
+  překročení appka nejstarší polovinu zahodí -- takže i pár minut
+  běžného používání telefonu dokázalo z logu vytlačit přesně tu část, na
+  kterou jsem se ptal, dřív než jsi stihl log vyexportovat. Tohle
+  vysvětluje, proč to "nefungovalo", i když jsi obě věci reálně udělal.
+- **Oprava:** appka teď zapisuje do logu jen přechody, který se týkaj
+  Instagramu (vstup/výstup) -- ne každý skok mezi appkama, co s
+  Instagramem nemaj nic společnýho. Zvedl jsem taky strop logu z 200 KB
+  na 500 KB pro rezervu.
+- Nemusíš teď dělat nic extra navíc -- stačí normálně vyzkoušet: Instagram
+  → Reels → minimalizovat appku ReelsBlocker → zpátky do Instagramu →
+  Reels znovu → DM vlákno → swipe do Reels → historka → export logu z
+  appky. Log teď bude mnohem menší a mnohem víc relevantní.
+
 ## v1.16 -- restart tlačítko natvrdo viditelné, přesný čas na vteřiny
 
 - **Restart App tlačítko jde teď vidět vždycky, bez scrollování.** Prohlédl
