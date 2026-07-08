@@ -164,6 +164,12 @@ class MainActivity : AppCompatActivity() {
             renderLog()
         }
         findViewById<Button>(R.id.btnDownloadLog).setOnClickListener { exportLog() }
+        findViewById<Button>(R.id.btnToggleDebugOverlay).setOnClickListener {
+            val enabled = prefs.getBoolean(PrefsKeys.KEY_DEBUG_OVERLAY, false)
+            prefs.edit().putBoolean(PrefsKeys.KEY_DEBUG_OVERLAY, !enabled).apply()
+            refreshDebugOverlayButton()
+        }
+        refreshDebugOverlayButton()
 
         setupHub()
         setupLanguages()
@@ -733,6 +739,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun renderLog() {
         findViewById<TextView>(R.id.tvLog).text = AppLog.readAll(this)
+    }
+
+    private fun refreshDebugOverlayButton() {
+        val enabled = prefs.getBoolean(PrefsKeys.KEY_DEBUG_OVERLAY, false)
+        findViewById<Button>(R.id.btnToggleDebugOverlay).text =
+            getString(if (enabled) R.string.debug_overlay_on else R.string.debug_overlay_off)
     }
 
     private val createLogDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri: Uri? ->

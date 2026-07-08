@@ -79,8 +79,11 @@ class ReelsAccessibilityService : AccessibilityService() {
         // consider the session over. Mid-swipe transition animations can
         // briefly report bounds that don't look full-screen, which was
         // resetting (and effectively re-granting) the "1 free reel" way
-        // too often the longer someone scrolled.
-        private const val VIEWER_MISS_TOLERANCE = 2
+        // too often the longer someone scrolled. The v1.19 log showed a
+        // reset only 804ms after entry while something CPU-heavy (screen
+        // recording) was running alongside Instagram -- rendering hiccups
+        // under load can plausibly cost more than 2 consecutive misses.
+        private const val VIEWER_MISS_TOLERANCE = 4
 
         // The v1.17.2 log showed Instagram's own settle/lazy-load scrolls
         // landing as late as 683ms after entry -- right at the edge of the
@@ -121,6 +124,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     private var transitionRoot: FrameLayout? = null
     private var transitionLabel: TextView? = null
+    private var debugBadge: TextView? = null
 
     private val mainHandler = Handler(Looper.getMainLooper())
     private val colorSampleExecutor = Executors.newSingleThreadExecutor()
@@ -209,6 +213,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         overlayView = null
         transitionRoot = null
         transitionLabel = null
+        debugBadge = null
         overlayAdded = false
     }
 
@@ -300,7 +305,36 @@ class ReelsAccessibilityService : AccessibilityService() {
             }
             root.addView(label, labelParams)
 
-            root.visibility = View.GONE
+            // Small always-attached state badge for live debugging --
+            // only shown when the "Show debug overlay" toggle is on. Root
+            // used to default to GONE and only flip VISIBLE during the
+            // exit-pill animation, but that would hide this too; root now
+            // stays permanently attached (it's FLAG_NOT_TOUCHABLE, so this
+            // costs nothing visually) and each child manages its own
+            // visibility instead.
+            val badge = TextView(this).apply {
+                setTextColor(Color.WHITE)
+                textSize = 11f
+                setPadding(
+                    (8 * density).toInt(), (4 * density).toInt(),
+                    (8 * density).toInt(), (4 * density).toInt()
+                )
+                background = GradientDrawable().apply {
+                    setColor(Color.parseColor("#CC000000"))
+                    cornerRadius = 8 * density
+                }
+                visibility = View.GONE
+            }
+            val badgeParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                topMargin = statusBarHeightPx + (8 * density).toInt()
+                leftMargin = (8 * density).toInt()
+            }
+            root.addView(badge, badgeParams)
+            debugBadge = badge
 
             val params = WindowManager.LayoutParams(
                 metrics.widthPixels,
@@ -321,18 +355,31 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
+    // Reflects internal state live so a screen recording is
+    // self-documenting instead of needing to be correlated against a
+    // separate timestamped text log afterwards. Off by default.
+    private fun updateDebugBadge(text: String, color: String) {
+        val badge = debugBadge ?: return
+        if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.KEY_DEBUG_OVERLAY, false)) {
+            if (badge.visibility != View.GONE) badge.visibility = View.GONE
+            return
+        }
+        badge.visibility = View.VISIBLE
+        badge.text = text
+        badge.setTextColor(Color.parseColor(color))
+    }
+
     // wentToFeed is false when we had to fall back to the plain back
     // button instead of clicking the Home tab -- in that case we can't
     // actually promise the user landed back on the main feed (a fallback
     // "back" from a reel opened inside a DM thread returns to the DM,
     // not the feed), so the pill text needs to stay honest about that.
     private fun playExitAnimation(wentToFeed: Boolean) {
-        val root = transitionRoot ?: return
+        transitionRoot ?: return
         val label = transitionLabel ?: return
         val density = resources.displayMetrics.density
         try {
             label.text = localizedString(if (wentToFeed) R.string.pill_back_to_feed else R.string.pill_left_reels)
-            root.visibility = View.VISIBLE
             label.animate().cancel()
             label.alpha = 0f
             label.translationY = -60 * density
@@ -347,7 +394,6 @@ class ReelsAccessibilityService : AccessibilityService() {
                             .alpha(0f)
                             .translationY(-40 * density)
                             .setDuration(200)
-                            .withEndAction { root.visibility = View.GONE }
                             .start()
                     }, 900)
                 }
@@ -425,6 +471,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             hideOverlay()
             inReelsViewer = false
             lastTimeTickAt = 0L
+            updateDebugBadge("not IG", "#808080")
             return
         }
 
@@ -443,7 +490,10 @@ class ReelsAccessibilityService : AccessibilityService() {
             // instead of touching any state either way -- Instagram is
             // still genuinely current underneath, so neither hiding nor
             // resetting the session is correct here.
-            if (root.packageName?.toString() != INSTAGRAM_PACKAGE) return
+            if (root.packageName?.toString() != INSTAGRAM_PACKAGE) {
+                updateDebugBadge("skip (root≠IG)", "#FFA726")
+                return
+            }
 
             // Time tracking runs regardless of the Run/Stop toggle -- it's
             // a passive usage insight, not part of the blocking feature.
@@ -451,6 +501,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
             if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)) {
                 hideOverlay()
+                updateDebugBadge("IG (blocking off)", "#808080")
                 return
             }
 
@@ -500,8 +551,10 @@ class ReelsAccessibilityService : AccessibilityService() {
             tabNode.getBoundsInScreen(bounds)
             tabNode.recycle()
             showOverlayAt(bounds)
+            updateDebugBadge("IG · tab✓", "#26A69A")
         } else {
             val missMs = System.currentTimeMillis() - lastSeenTabAt
+            updateDebugBadge("IG · tab✗ ${missMs}ms", "#FFA726")
             if (missMs >= HIDE_GRACE_MS && overlayView?.visibility != View.GONE) {
                 AppLog.d(this, TAG, "Tab icon missing for ${missMs}ms -- hiding overlay")
                 hideOverlay()
@@ -670,6 +723,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                 inReelsViewer = true
                 viewerEnteredAt = now
                 AppLog.d(this, TAG, "Entered reels viewer (matched id=$matchedId) -- 1 reel allowed, next real swipe exits")
+                updateDebugBadge("REELS entered", "#26A69A")
             } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
                 if (now - viewerEnteredAt < ENTRY_GRACE_MS) {
                     AppLog.d(this, TAG, "Ignoring scroll ${now - viewerEnteredAt}ms after entry (likely settle, not a real swipe)")
@@ -681,6 +735,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                     val wentToFeed = exitToFeed(root)
                     playExitAnimation(wentToFeed)
                     inReelsViewer = false
+                    updateDebugBadge("REELS→EXIT", "#FF5252")
                 }
             }
         } else if (inReelsViewer) {
@@ -689,6 +744,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                 inReelsViewer = false
                 viewerMissCount = 0
                 AppLog.d(this, TAG, "Left reels viewer -- session reset")
+                updateDebugBadge("REELS→gone", "#808080")
             }
             // else: a single non-matching frame during a swipe transition
             // animation isn't treated as actually leaving -- avoids

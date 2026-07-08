@@ -25,6 +25,8 @@
     <string name="copy">Copy</string>
     <string name="clear">Clear</string>
     <string name="download_txt">Download as .txt</string>
+    <string name="debug_overlay_on">Debug overlay: ON (tap to turn off)</string>
+    <string name="debug_overlay_off">Debug overlay: OFF (tap to turn on)</string>
     <string name="log_copied_toast">Log copied</string>
     <string name="export_failed_toast">Log export failed</string>
     <string name="export_chooser_title">Save log as .txt</string>

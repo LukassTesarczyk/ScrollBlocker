@@ -9,6 +9,7 @@ object PrefsKeys {
     // Run/Stop state. This is Instagram's enabled flag specifically.
     const val KEY_ENABLED = "enabled"
     const val KEY_HUB_ORDER = "hub_order"
+    const val KEY_DEBUG_OVERLAY = "debug_overlay_enabled"
 
     // Order here is the default hub layout for fresh installs --
     // Instagram in the middle slot, since it's the only one that's

@@ -367,6 +367,16 @@
                         android:textSize="12sp"
                         android:textColor="#FFFFFF"
                         android:backgroundTint="#2E2E2E"
+                        android:layout_marginBottom="10dp" />
+
+                    <Button
+                        android:id="@+id/btnToggleDebugOverlay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/debug_overlay_off"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:backgroundTint="#2E2E2E"
                         android:layout_marginBottom="14dp" />
 
                     <ScrollView

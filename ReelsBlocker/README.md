@@ -119,6 +119,30 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.20 -- živý debug štítek na obrazovce (nový přístup k ladění)
+
+Poslední log měl navíc appku `com.miui.screenrecorder` prolínající se s
+Instagramem stovky×, protože jsi nahrával obrazovku -- to appce dost
+znepřehlednilo signál a je docela možné, že samotné nahrávání
+(výkonová zátěž navíc) přispělo k tomu, že appka na chvíli minula
+ikonku Reels vícekrát za sebou. Zvedl jsem toleranci na tyhle výpadky
+(2 → 4 mise po sobě, než appka usoudí, že jsi opravdu odešel).
+
+Ale hlavně -- **nová věc, ne jen další záplata na to samé.** Doteď jsem
+se musel dohadovat, co se dělo, ze suchého textového logu s
+milisekundovými časy, což je pomalé a nejednoznačné. Přidal jsem
+**živý debugovací štítek přímo na obrazovku** (Debug tab -> tlačítko
+"Debug overlay: OFF/ON"), malý černý štítek v levém horním rohu, co v
+reálném čase ukazuje, co appka právě vidí: jestli jsi v Instagramu,
+jestli má nalezenou ikonku Reels, jestli jsi v Reels přehrávači, kdy tě
+appka vyhodila atd. -- barevně (zeleně = OK, oranžově = nenalezeno,
+červeně = vyhozeno).
+
+**Až budeš příště nahrávat obrazovku kvůli bugu, zapni si tenhle štítek
+předtím** -- uvidím přesně, co appka dělala v každém okamžiku videa,
+místo abych to zpětně dolovat z logu. Mělo by to hodně zrychlit, jak
+rychle se příští bug najde a opraví.
+
 ## v1.19 -- oprava "appka na chvíli vypadla" (čtvereček i detekce)
 
 Log ukázal přesně to, co jsi popsal ("uprostřed používání to vypadlo

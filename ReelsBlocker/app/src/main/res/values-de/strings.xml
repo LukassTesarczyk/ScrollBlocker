@@ -20,6 +20,8 @@
     <string name="copy">Kopieren</string>
     <string name="clear">Leeren</string>
     <string name="download_txt">Als .txt herunterladen</string>
+    <string name="debug_overlay_on">Debug-Overlay: AN (tippen zum Ausschalten)</string>
+    <string name="debug_overlay_off">Debug-Overlay: AUS (tippen zum Einschalten)</string>
     <string name="log_copied_toast">Log kopiert</string>
     <string name="export_failed_toast">Log-Export fehlgeschlagen</string>
     <string name="export_chooser_title">Log als .txt speichern</string>

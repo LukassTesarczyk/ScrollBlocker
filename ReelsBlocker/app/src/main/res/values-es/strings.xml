@@ -20,6 +20,8 @@
     <string name="copy">Copiar</string>
     <string name="clear">Borrar</string>
     <string name="download_txt">Descargar como .txt</string>
+    <string name="debug_overlay_on">Superposición debug: ACTIVADA (toca para desactivar)</string>
+    <string name="debug_overlay_off">Superposición debug: DESACTIVADA (toca para activar)</string>
     <string name="log_copied_toast">Registro copiado</string>
     <string name="export_failed_toast">Error al exportar el registro</string>
     <string name="export_chooser_title">Guardar registro como .txt</string>

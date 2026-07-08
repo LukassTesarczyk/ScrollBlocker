@@ -20,6 +20,8 @@
     <string name="copy">Copier</string>
     <string name="clear">Effacer</string>
     <string name="download_txt">Télécharger en .txt</string>
+    <string name="debug_overlay_on">Overlay debug : ACTIVÉ (touchez pour désactiver)</string>
+    <string name="debug_overlay_off">Overlay debug : DÉSACTIVÉ (touchez pour activer)</string>
     <string name="log_copied_toast">Journal copié</string>
     <string name="export_failed_toast">Échec de l\'export du journal</string>
     <string name="export_chooser_title">Enregistrer le journal en .txt</string>

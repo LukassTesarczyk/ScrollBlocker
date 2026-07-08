@@ -20,6 +20,8 @@
     <string name="copy">Kopírovať</string>
     <string name="clear">Vymazať</string>
     <string name="download_txt">Stiahnuť ako .txt</string>
+    <string name="debug_overlay_on">Debug overlay: ZAPNUTÉ (klepni pre vypnutie)</string>
+    <string name="debug_overlay_off">Debug overlay: VYPNUTÉ (klepni pre zapnutie)</string>
     <string name="log_copied_toast">Log skopírovaný</string>
     <string name="export_failed_toast">Export logu zlyhal</string>
     <string name="export_chooser_title">Uložiť log ako .txt</string>
