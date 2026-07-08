@@ -21,7 +21,6 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.view.accessibility.AccessibilityWindowInfo
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -470,28 +469,35 @@ class ReelsAccessibilityService : AccessibilityService() {
         // counts, the flickering overlay, and is the most likely cause of
         // swipes-from-DMs bypassing the block too (the session kept
         // getting wiped before the swipe-past-first-reel check could fire).
-        // The v1.21 log showed the same class of bug again, this time from
-        // the on-screen keyboard: com.google.android.inputmethod.latin
-        // fired a genuine TYPE_WINDOW_STATE_CHANGED once (typing a
-        // comment/caption/search), got latched as currentForegroundPackage,
-        // and stayed there for 23 straight seconds after the keyboard
-        // closed -- dismissing an IME apparently doesn't reliably fire its
-        // own matching transition back to the app underneath. Blacklisting
-        // Gboard's package specifically would only fix it for that one
-        // keyboard; checking the actual window type instead (via the
-        // service's own windows list, already enabled through
-        // flagRetrieveInteractiveWindows) generalizes to any keyboard app.
-        val isImeWindow = event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
-            windows.any { it.id == event.windowId && it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
-
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && !isImeWindow) {
-            if (eventPackage != currentForegroundPackage) {
-                val fgRelevant = eventPackage == INSTAGRAM_PACKAGE || currentForegroundPackage == INSTAGRAM_PACKAGE
-                if (fgRelevant) {
-                    AppLog.d(this, TAG, "Foreground app changed to: $eventPackage")
+        //
+        // v1.21 and v1.22 each fixed one specific transient window
+        // (miui.systemui.plugin, then the on-screen keyboard) that could
+        // still fire a *genuine* TYPE_WINDOW_STATE_CHANGED without
+        // Instagram actually losing focus -- but the v1.22 log showed a
+        // keyboard transition slip through the window-type check anyway
+        // (the live `windows` list is a snapshot that can race with the
+        // event that triggered it). Rather than keep chasing each new
+        // culprit one at a time, any transition AWAY from Instagram now
+        // gets one live confirmation: ask rootInActiveWindow (the same
+        // check v1.19 already uses, just applied at this decision point
+        // too) whether Instagram is still actually the active window right
+        // now. If it is, the transition is spurious -- skip it and keep
+        // treating Instagram as current. This covers every transient
+        // window type at once, known or not yet seen, instead of needing a
+        // new patch per culprit.
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            val leavingInstagram = currentForegroundPackage == INSTAGRAM_PACKAGE && eventPackage != INSTAGRAM_PACKAGE
+            val stillReallyInInstagram = leavingInstagram &&
+                rootInActiveWindow?.packageName?.toString() == INSTAGRAM_PACKAGE
+            if (!stillReallyInInstagram) {
+                if (eventPackage != currentForegroundPackage) {
+                    val fgRelevant = eventPackage == INSTAGRAM_PACKAGE || currentForegroundPackage == INSTAGRAM_PACKAGE
+                    if (fgRelevant) {
+                        AppLog.d(this, TAG, "Foreground app changed to: $eventPackage")
+                    }
                 }
+                currentForegroundPackage = eventPackage
             }
-            currentForegroundPackage = eventPackage
         }
 
         val isInstagram = currentForegroundPackage == INSTAGRAM_PACKAGE

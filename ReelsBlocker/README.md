@@ -119,6 +119,34 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.23 -- jedna obecná pojistka místo honění jednotlivých viníků
+
+Psal jsi, že už to funguje líp, ale pár× se pořád objevilo "not IG" i
+když jsi byl v Instagramu -- v novém logu se ukázalo, že oprava klávesnice
+z v1.22 jednou neproběhla (kontrola přes seznam oken je momentka, co se
+může minout s událostí, která ji vyvolala) -- tentokrát to trvalo jen 2,8
+vteřiny místo 23, ale pořád se to stalo.
+
+**Místo honění dalšího konkrétního viníka (co bude příště? jiná appka?
+jiný typ okna?) jsem to teď vyřešil obecně:** kdykoliv appka usoudí, že
+opouštíš Instagram, se předtím ještě jednou zeptá systému naživo "jsi
+fakt pořád v Instagramu?" (stejný trik, co appka od v1.19 používá jinde).
+Pokud systém řekne, že Instagram je pořád aktivní, appka to přechodné
+hlášení ignoruje a zůstává u toho, že jsi v Instagramu. Tohle by mělo
+zachytit úplně cokoliv -- klávesnici, systémové komponenty HyperOS, i
+věci, co jsem ještě neviděl -- bez toho, abych musel čekat na další log
+a další konkrétní opravu.
+
+Řešení je záměrně **stejný, už jednou ověřený princip** jako oprava z
+v1.19, jen použitý na dalším místě -- ne nový mechanismus, který by mohl
+něco jinýho pokazit.
+
+Na to druhé, vyhození z Reels bez scrollnutí, jsem v tomhle logu nenašel
+jednoznačný důkaz nové chyby (spíš to vypadá na stejné krátké výpadky
+detekce, co řeší oprava výše) -- pokud se to bude dít dál i po týhle
+verzi, pošli prosím log s debug štítkem zapnutým, ať vidím přesně, co se
+děje v tu chvíli.
+
 ## v1.22 -- stejný bug, tentokrát u klávesnice (opraveno obecně)
 
 Nejnovější log ukázal úplně stejnou třídu chyby jako v1.21, ale tentokrát
