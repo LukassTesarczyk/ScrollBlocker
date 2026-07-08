@@ -430,6 +430,21 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         val root = rootInActiveWindow ?: return
         try {
+            // rootInActiveWindow reflects whatever window is truly focused
+            // right now, which can drift from currentForegroundPackage --
+            // e.g. a transient status-bar peek while watching something
+            // fullscreen doesn't always fire TYPE_WINDOW_STATE_CHANGED, so
+            // our tracked "still in Instagram" can go stale while the
+            // actual root briefly belongs to systemui instead. Searching
+            // that root for Instagram's tab icon predictably finds
+            // nothing, so the overlay silently sat hidden for up to a
+            // minute (per the v1.18 log) until a real window switch
+            // finally resynced things. Just skip processing this one event
+            // instead of touching any state either way -- Instagram is
+            // still genuinely current underneath, so neither hiding nor
+            // resetting the session is correct here.
+            if (root.packageName?.toString() != INSTAGRAM_PACKAGE) return
+
             // Time tracking runs regardless of the Run/Stop toggle -- it's
             // a passive usage insight, not part of the blocking feature.
             tickTimeTracking(classifyScreen(root))

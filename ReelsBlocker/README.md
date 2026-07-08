@@ -119,6 +119,31 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.19 -- oprava "appka na chvíli vypadla" (čtvereček i detekce)
+
+Log ukázal přesně to, co jsi popsal ("uprostřed používání to vypadlo
+třeba na minutu") -- asi 80 vteřin appka viděla desítky přepínání mezi
+Instagramem a systémovou lištou, ale žádné z nich nebylo skutečné
+přepnutí okna (appka si pořád myslela, že je pořád v Instagramu), a
+přesto se po celou tu dobu nenašla ikonka záložky ani se nic
+nedetekovalo -- čtvereček zůstal schovaný, dokud nepřišlo první
+opravdové přepnutí appky, které to zase srovnalo.
+
+- **Příčina:** appka se ptá systému "co je teď skutečně na obrazovce"
+  (`rootInActiveWindow`) při každé události, ale při krátkém probliknutí
+  stavové lišty (typické při sledování něčeho na celou obrazovku) systém
+  na okamžik vrátí obsah stavové lišty místo Instagramu -- aniž by to
+  appka zaregistrovala jako "opustil jsi Instagram" (protože to není
+  skutečné přepnutí okna). Appka pak hledala ikonku Reels ve špatném
+  obsahu, nic nenašla, a čekala, až přijde další skutečné přepnutí, aby
+  se to opravilo -- což mohlo trvat klidně minutu.
+- **Oprava:** appka si teď při každé události ověří, že to, co skutečně
+  vidí na obrazovce, je opravdu Instagram, než se do toho pustí. Pokud
+  ne (jen to krátké probliknutí), tu jednu událost přeskočí a nic
+  nemění -- ani neschovává čtvereček, ani neresetuje sezení -- protože
+  Instagram je pořád reálně v popředí, jen se to na okamžik odchýlilo.
+  Příště by se to mělo srovnat prakticky okamžitě, ne až za minutu.
+
 ## v1.18 -- storky se přestanou plést s Reels, delší tolerance na první video
 
 Nový log (díky opravě z v1.17 konečně obsahoval to důležité) ukázal dvě
