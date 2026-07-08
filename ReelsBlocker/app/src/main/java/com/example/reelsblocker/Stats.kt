@@ -24,6 +24,7 @@ object Stats {
         val dayKey = "stat_day_${dayKeyFormat.format(Date())}"
         editor.putInt(dayKey, prefs.getInt(dayKey, 0) + 1)
         editor.apply()
+        StatsWidgetProvider.pushUpdate(context, force = true)
     }
 
     fun total(context: Context): Int {

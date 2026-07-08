@@ -10,6 +10,10 @@ object PrefsKeys {
     const val KEY_ENABLED = "enabled"
     const val KEY_HUB_ORDER = "hub_order"
     const val KEY_DEBUG_OVERLAY = "debug_overlay_enabled"
+    // Empty string = PIN lock disabled. Stored as plain text on purpose:
+    // this is a self-control speed bump against impulsively disabling the
+    // blocker, not a security boundary against another person.
+    const val KEY_PIN = "pin_code"
 
     // Order here is the default hub layout for fresh installs --
     // Instagram in the middle slot, since it's the only one that's

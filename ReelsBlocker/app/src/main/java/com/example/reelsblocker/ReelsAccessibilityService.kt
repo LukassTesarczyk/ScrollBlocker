@@ -111,6 +111,9 @@ class ReelsAccessibilityService : AccessibilityService() {
     }
 
     private var inReelsViewer = false
+    private var inTikTokFeed = false
+    private var tiktokEnteredAt = 0L
+    private var tiktokMissCount = 0
     private var viewerEnteredAt = 0L
     private var viewerMissCount = 0
     private var lastActionTime = 0L
@@ -382,17 +385,16 @@ class ReelsAccessibilityService : AccessibilityService() {
         badge.setTextColor(Color.parseColor(color))
     }
 
-    // wentToFeed is false when we had to fall back to the plain back
-    // button instead of clicking the Home tab -- in that case we can't
-    // actually promise the user landed back on the main feed (a fallback
-    // "back" from a reel opened inside a DM thread returns to the DM,
-    // not the feed), so the pill text needs to stay honest about that.
-    private fun playExitAnimation(wentToFeed: Boolean) {
+    // Callers pass the exact pill text: "back to feed" only when the Home
+    // tab click actually succeeded (a fallback "back" from a reel opened
+    // inside a DM returns to the DM, not the feed, so the text must stay
+    // honest about that), a generic "left" text otherwise.
+    private fun playExitAnimation(textRes: Int) {
         transitionRoot ?: return
         val label = transitionLabel ?: return
         val density = resources.displayMetrics.density
         try {
-            label.text = localizedString(if (wentToFeed) R.string.pill_back_to_feed else R.string.pill_left_reels)
+            label.text = localizedString(textRes)
             label.animate().cancel()
             label.alpha = 0f
             label.translationY = -60 * density
@@ -529,13 +531,8 @@ class ReelsAccessibilityService : AccessibilityService() {
         val isInstagram = currentForegroundPackage == INSTAGRAM_PACKAGE
 
         if (!isInstagram) {
-            hideOverlay()
             inReelsViewer = false
             lastTimeTickAt = 0L
-            // TikTok groundwork: no detection exists yet because its
-            // internal ids have never been observed -- while its Run
-            // toggle is on, record what's actually on screen so the real
-            // detection can be built from data, same as Instagram's was.
             if (currentForegroundPackage == TIKTOK_PACKAGE &&
                 ::prefs.isInitialized && prefs.getBoolean(PrefsKeys.enabledKeyFor("tiktok"), false)
             ) {
@@ -544,15 +541,23 @@ class ReelsAccessibilityService : AccessibilityService() {
                     try {
                         if (tkRoot.packageName?.toString() == TIKTOK_PACKAGE) {
                             reconDumpScreenIds(tkRoot, "TikTok recon")
+                            updateTikTokOverlay(tkRoot)
+                            handleTikTokSession(tkRoot, event)
                         }
+                    } catch (e: Exception) {
+                        AppLog.w(this, TAG, "TikTok handling failed: ${e.message}")
                     } finally {
                         tkRoot.recycle()
                     }
                 }
+                return
             }
+            hideOverlay()
+            inTikTokFeed = false
             updateDebugBadge("not IG", "#808080")
             return
         }
+        inTikTokFeed = false
 
         val root = rootInActiveWindow ?: return
         try {
@@ -577,10 +582,10 @@ class ReelsAccessibilityService : AccessibilityService() {
             // Time tracking runs regardless of the Run/Stop toggle -- it's
             // a passive usage insight, not part of the blocking feature.
             tickTimeTracking(classifyScreen(root))
+            categoryBadge(lastTimeCategory)
 
-            // Screens the chart can't classify (DMs, Stories, search...)
-            // currently all land in "Other" -- record what ids these
-            // screens actually contain so they can be told apart properly.
+            // Screens the chart still can't classify get their ids
+            // recorded, so any future gap can be closed from data too.
             if (lastTimeCategory == TimeCategory.OTHER && !inReelsViewer) {
                 reconDumpScreenIds(root, "IG screen recon")
             }
@@ -605,22 +610,52 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var lastTimeTickAt = 0L
     private var lastTimeCategory = TimeCategory.OTHER
 
-    // FEED reuses the already-validated home-tab resource id (same one
-    // exitToFeed clicks) just reading its selected state instead of
-    // clicking it -- low risk since that id is proven to work. DM/STORY
-    // have no validated resource ids yet, so unclassified time falls into
-    // OTHER rather than being guessed at (see CLAUDE.md rule 5).
+    // Every id here was read off the user's own recon logs (v1.26 round),
+    // not guessed -- see CLAUDE.md rule 5. DM threads consistently showed
+    // thread_fragment_container + message_list, Stories showed
+    // reel_viewer_root, and the main feed showed row_feed_* rows. Order
+    // matters: a reel opened from inside a DM thread has both the clips
+    // viewer AND the thread ids in the tree, and it should count as Reels.
     private fun classifyScreen(root: AccessibilityNodeInfo): TimeCategory {
+        if (matchedReelsViewerId(root) != null) return TimeCategory.REELS
+        if (hasAnyNodeById(root, "reel_viewer_root")) return TimeCategory.STORY
+        if (hasAnyNodeById(root, "thread_fragment_container") || hasAnyNodeById(root, "message_list")) {
+            return TimeCategory.DM
+        }
         val homeNode = findHomeTabNode(root)
-        val isFeed = homeNode?.isSelected == true
+        val isFeedTabSelected = homeNode?.isSelected == true
         homeNode?.recycle()
-        return if (isFeed) TimeCategory.FEED else TimeCategory.OTHER
+        if (isFeedTabSelected) return TimeCategory.FEED
+        if (hasAnyNodeById(root, "row_feed_photo_imageview") || hasAnyNodeById(root, "row_feed_profile_header")) {
+            return TimeCategory.FEED
+        }
+        return TimeCategory.OTHER
+    }
+
+    private fun hasAnyNodeById(root: AccessibilityNodeInfo, id: String): Boolean {
+        val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$id")
+        val found = matches.isNotEmpty()
+        matches.forEach { it.recycle() }
+        return found
+    }
+
+    private fun categoryBadge(category: TimeCategory) {
+        when (category) {
+            TimeCategory.REELS -> updateDebugBadge("REELS", "#C9A8F2")
+            TimeCategory.FEED -> updateDebugBadge("FEED", "#A8C8E8")
+            TimeCategory.DM -> updateDebugBadge("DMs", "#A8D8B9")
+            TimeCategory.STORY -> updateDebugBadge("STORY", "#F2A8C0")
+            TimeCategory.OTHER -> updateDebugBadge("IG · other", "#B0B0B0")
+        }
     }
 
     private fun tickTimeTracking(category: TimeCategory) {
         val now = System.currentTimeMillis()
         if (lastTimeTickAt != 0L) {
             TimeStats.addTime(this, lastTimeCategory, now - lastTimeTickAt)
+            // Throttled internally -- keeps the widget's time donut fresh
+            // during long sessions without redrawing it per event.
+            StatsWidgetProvider.pushUpdate(this)
         }
         lastTimeTickAt = now
         lastTimeCategory = category
@@ -637,10 +672,8 @@ class ReelsAccessibilityService : AccessibilityService() {
             tabNode.getBoundsInScreen(bounds)
             tabNode.recycle()
             showOverlayAt(bounds)
-            updateDebugBadge("IG · tab✓", "#26A69A")
         } else {
             val missMs = System.currentTimeMillis() - lastSeenTabAt
-            updateDebugBadge("IG · tab✗ ${missMs}ms", "#FFA726")
             if (missMs >= HIDE_GRACE_MS && overlayView?.visibility != View.GONE) {
                 AppLog.d(this, TAG, "Tab icon missing for ${missMs}ms -- hiding overlay")
                 hideOverlay()
@@ -819,7 +852,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                     AppLog.d(this, TAG, "Swiped past the first reel -- exiting to Home feed")
                     lastActionTime = now
                     val wentToFeed = exitToFeed(root)
-                    playExitAnimation(wentToFeed)
+                    playExitAnimation(if (wentToFeed) R.string.pill_back_to_feed else R.string.pill_left_reels)
                     inReelsViewer = false
                     updateDebugBadge("REELS→EXIT", "#FF5252")
                 }
@@ -835,6 +868,90 @@ class ReelsAccessibilityService : AccessibilityService() {
             // else: a single non-matching frame during a swipe transition
             // animation isn't treated as actually leaving -- avoids
             // silently re-granting a fresh "free reel" on every swipe.
+        }
+    }
+
+    // ---- TikTok: one video per session ----
+
+    // The For You player is identified by the only two non-obfuscated ids
+    // it consistently showed across the user's recon log: "viewpager" +
+    // "long_press_layout". The drafts/editor screens in the same log had
+    // viewpager WITHOUT long_press_layout, so they stay usable -- which is
+    // exactly the requested behavior (block feed scrolling, keep drafts
+    // and own-profile videos accessible). Everything else in TikTok's
+    // tree is per-build obfuscated ("be1", "hpk"...) and useless to match.
+    private fun isTikTokFeedScreen(root: AccessibilityNodeInfo): Boolean {
+        return hasAnyTikTokNodeById(root, "viewpager") && hasAnyTikTokNodeById(root, "long_press_layout")
+    }
+
+    private fun hasAnyTikTokNodeById(root: AccessibilityNodeInfo, id: String): Boolean {
+        val matches = root.findAccessibilityNodeInfosByViewId("$TIKTOK_PACKAGE:id/$id")
+        val found = matches.isNotEmpty()
+        matches.forEach { it.recycle() }
+        return found
+    }
+
+    // TikTok's bottom-nav ids are per-build obfuscated, so the Home tab is
+    // located by its accessibility description instead, gated by the same
+    // bottom-of-screen plausibility check the Instagram overlay uses --
+    // if TikTok localizes/renames the description, this quietly finds
+    // nothing and only the icon cover is lost, not the blocking itself.
+    private fun updateTikTokOverlay(root: AccessibilityNodeInfo) {
+        if (!overlayAdded) return
+        val node = findNodeByExactDesc(root, "home", depth = 0)
+        if (node != null) {
+            val bounds = Rect()
+            node.getBoundsInScreen(bounds)
+            node.recycle()
+            if (isPlausibleTabIconBounds(bounds)) {
+                lastSeenTabAt = System.currentTimeMillis()
+                showOverlayAt(bounds)
+                return
+            }
+        }
+        val missMs = System.currentTimeMillis() - lastSeenTabAt
+        if (missMs >= HIDE_GRACE_MS && overlayView?.visibility != View.GONE) {
+            hideOverlay()
+        }
+    }
+
+    private fun handleTikTokSession(root: AccessibilityNodeInfo, event: AccessibilityEvent) {
+        val inFeed = isTikTokFeedScreen(root)
+        val now = System.currentTimeMillis()
+
+        if (inFeed) {
+            tiktokMissCount = 0
+            if (!inTikTokFeed) {
+                inTikTokFeed = true
+                tiktokEnteredAt = now
+                AppLog.d(this, TAG, "Entered TikTok feed -- 1 video allowed, next real swipe exits")
+                updateDebugBadge("TIKTOK feed", "#7FE3E0")
+            } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+                if (now - tiktokEnteredAt < ENTRY_GRACE_MS) {
+                    AppLog.d(this, TAG, "Ignoring TikTok scroll ${now - tiktokEnteredAt}ms after entry (settle)")
+                    return
+                }
+                if (now - lastActionTime > COOLDOWN_MS) {
+                    // No measured "safe screen" to click over to (unlike
+                    // Instagram's Home tab), so back out of the player.
+                    AppLog.d(this, TAG, "Swiped past the first TikTok video -- backing out")
+                    lastActionTime = now
+                    performGlobalAction(GLOBAL_ACTION_BACK)
+                    playExitAnimation(R.string.pill_left_feed)
+                    inTikTokFeed = false
+                    updateDebugBadge("TIKTOK→EXIT", "#FF5252")
+                }
+            }
+        } else if (inTikTokFeed) {
+            tiktokMissCount++
+            if (tiktokMissCount >= VIEWER_MISS_TOLERANCE) {
+                inTikTokFeed = false
+                tiktokMissCount = 0
+                AppLog.d(this, TAG, "Left TikTok feed -- session reset")
+                updateDebugBadge("TIKTOK", "#B0B0B0")
+            }
+        } else {
+            updateDebugBadge("TIKTOK", "#B0B0B0")
         }
     }
 

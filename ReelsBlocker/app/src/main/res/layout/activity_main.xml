@@ -252,50 +252,123 @@
 
                 </LinearLayout>
 
-                <!-- Setup -->
+                <!-- Setup: sectioned cards (Guide / Permissions / PIN) -->
                 <LinearLayout
                     android:id="@+id/setupContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_card"
-                    android:padding="18dp"
                     android:visibility="gone">
 
-                    <TextView
-                        android:id="@+id/tvInstructions"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="#CCCCCC"
-                        android:lineSpacingExtra="3dp"
-                        android:layout_marginBottom="18dp" />
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_card"
+                        android:padding="18dp"
+                        android:layout_marginBottom="16dp">
 
-                    <Button
-                        android:id="@+id/btnOpenAccessibility"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/setup_open_accessibility"
-                        android:textColor="#FFFFFF"
-                        android:backgroundTint="#2E2E2E"
-                        android:layout_marginBottom="10dp" />
+                        <TextView
+                            android:text="@string/section_guide"
+                            android:textColor="#808080"
+                            android:textSize="12sp"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.1"
+                            android:layout_marginBottom="12dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
 
-                    <Button
-                        android:id="@+id/btnOpenBatterySettings"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/setup_open_battery"
-                        android:textColor="#FFFFFF"
-                        android:backgroundTint="#2E2E2E"
-                        android:layout_marginBottom="10dp" />
+                        <TextView
+                            android:id="@+id/tvInstructions"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="#CCCCCC"
+                            android:lineSpacingExtra="3dp" />
 
-                    <Button
-                        android:id="@+id/btnOpenOtherPermissions"
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/setup_open_other_permissions"
-                        android:textColor="#FFFFFF"
-                        android:backgroundTint="#2E2E2E" />
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_card"
+                        android:padding="18dp"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:text="@string/section_permissions"
+                            android:textColor="#808080"
+                            android:textSize="12sp"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.1"
+                            android:layout_marginBottom="12dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <Button
+                            android:id="@+id/btnOpenAccessibility"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/setup_open_accessibility"
+                            android:textColor="#FFFFFF"
+                            android:backgroundTint="#2E2E2E"
+                            android:layout_marginBottom="10dp" />
+
+                        <Button
+                            android:id="@+id/btnOpenBatterySettings"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/setup_open_battery"
+                            android:textColor="#FFFFFF"
+                            android:backgroundTint="#2E2E2E"
+                            android:layout_marginBottom="10dp" />
+
+                        <Button
+                            android:id="@+id/btnOpenOtherPermissions"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/setup_open_other_permissions"
+                            android:textColor="#FFFFFF"
+                            android:backgroundTint="#2E2E2E" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_card"
+                        android:padding="18dp">
+
+                        <TextView
+                            android:text="@string/section_pin"
+                            android:textColor="#808080"
+                            android:textSize="12sp"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.1"
+                            android:layout_marginBottom="12dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <TextView
+                            android:text="@string/pin_description"
+                            android:textColor="#909090"
+                            android:textSize="13sp"
+                            android:lineSpacingExtra="2dp"
+                            android:layout_marginBottom="14dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <Button
+                            android:id="@+id/btnPinToggle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pin_enable"
+                            android:textColor="#FFFFFF"
+                            android:backgroundTint="#2E2E2E" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

@@ -4,15 +4,16 @@ import android.content.Context
 
 /**
  * All-time cumulative milliseconds spent per screen category while
- * Instagram is in the foreground and blocking is on. Same SharedPreferences
- * file as Stats -- the accessibility service writes, MainActivity reads.
+ * Instagram is in the foreground. Same SharedPreferences file as Stats --
+ * the accessibility service writes, MainActivity reads.
  *
- * Only FEED is currently classified with real confidence (it reuses the
- * already-validated home-tab resource id lookup). DM and STORY have no
- * validated resource ids yet -- until a log pins those down, that time
- * falls into OTHER instead of being guessed at and possibly mislabeled.
+ * Every category here is backed by resource ids actually observed in the
+ * user's own recon logs (v1.26 round), not guessed: DM threads show
+ * thread_fragment_container/message_list, Stories show reel_viewer_root,
+ * the feed shows row_feed_* rows, and Reels shows clips_viewer_view_pager.
  */
 enum class TimeCategory(val prefKey: String) {
+    REELS("time_reels"),
     FEED("time_feed"),
     DM("time_dm"),
     STORY("time_story"),

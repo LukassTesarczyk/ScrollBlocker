@@ -7,6 +7,7 @@
     <string name="today">Heute</string>
     <string name="last_7_days">Letzte 7 Tage</string>
     <string name="time_spent_title">Zeit verbracht</string>
+    <string name="time_spent_reels">Reels</string>
     <string name="time_spent_dm">Nachrichten</string>
     <string name="time_spent_feed">Feed</string>
     <string name="time_spent_stories">Storys</string>
@@ -47,4 +48,15 @@
     <string name="shutdown_app">App beenden</string>
     <string name="pill_back_to_feed">↩ Zurück zum Feed</string>
     <string name="pill_left_reels">↩ Reels verlassen</string>
+    <string name="pill_left_feed">↩ Video-Feed verlassen</string>
+    <string name="section_guide">Anleitung</string>
+    <string name="section_permissions">Berechtigungen</string>
+    <string name="section_pin">PIN-Sperre</string>
+    <string name="pin_description">Wenn aktiviert, erfordert das Stoppen der Blockierung (Stop, Run/Stop im Hub, App beenden) zuerst die PIN-Eingabe. Eine Bremse für schwache Momente.</string>
+    <string name="pin_enable">PIN aktivieren</string>
+    <string name="pin_disable">PIN deaktivieren</string>
+    <string name="pin_set_title">PIN festlegen (4-6 Ziffern)</string>
+    <string name="pin_enter_title">PIN eingeben</string>
+    <string name="pin_wrong">Falsche PIN</string>
+    <string name="pin_length_hint">PIN muss 4-6 Ziffern haben</string>
 </resources>

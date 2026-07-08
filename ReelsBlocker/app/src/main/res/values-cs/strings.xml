@@ -7,6 +7,7 @@
     <string name="today">Dnes</string>
     <string name="last_7_days">Posledních 7 dní</string>
     <string name="time_spent_title">Kde trávíš čas</string>
+    <string name="time_spent_reels">Reels</string>
     <string name="time_spent_dm">Zprávy</string>
     <string name="time_spent_feed">Feed</string>
     <string name="time_spent_stories">Historky</string>
@@ -47,4 +48,15 @@
     <string name="shutdown_app">Vypnout aplikaci</string>
     <string name="pill_back_to_feed">↩ Zpět do feedu</string>
     <string name="pill_left_reels">↩ Opuštěno Reels</string>
+    <string name="pill_left_feed">↩ Opuštěn video feed</string>
+    <string name="section_guide">Návod</string>
+    <string name="section_permissions">Oprávnění</string>
+    <string name="section_pin">PIN zámek</string>
+    <string name="pin_description">Když je zapnutý, vypnutí blokování (Stop, Run/Stop v hubu, Vypnout aplikaci) vyžaduje nejdřív zadat PIN. Pojistka pro chvíle slabé vůle.</string>
+    <string name="pin_enable">Zapnout PIN</string>
+    <string name="pin_disable">Vypnout PIN</string>
+    <string name="pin_set_title">Nastav PIN (4-6 číslic)</string>
+    <string name="pin_enter_title">Zadej PIN</string>
+    <string name="pin_wrong">Špatný PIN</string>
+    <string name="pin_length_hint">PIN musí mít 4-6 číslic</string>
 </resources>

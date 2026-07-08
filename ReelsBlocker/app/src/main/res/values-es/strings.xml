@@ -7,6 +7,7 @@
     <string name="today">Hoy</string>
     <string name="last_7_days">Últimos 7 días</string>
     <string name="time_spent_title">Tiempo dedicado</string>
+    <string name="time_spent_reels">Reels</string>
     <string name="time_spent_dm">Mensajes</string>
     <string name="time_spent_feed">Feed</string>
     <string name="time_spent_stories">Historias</string>
@@ -47,4 +48,15 @@
     <string name="shutdown_app">Apagar la aplicación</string>
     <string name="pill_back_to_feed">↩ Volver al feed</string>
     <string name="pill_left_reels">↩ Reels cerrado</string>
+    <string name="pill_left_feed">↩ Saliste del feed de video</string>
+    <string name="section_guide">Guía</string>
+    <string name="section_permissions">Permisos</string>
+    <string name="section_pin">Bloqueo PIN</string>
+    <string name="pin_description">Si está activado, detener el bloqueo (Stop, Run/Stop en el hub, Apagar la aplicación) requiere introducir el PIN primero. Un freno para momentos de poca voluntad.</string>
+    <string name="pin_enable">Activar PIN</string>
+    <string name="pin_disable">Desactivar PIN</string>
+    <string name="pin_set_title">Establecer PIN (4-6 dígitos)</string>
+    <string name="pin_enter_title">Introduce el PIN</string>
+    <string name="pin_wrong">PIN incorrecto</string>
+    <string name="pin_length_hint">El PIN debe tener 4-6 dígitos</string>
 </resources>

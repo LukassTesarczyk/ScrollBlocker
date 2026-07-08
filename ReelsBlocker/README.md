@@ -119,6 +119,40 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.27 -- graf z naměřených dat, widget, PIN, TikTok blokování
+
+Velká verze -- všechno v ní vychází z logů, cos poslal (žádné hádání):
+
+- **Graf "Kde trávíš čas" konečně měří doopravdy.** Z reconu jsem přečetl
+  skutečná ID: DMs (`thread_fragment_container`, `message_list`),
+  Historky (`reel_viewer_root`), feed (`row_feed_*`). Nově má graf i
+  kategorii **Reels** (fialová) -- čas strávený v Reels přehrávači se
+  počítá zvlášť. DMs už nebudou na nule.
+- **Debug štítek teď ukazuje, co appka právě detekuje:** REELS / FEED /
+  DMs / STORY / IG · other / TIKTOK feed -- každá kategorie svojí barvou.
+  Na nahrávkách obrazovky bude okamžitě vidět, jestli appka vidí totéž
+  co ty.
+- **Widget na plochu** -- dnešní počet zablokování, celkový počet a
+  prstencový graf času (stejné barvy jako v appce). Klepnutí na widget
+  otevře appku. Najdeš ho v launcheru mezi widgety (podrž prst na ploše
+  -> Widgety -> Reels Blocker). Aktualizuje se sám.
+- **PIN zámek** -- v Nastavení, které je teď rozdělené do sekcí (**Návod /
+  Oprávnění / PIN zámek**). Po zapnutí PINu (4-6 číslic) vyžaduje
+  vypnutí blokování (Stop, Run/Stop v hubu i Vypnout aplikaci) nejdřív
+  zadat PIN. Pojistka pro chvíle slabé vůle -- není to trezor, jen
+  zpomalovací práh.
+- **TikTok se teď blokuje jako Instagram.** Z TikTok logu: skoro všechna
+  jeho ID jsou zamlžená (mění se s každou verzí -- `be1`, `hpk`...), ale
+  dvě jsou stabilní: `viewpager` + `long_press_layout` = For You
+  přehrávač. Takže: jedno video se dokouká, další swipe tě vyhodí
+  (tlačítkem zpět -- TikTok nemá změřené bezpečné místo, kam kliknout).
+  Ikonku domečku dole zakrývá čtvereček (hledá se podle popisku "Home",
+  protože ID jsou zamlžená). **Drafty a vlastní profil zůstávají
+  přístupné** -- ty obrazovky v logu `long_press_layout` nemají, takže je
+  appka nebere jako feed. Zapíná se v hubu (TikTok -> Run).
+- Pozn.: zablokovaná TikTok videa se zatím nepočítají do statistik/grafu
+  (ty jsou zatím čistě instagramové) -- můžu doplnit příště, kdyžtak řekni.
+
 ## v1.26 -- Shutdown místo restartu, větší ikonka oznámení, příprava na TikTok
 
 - **Tlačítko Shutdown App v bočním menu.** Restart tlačítko z Nastavení

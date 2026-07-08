@@ -109,7 +109,11 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnOpenOtherPermissions).setOnClickListener {
             openAppInfo()
         }
-        findViewById<View>(R.id.btnMenuShutdown).setOnClickListener { shutdownApp() }
+        findViewById<View>(R.id.btnMenuShutdown).setOnClickListener {
+            requirePin { shutdownApp() }
+        }
+        findViewById<Button>(R.id.btnPinToggle).setOnClickListener { togglePin() }
+        refreshPinButton()
 
         findViewById<Button>(R.id.btnRun).setOnClickListener {
             ensureNotificationPermission()
@@ -117,8 +121,10 @@ class MainActivity : AppCompatActivity() {
             refreshStatus()
         }
         findViewById<Button>(R.id.btnStop).setOnClickListener {
-            prefs.edit().putBoolean(PrefsKeys.enabledKeyFor(selectedApp), false).apply()
-            refreshStatus()
+            requirePin {
+                prefs.edit().putBoolean(PrefsKeys.enabledKeyFor(selectedApp), false).apply()
+                refreshStatus()
+            }
         }
 
         btnOpenMenu.setOnClickListener { if (drawerOpen) closeDrawer() else openDrawer() }
@@ -148,9 +154,17 @@ class MainActivity : AppCompatActivity() {
             if (slot != null) {
                 val appId = hubOrder[slot]
                 val enabled = prefs.getBoolean(PrefsKeys.enabledKeyFor(appId), false)
-                if (!enabled) ensureNotificationPermission()
-                prefs.edit().putBoolean(PrefsKeys.enabledKeyFor(appId), !enabled).apply()
-                if (appId == selectedApp) refreshStatus()
+                val apply = {
+                    prefs.edit().putBoolean(PrefsKeys.enabledKeyFor(appId), !enabled).apply()
+                    if (appId == selectedApp) refreshStatus()
+                }
+                if (enabled) {
+                    // Turning blocking OFF is what the PIN lock exists for.
+                    requirePin(apply)
+                } else {
+                    ensureNotificationPermission()
+                    apply()
+                }
             }
         }
 
@@ -203,6 +217,7 @@ class MainActivity : AppCompatActivity() {
         refreshStatus()
         if (overviewContainer.visibility == View.VISIBLE) renderStats()
         if (debugContainer.visibility == View.VISIBLE) renderLog()
+        StatsWidgetProvider.pushUpdate(this, force = true)
     }
 
     private val notificationPermissionLauncher =
@@ -260,6 +275,69 @@ class MainActivity : AppCompatActivity() {
         getSystemService(NotificationManager::class.java)?.cancelAll()
         finishAffinity()
         Runtime.getRuntime().exit(0)
+    }
+
+    // ---- PIN lock ----
+
+    private fun pinCode(): String = prefs.getString(PrefsKeys.KEY_PIN, "") ?: ""
+
+    private fun refreshPinButton() {
+        findViewById<Button>(R.id.btnPinToggle).text =
+            getString(if (pinCode().isEmpty()) R.string.pin_enable else R.string.pin_disable)
+    }
+
+    private fun togglePin() {
+        if (pinCode().isEmpty()) {
+            showPinDialog(R.string.pin_set_title) { entered ->
+                if (entered.length in 4..6) {
+                    prefs.edit().putString(PrefsKeys.KEY_PIN, entered).apply()
+                    refreshPinButton()
+                } else {
+                    Toast.makeText(this, getString(R.string.pin_length_hint), Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            requirePin {
+                prefs.edit().putString(PrefsKeys.KEY_PIN, "").apply()
+                refreshPinButton()
+            }
+        }
+    }
+
+    // Runs the action immediately when no PIN is set; otherwise the action
+    // only runs after the stored PIN is typed correctly.
+    private fun requirePin(onSuccess: () -> Unit) {
+        val pin = pinCode()
+        if (pin.isEmpty()) {
+            onSuccess()
+            return
+        }
+        showPinDialog(R.string.pin_enter_title) { entered ->
+            if (entered == pin) {
+                onSuccess()
+            } else {
+                Toast.makeText(this, getString(R.string.pin_wrong), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun showPinDialog(titleRes: Int, onEntered: (String) -> Unit) {
+        val density = resources.displayMetrics.density
+        val input = android.widget.EditText(this).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
+            filters = arrayOf(android.text.InputFilter.LengthFilter(6))
+        }
+        val wrapper = android.widget.FrameLayout(this).apply {
+            setPadding((20 * density).toInt(), (8 * density).toInt(), (20 * density).toInt(), 0)
+            addView(input)
+        }
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(titleRes))
+            .setView(wrapper)
+            .setPositiveButton(android.R.string.ok) { _, _ -> onEntered(input.text.toString()) }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private val hubSlotIds = listOf(R.id.hubInstagram, R.id.hubTiktok, R.id.hubSnapchat)
@@ -632,6 +710,7 @@ class MainActivity : AppCompatActivity() {
         val density = resources.displayMetrics.density
         val times = TimeStats.all(this)
         val entries = listOf(
+            Triple(getString(R.string.time_spent_reels), times[TimeCategory.REELS] ?: 0L, "#C9A8F2"),
             Triple(getString(R.string.time_spent_dm), times[TimeCategory.DM] ?: 0L, "#A8D8B9"),
             Triple(getString(R.string.time_spent_feed), times[TimeCategory.FEED] ?: 0L, "#A8C8E8"),
             Triple(getString(R.string.time_spent_stories), times[TimeCategory.STORY] ?: 0L, "#F2A8C0"),
