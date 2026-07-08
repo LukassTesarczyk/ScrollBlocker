@@ -218,6 +218,7 @@ class MainActivity : AppCompatActivity() {
         if (overviewContainer.visibility == View.VISIBLE) renderStats()
         if (debugContainer.visibility == View.VISIBLE) renderLog()
         StatsWidgetProvider.pushUpdate(this, force = true)
+        BarsWidgetProvider.pushUpdate(this, force = true)
     }
 
     private val notificationPermissionLauncher =
@@ -322,22 +323,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showPinDialog(titleRes: Int, onEntered: (String) -> Unit) {
-        val density = resources.displayMetrics.density
-        val input = android.widget.EditText(this).apply {
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
-                android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
-            filters = arrayOf(android.text.InputFilter.LengthFilter(6))
+        val view = layoutInflater.inflate(R.layout.dialog_pin, null)
+        val title = view.findViewById<TextView>(R.id.tvPinDialogTitle)
+        val input = view.findViewById<android.widget.EditText>(R.id.etPinInput)
+        val btnCancel = view.findViewById<Button>(R.id.btnPinCancel)
+        val btnConfirm = view.findViewById<Button>(R.id.btnPinConfirm)
+        title.text = getString(titleRes)
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this, R.style.Theme_App_Dialog)
+            .setView(view)
+            .create()
+
+        btnCancel.setOnClickListener { dialog.dismiss() }
+        btnConfirm.setOnClickListener {
+            onEntered(input.text.toString())
+            dialog.dismiss()
         }
-        val wrapper = android.widget.FrameLayout(this).apply {
-            setPadding((20 * density).toInt(), (8 * density).toInt(), (20 * density).toInt(), 0)
-            addView(input)
+        input.setOnEditorActionListener { _, _, _ ->
+            onEntered(input.text.toString())
+            dialog.dismiss()
+            true
         }
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle(getString(titleRes))
-            .setView(wrapper)
-            .setPositiveButton(android.R.string.ok) { _, _ -> onEntered(input.text.toString()) }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+
+        dialog.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        dialog.show()
+        input.requestFocus()
     }
 
     private val hubSlotIds = listOf(R.id.hubInstagram, R.id.hubTiktok, R.id.hubSnapchat)
@@ -664,7 +674,9 @@ class MainActivity : AppCompatActivity() {
         runBtn.text = if (enabled) getString(R.string.status_running) else getString(R.string.run)
         stopBtn.text = if (enabled) getString(R.string.stop) else getString(R.string.status_stopped)
 
-        if (selectedApp == "instagram") {
+        if (PrefsKeys.isImplemented(selectedApp)) {
+            // TikTok detection runs inside the same accessibility service
+            // as Instagram's -- there's no separate service to enable.
             val serviceOn = isAccessibilityServiceEnabled()
             tvServiceStatus.text = if (serviceOn) {
                 getString(R.string.service_enabled)
@@ -677,7 +689,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderStats() {
-        if (selectedApp != "instagram") {
+        if (!PrefsKeys.isImplemented(selectedApp)) {
             findViewById<TextView>(R.id.tvTotalBlocked).text = "--"
             findViewById<TextView>(R.id.tvTodayBlocked).text = "--"
             findViewById<LinearLayout>(R.id.barsContainer).removeAllViews()
@@ -685,9 +697,9 @@ class MainActivity : AppCompatActivity() {
             findViewById<LinearLayout>(R.id.timeLegendContainer).removeAllViews()
             return
         }
-        findViewById<TextView>(R.id.tvTotalBlocked).text = Stats.total(this).toString()
-        findViewById<TextView>(R.id.tvTodayBlocked).text = Stats.today(this).toString()
-        renderChart(Stats.last7Days(this))
+        findViewById<TextView>(R.id.tvTotalBlocked).text = Stats.total(this, selectedApp).toString()
+        findViewById<TextView>(R.id.tvTodayBlocked).text = Stats.today(this, selectedApp).toString()
+        renderChart(Stats.last7Days(this, selectedApp))
         renderTimeChart()
     }
 
@@ -708,13 +720,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun renderTimeChart() {
         val density = resources.displayMetrics.density
-        val times = TimeStats.all(this)
+        val times = TimeStats.today(this, selectedApp)
         val entries = listOf(
-            Triple(getString(R.string.time_spent_reels), times[TimeCategory.REELS] ?: 0L, "#C9A8F2"),
-            Triple(getString(R.string.time_spent_dm), times[TimeCategory.DM] ?: 0L, "#A8D8B9"),
-            Triple(getString(R.string.time_spent_feed), times[TimeCategory.FEED] ?: 0L, "#A8C8E8"),
-            Triple(getString(R.string.time_spent_stories), times[TimeCategory.STORY] ?: 0L, "#F2A8C0"),
-            Triple(getString(R.string.time_spent_other), times[TimeCategory.OTHER] ?: 0L, "#5A5A5A")
+            Triple(getString(R.string.time_spent_reels), times[TimeCategory.REELS] ?: 0L, "#A855F7"),
+            Triple(getString(R.string.time_spent_dm), times[TimeCategory.DM] ?: 0L, "#22C55E"),
+            Triple(getString(R.string.time_spent_feed), times[TimeCategory.FEED] ?: 0L, "#3B82F6"),
+            Triple(getString(R.string.time_spent_stories), times[TimeCategory.STORY] ?: 0L, "#EC4899"),
+            Triple(getString(R.string.time_spent_other), times[TimeCategory.OTHER] ?: 0L, "#70706C")
         )
 
         findViewById<DonutChartView>(R.id.timeDonutChart).setSegments(

@@ -119,6 +119,48 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.28 -- vlastní statistiky pro každou appku, dva widgety, hezčí PIN, TikTok do Inboxu
+
+Reakce na tvůj test v1.27 -- postupně po bodech:
+
+- **Graf "Kde trávíš čas" se teď resetuje každý den** (o půlnoci) a
+  **Instagram a TikTok mají úplně oddělené statistiky** -- vlastní graf
+  času i vlastní počet zablokování pro každou appku zvlášť, nemíchá se
+  to dohromady. Přepneš appku v hubu dole a Home záložka ukáže její
+  vlastní čísla.
+- **Barvy grafu jsou teď výraznější** -- Reels sytě fialová, Feed sytě
+  modrá, DMs sytě zelená, Historky sytě růžová (dřív to byly bledé
+  pastelové odstíny).
+- **TikTok se teď počítá do statistik** -- předtím se blokovalo, ale
+  nikde se to nezapočítávalo. Teď má TikTok vlastní graf i počítadlo
+  zablokování jako Instagram.
+- **Widget je teď dva widgety, ne jeden.** První je kolečko (donut graf)
+  s časy vedle něj, druhý je sloupcový graf posledních 7 dní -- oba
+  vypadají stejně jako v appce. Přidáš je zvlášť (podrž prst na ploše ->
+  Widgety -> Reels Blocker -> vyber, který chceš).
+- **PIN dialog má teď tmavý design appky**, ne systémové bílé okno se
+  starým Androidem -- tmavá kartička, zaoblený vstup na číslice, tlačítka
+  ve stylu appky (Zrušit / Potvrdit).
+- **TikTok tě po vyhození pošle do Inboxu**, ne na náhodnou obrazovku
+  "zpět" jako dřív (to mohlo skončit kdekoliv, klidně zase ve videu).
+  Zkouší najít Inbox záložku stejně, jako appka hledá Home ikonku --
+  když by to Inbox nenašlo, spadne to zpátky na obyčejné "zpět".
+- **Žlutá poznámka "detekce zatím neexistuje" u TikToku zmizela** --
+  appka teď TikTok bere jako plně implementovanou appku (stejně jako
+  Instagram), takže se ta poznámka logicky ukazuje už jen u Snapchatu,
+  který opravdu ještě nic nedělá.
+- **Ikonka appky je nový obrázek** (`image-1.jpg` z rootu repa) --
+  zelený prstenec na tmavě modrém pozadí, zpracovaný stejným postupem
+  jako předchozí ikonka (ne ruční překreslení).
+- **Inbox (seznam zpráv) se pořád někdy hlásí jako Feed, ne DMs** --
+  tohle se bez tvého čerstvého logu nedalo bezpečně opravit (pravidlo
+  č. 5 v CLAUDE.md -- neházet se do detekce Instagramu naslepo). Appka
+  teď potichu loguje, co přesně na té obrazovce vidí, takže stačí
+  poslat log pořízený přímo na obrazovce se seznamem zpráv (se
+  zapnutým Debug overlay v Log tabu) a příště to půjde doladit přesně.
+  Stejná prosba platí i pro rozlišení Profilu / Videí / Fotoaparátu v
+  debug štítku -- zatím pro ně nemám žádná data.
+
 ## v1.27 -- graf z naměřených dat, widget, PIN, TikTok blokování
 
 Velká verze -- všechno v ní vychází z logů, cos poslal (žádné hádání):

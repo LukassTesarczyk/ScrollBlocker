@@ -529,19 +529,23 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
 
         val isInstagram = currentForegroundPackage == INSTAGRAM_PACKAGE
+        // Time tracking runs regardless of the Run/Stop toggle for either
+        // app -- it's a passive usage insight, not part of the blocking
+        // feature. Tracked here (not per-app-branch) purely so TikTok being
+        // foreground doesn't fall into the "not Instagram -> wipe the tick
+        // baseline" path below and lose a whole in-between delta.
+        val isTikTok = currentForegroundPackage == TIKTOK_PACKAGE
 
         if (!isInstagram) {
             inReelsViewer = false
-            lastTimeTickAt = 0L
-            if (currentForegroundPackage == TIKTOK_PACKAGE &&
-                ::prefs.isInitialized && prefs.getBoolean(PrefsKeys.enabledKeyFor("tiktok"), false)
-            ) {
+            if (isTikTok && ::prefs.isInitialized && prefs.getBoolean(PrefsKeys.enabledKeyFor("tiktok"), false)) {
                 val tkRoot = rootInActiveWindow
                 if (tkRoot != null) {
                     try {
                         if (tkRoot.packageName?.toString() == TIKTOK_PACKAGE) {
                             reconDumpScreenIds(tkRoot, "TikTok recon")
                             updateTikTokOverlay(tkRoot)
+                            tickTimeTracking("tiktok", if (isTikTokFeedScreen(tkRoot)) TimeCategory.FEED else TimeCategory.OTHER)
                             handleTikTokSession(tkRoot, event)
                         }
                     } catch (e: Exception) {
@@ -552,6 +556,9 @@ class ReelsAccessibilityService : AccessibilityService() {
                 }
                 return
             }
+            // Truly not in either tracked app -- stop the tick baseline so
+            // the next resumed session doesn't count the gap as usage time.
+            lastTimeTickAt = 0L
             hideOverlay()
             inTikTokFeed = false
             updateDebugBadge("not IG", "#808080")
@@ -579,9 +586,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                 return
             }
 
-            // Time tracking runs regardless of the Run/Stop toggle -- it's
-            // a passive usage insight, not part of the blocking feature.
-            tickTimeTracking(classifyScreen(root))
+            tickTimeTracking("instagram", classifyScreen(root))
             categoryBadge(lastTimeCategory)
 
             // Screens the chart still can't classify get their ids
@@ -609,6 +614,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     private var lastTimeTickAt = 0L
     private var lastTimeCategory = TimeCategory.OTHER
+    private var lastTimeAppId = "instagram"
 
     // Every id here was read off the user's own recon logs (v1.26 round),
     // not guessed -- see CLAUDE.md rule 5. DM threads consistently showed
@@ -625,7 +631,20 @@ class ReelsAccessibilityService : AccessibilityService() {
         val homeNode = findHomeTabNode(root)
         val isFeedTabSelected = homeNode?.isSelected == true
         homeNode?.recycle()
-        if (isFeedTabSelected) return TimeCategory.FEED
+        if (isFeedTabSelected) {
+            // The Direct Inbox (DM list) is opened as a screen on top of
+            // the feed rather than through the bottom tab bar, so the Home
+            // tab underneath can still report isSelected=true while it's
+            // open -- reported by the user as Inbox showing up as FEED in
+            // the chart/badge. No id for the Inbox list itself has been
+            // measured yet (unlike an open thread, which DM above already
+            // catches), so per CLAUDE.md rule 5 this only logs what's
+            // actually on screen here instead of guessing a new id -- a
+            // fresh log captured while sitting on Inbox will show exactly
+            // what to match on.
+            reconDumpScreenIds(root, "IG screen recon (FEED via tab-selected)")
+            return TimeCategory.FEED
+        }
         if (hasAnyNodeById(root, "row_feed_photo_imageview") || hasAnyNodeById(root, "row_feed_profile_header")) {
             return TimeCategory.FEED
         }
@@ -641,24 +660,29 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     private fun categoryBadge(category: TimeCategory) {
         when (category) {
-            TimeCategory.REELS -> updateDebugBadge("REELS", "#C9A8F2")
-            TimeCategory.FEED -> updateDebugBadge("FEED", "#A8C8E8")
-            TimeCategory.DM -> updateDebugBadge("DMs", "#A8D8B9")
-            TimeCategory.STORY -> updateDebugBadge("STORY", "#F2A8C0")
+            TimeCategory.REELS -> updateDebugBadge("REELS", "#A855F7")
+            TimeCategory.FEED -> updateDebugBadge("FEED", "#3B82F6")
+            TimeCategory.DM -> updateDebugBadge("DMs", "#22C55E")
+            TimeCategory.STORY -> updateDebugBadge("STORY", "#EC4899")
             TimeCategory.OTHER -> updateDebugBadge("IG · other", "#B0B0B0")
         }
     }
 
-    private fun tickTimeTracking(category: TimeCategory) {
+    private fun tickTimeTracking(appId: String, category: TimeCategory) {
         val now = System.currentTimeMillis()
-        if (lastTimeTickAt != 0L) {
-            TimeStats.addTime(this, lastTimeCategory, now - lastTimeTickAt)
+        // A tick can only be attributed to the app it was measured under --
+        // switching straight from Instagram to TikTok (or back) without an
+        // intervening "neither app foreground" gap must not let the last
+        // slice bleed into the new app's total.
+        if (lastTimeTickAt != 0L && lastTimeAppId == appId) {
+            TimeStats.addTime(this, appId, lastTimeCategory, now - lastTimeTickAt)
             // Throttled internally -- keeps the widget's time donut fresh
             // during long sessions without redrawing it per event.
             StatsWidgetProvider.pushUpdate(this)
         }
         lastTimeTickAt = now
         lastTimeCategory = category
+        lastTimeAppId = appId
     }
 
     // ---- Bottom-nav Reels icon covering ----
@@ -932,11 +956,9 @@ class ReelsAccessibilityService : AccessibilityService() {
                     return
                 }
                 if (now - lastActionTime > COOLDOWN_MS) {
-                    // No measured "safe screen" to click over to (unlike
-                    // Instagram's Home tab), so back out of the player.
-                    AppLog.d(this, TAG, "Swiped past the first TikTok video -- backing out")
+                    AppLog.d(this, TAG, "Swiped past the first TikTok video -- exiting to Inbox")
                     lastActionTime = now
-                    performGlobalAction(GLOBAL_ACTION_BACK)
+                    exitTikTokToInbox(root)
                     playExitAnimation(R.string.pill_left_feed)
                     inTikTokFeed = false
                     updateDebugBadge("TIKTOK→EXIT", "#FF5252")
@@ -953,6 +975,24 @@ class ReelsAccessibilityService : AccessibilityService() {
         } else {
             updateDebugBadge("TIKTOK", "#B0B0B0")
         }
+    }
+
+    // Mirrors exitToFeed's approach for Instagram: land somewhere useful
+    // instead of a plain back-press, which could pop to whatever screen
+    // was underneath (including right back into another video). TikTok's
+    // bottom-nav ids are per-build obfuscated same as the Home tab (see
+    // updateTikTokOverlay above), so Inbox is also located by content
+    // description, falling back to BACK if that description ever changes.
+    private fun exitTikTokToInbox(root: AccessibilityNodeInfo): Boolean {
+        Stats.recordBlock(this, "tiktok")
+        val inboxNode = findNodeByExactDesc(root, "inbox", depth = 0)
+        val clicked = inboxNode?.let { clickNodeOrAncestor(it) } ?: false
+        inboxNode?.recycle()
+        if (!clicked) {
+            AppLog.d(this, TAG, "TikTok Inbox tab not found -- falling back to back button")
+            performGlobalAction(GLOBAL_ACTION_BACK)
+        }
+        return clicked
     }
 
     // Returns which candidate id matched (or null) instead of a plain
@@ -984,7 +1024,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     }
 
     private fun exitToFeed(root: AccessibilityNodeInfo): Boolean {
-        Stats.recordBlock(this)
+        Stats.recordBlock(this, "instagram")
         val homeNode = findHomeTabNode(root)
         val clicked = homeNode?.let { clickNodeOrAncestor(it) } ?: false
         homeNode?.recycle()

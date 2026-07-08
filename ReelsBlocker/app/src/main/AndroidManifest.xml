@@ -31,7 +31,18 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_stats_info" />
+                android:resource="@xml/widget_donut_info" />
+        </receiver>
+
+        <receiver
+            android:name=".BarsWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_bars_info" />
         </receiver>
 
         <service

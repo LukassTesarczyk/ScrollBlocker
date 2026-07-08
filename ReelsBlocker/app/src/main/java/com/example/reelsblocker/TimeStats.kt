@@ -1,23 +1,30 @@
 package com.example.reelsblocker
 
 import android.content.Context
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
- * All-time cumulative milliseconds spent per screen category while
- * Instagram is in the foreground. Same SharedPreferences file as Stats --
- * the accessibility service writes, MainActivity reads.
+ * Milliseconds spent per screen category while a given app is in the
+ * foreground, scoped per app id and per calendar day -- resets naturally at
+ * midnight (a new day just starts reading/writing a fresh, absent key) and
+ * never mixes one app's numbers into another's, same pattern Stats.kt
+ * already uses for the blocked-count bar chart.
  *
- * Every category here is backed by resource ids actually observed in the
- * user's own recon logs (v1.26 round), not guessed: DM threads show
+ * Every Instagram category here is backed by resource ids actually observed
+ * in the user's own recon logs (v1.26 round), not guessed: DM threads show
  * thread_fragment_container/message_list, Stories show reel_viewer_root,
  * the feed shows row_feed_* rows, and Reels shows clips_viewer_view_pager.
+ * TikTok only ever reports FEED/OTHER -- it has no separate DM/Story/Reels
+ * screens in this app's model.
  */
 enum class TimeCategory(val prefKey: String) {
-    REELS("time_reels"),
-    FEED("time_feed"),
-    DM("time_dm"),
-    STORY("time_story"),
-    OTHER("time_other")
+    REELS("reels"),
+    FEED("feed"),
+    DM("dm"),
+    STORY("story"),
+    OTHER("other")
 }
 
 object TimeStats {
@@ -26,20 +33,23 @@ object TimeStats {
     // capping each tick's delta keeps a long gap from being misattributed
     // as one huge slice of whatever category was active before the gap.
     private const val MAX_TICK_MS = 2000L
+    private val dayKeyFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
-    fun addTime(context: Context, category: TimeCategory, deltaMs: Long) {
+    private fun key(appId: String, category: TimeCategory, day: String): String =
+        "time_${appId}_${category.prefKey}_$day"
+
+    fun addTime(context: Context, appId: String, category: TimeCategory, deltaMs: Long) {
         if (deltaMs <= 0) return
         val clamped = deltaMs.coerceAtMost(MAX_TICK_MS)
         val prefs = context.getSharedPreferences(PrefsKeys.PREFS_NAME, Context.MODE_PRIVATE)
-        val key = category.prefKey
-        prefs.edit().putLong(key, prefs.getLong(key, 0L) + clamped).apply()
+        val k = key(appId, category, dayKeyFormat.format(Date()))
+        prefs.edit().putLong(k, prefs.getLong(k, 0L) + clamped).apply()
     }
 
-    fun get(context: Context, category: TimeCategory): Long {
+    /** Today's per-category milliseconds for one app -- resets at midnight. */
+    fun today(context: Context, appId: String): Map<TimeCategory, Long> {
         val prefs = context.getSharedPreferences(PrefsKeys.PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getLong(category.prefKey, 0L)
+        val day = dayKeyFormat.format(Date())
+        return TimeCategory.values().associateWith { prefs.getLong(key(appId, it, day), 0L) }
     }
-
-    fun all(context: Context): Map<TimeCategory, Long> =
-        TimeCategory.values().associateWith { get(context, it) }
 }

@@ -30,7 +30,10 @@ object PrefsKeys {
         else -> appId
     }
 
-    fun isImplemented(appId: String): Boolean = appId == "instagram"
+    // TikTok's For You feed detection (viewpager + long_press_layout,
+    // v1.27) is real now, not a placeholder -- Snapchat is still nothing
+    // but a saved Run/Stop toggle.
+    fun isImplemented(appId: String): Boolean = appId == "instagram" || appId == "tiktok"
 
     fun loadHubOrder(context: Context): MutableList<String> {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

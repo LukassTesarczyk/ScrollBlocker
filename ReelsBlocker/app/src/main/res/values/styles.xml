@@ -23,4 +23,17 @@
         <item name="android:fontFamily">serif</item>
         <item name="fontFamily">serif</item>
     </style>
+
+    <!-- Custom dialogs (PIN entry) draw their own bg_card-backed root, so
+         the system dialog chrome (white window background/corners) needs
+         to get out of the way entirely instead of showing through/behind
+         it -- that's what read as "looks like old Android". -->
+    <style name="Theme.App.Dialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorAccent">#26A69A</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="fontFamily">serif</item>
+    </style>
 </resources>

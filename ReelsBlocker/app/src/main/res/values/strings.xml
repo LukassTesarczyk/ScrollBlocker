@@ -9,7 +9,7 @@
     <string name="total_blocked">Total blocked</string>
     <string name="today">Today</string>
     <string name="last_7_days">Last 7 days</string>
-    <string name="time_spent_title">Time spent</string>
+    <string name="time_spent_title">Time spent today</string>
     <string name="time_spent_reels">Reels</string>
     <string name="time_spent_dm">DMs</string>
     <string name="time_spent_feed">Feed</string>
@@ -71,4 +71,6 @@
     <string name="pin_enter_title">Enter PIN</string>
     <string name="pin_wrong">Wrong PIN</string>
     <string name="pin_length_hint">PIN must be 4-6 digits</string>
+    <string name="pin_confirm">Confirm</string>
+    <string name="pin_cancel">Cancel</string>
 </resources>
