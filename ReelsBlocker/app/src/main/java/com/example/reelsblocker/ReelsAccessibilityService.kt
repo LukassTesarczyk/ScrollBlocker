@@ -487,8 +487,21 @@ class ReelsAccessibilityService : AccessibilityService() {
         // new patch per culprit.
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val leavingInstagram = currentForegroundPackage == INSTAGRAM_PACKAGE && eventPackage != INSTAGRAM_PACKAGE
-            val stillReallyInInstagram = leavingInstagram &&
-                rootInActiveWindow?.packageName?.toString() == INSTAGRAM_PACKAGE
+            // rootInActiveWindow returns a node that must be recycled --
+            // this was leaking one every time this branch ran (i.e. on
+            // basically every real window switch away from Instagram)
+            // until the accessibility node pool ran out, which plausibly
+            // explains the sudden across-the-board flakiness (including in
+            // completely unrelated node lookups like the reel-viewer match)
+            // right after this check was added.
+            val stillReallyInInstagram = if (leavingInstagram) {
+                val checkRoot = rootInActiveWindow
+                val matches = checkRoot?.packageName?.toString() == INSTAGRAM_PACKAGE
+                checkRoot?.recycle()
+                matches
+            } else {
+                false
+            }
             if (!stillReallyInInstagram) {
                 if (eventPackage != currentForegroundPackage) {
                     val fgRelevant = eventPackage == INSTAGRAM_PACKAGE || currentForegroundPackage == INSTAGRAM_PACKAGE

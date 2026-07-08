@@ -119,6 +119,29 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.24 -- oprava mojí vlastní chyby z v1.23 (únik paměti)
+
+Měl jsi pravdu, v1.23 bylo skutečně horší -- a tentokrát to byla moje
+chyba, ne další skrytá vlastnost HyperOS.
+
+- **Co se stalo:** nová kontrola z v1.23 ("zeptej se systému naživo,
+  jestli jsi fakt pořád v Instagramu") si při každém spuštění vyžádala
+  od systému kousek paměti (referenci na aktuální obrazovku), ale já
+  jsem zapomněl appce říct, ať tu referenci zase uvolní. Při normálním
+  používání appka tohle dělá při každém přepnutí pryč z Instagramu --
+  takže se to opakovalo pořád dokola, únik se hromadil, až appce došla
+  interní kapacita a začala se chovat nevyzpytatelně i v úplně jiných
+  částech kódu (třeba při hledání, jestli jsi v Reels) -- což se
+  projevilo přesně jako "vyhazuje skoro pořád hned", protože appka si
+  najednou nebyla jistá vůbec ničím.
+- **Oprava:** appka si teď tu referenci po použití pořádně uklidí, jak
+  má. Samotná myšlenka z v1.23 (obecná kontrola místo honění
+  jednotlivých viníků) zůstává -- jen bez chyby, co ji doprovázela.
+
+Díky za rychlou zpětnou vazbu, tohle přesně ukazuje, proč je dobré
+testovat po každé verzi znovu, ne jen předpokládat, že novější je vždycky
+lepší.
+
 ## v1.23 -- jedna obecná pojistka místo honění jednotlivých viníků
 
 Psal jsi, že už to funguje líp, ale pár× se pořád objevilo "not IG" i
