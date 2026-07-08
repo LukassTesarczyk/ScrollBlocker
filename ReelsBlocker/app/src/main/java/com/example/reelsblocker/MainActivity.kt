@@ -498,6 +498,7 @@ class MainActivity : AppCompatActivity() {
         setupContainer.visibility = if (tab == "setup") View.VISIBLE else View.GONE
         debugContainer.visibility = if (tab == "debug") View.VISIBLE else View.GONE
         languagesContainer.visibility = if (tab == "languages") View.VISIBLE else View.GONE
+        findViewById<Button>(R.id.btnRestartApp).visibility = if (tab == "setup") View.VISIBLE else View.GONE
 
         btnMenuOverview.setBackgroundResource(if (tab == "overview") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
         btnMenuSetup.setBackgroundResource(if (tab == "setup") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
@@ -589,11 +590,19 @@ class MainActivity : AppCompatActivity() {
         renderTimeChart()
     }
 
+    // Rounding straight to whole minutes made every short test session show
+    // "0m" for everything, which read as the chart just not working at all --
+    // show seconds until there's at least a full minute of data.
     private fun formatDuration(ms: Long): String {
-        val totalMinutes = ms / 60000
-        val hours = totalMinutes / 60
-        val minutes = totalMinutes % 60
-        return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+        val totalSeconds = ms / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return when {
+            hours > 0 -> "${hours}h ${minutes}m"
+            minutes > 0 -> "${minutes}m ${seconds}s"
+            else -> "${seconds}s"
+        }
     }
 
     private fun renderTimeChart() {

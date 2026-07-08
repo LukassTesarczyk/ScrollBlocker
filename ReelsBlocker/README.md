@@ -119,6 +119,43 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.16 -- restart tlačítko natvrdo viditelné, přesný čas na vteřiny
+
+- **Restart App tlačítko jde teď vidět vždycky, bez scrollování.** Prohlédl
+  jsem si fotku, cos poslal (zesvětlil a zkontroloval pixely v místě, kam
+  ukazuje šipka) -- tam skutečně nic nebylo, appka v1.15 měla tlačítko
+  správně v kódu, ale sedělo úplně dole ve scrollovatelném obsahu Nastavení
+  tabu (pod dlouhým textem návodu + 3 tlačítky), takže bylo potřeba
+  doscrollovat. Radši než to nechávat na scrollování, přesunul jsem
+  tlačítko úplně mimo scrollovací oblast -- teď je natvrdo připíchnuté
+  hned nad spodní lištou appek, viditelné okamžitě, jakmile otevřeš
+  Nastavení, bez ohledu na to, jak dlouhý je návod.
+- **Log potvrdil, že oprava blbnutí detekce z v1.15 fakt funguje.** V logu
+  je vidět přesně ten scénář, co jsi popsal -- minimalizace appky (swipe
+  domů) vygenerovala desítky přepínání mezi Instagramem a launcherem
+  během jedné animace, a appka to teď správně vyhodnotila jako JEDNU
+  změnu popředí, ne desítky. To přesně dokazuje, že v1.15 oprava dělá, co
+  má.
+- **Co ale log nepotvrdil ani nevyvrátil:** log ukazuje, že jsi po
+  minimalizaci appky (ReelsBlocker) přešel na jiné appky (Claude, klávesnice,
+  výběr souboru) a do Instagramu ses už nevrátil -- takže v logu není nic,
+  z čeho bych poznal, jestli detekce po opětovném otevření Instagramu
+  fungovala nebo ne. Stejně tak log neobsahuje moment, kdy bys swipnul z
+  DMs do Reels. Potřebuju k tomu ještě jeden, cíleně zaměřený log -- viz
+  níž.
+- **Graf "Kde trávíš čas" teď počítá na vteřiny**, ne jen na celé minuty --
+  krátké testovací session dřív ukazovaly "0m" u všeho, což vypadalo jako
+  že graf vůbec nefunguje. Teď se zobrazí třeba "42s" nebo "3m 12s".
+- DMs/Historky v grafu pořád čekají na resource ID z logu (viz v1.15).
+
+**Prosím o jeden konkrétní, krátký log přesně v tomhle pořadí, ať
+konečně mám z čeho:** otevři Instagram → jdi do Reels, ověř že blokuje →
+**minimalizuj appku ReelsBlocker (ne Instagram) → počkej pár vteřin → vrať
+se zpátky do Instagramu a zkus Reels znovu** → pak otevři DM vlákno →
+swipni stranou do Reels → podívej se na něčí historku → pak mi rovnou z
+appky exportuj Log. Nemusí to být dlouhé, hlavně ať to obsahuje přesně
+tyhle kroky za sebou.
+
 ## v1.15 -- skutečná příčina rozbité detekce (podruhé), spolehlivé updaty
 
 Log, cos poslal, ukázal přesně to, co bylo za tím vším: `miui.systemui.plugin`
