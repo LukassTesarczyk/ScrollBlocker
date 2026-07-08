@@ -21,6 +21,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.accessibility.AccessibilityWindowInfo
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -469,7 +470,21 @@ class ReelsAccessibilityService : AccessibilityService() {
         // counts, the flickering overlay, and is the most likely cause of
         // swipes-from-DMs bypassing the block too (the session kept
         // getting wiped before the swipe-past-first-reel check could fire).
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        // The v1.21 log showed the same class of bug again, this time from
+        // the on-screen keyboard: com.google.android.inputmethod.latin
+        // fired a genuine TYPE_WINDOW_STATE_CHANGED once (typing a
+        // comment/caption/search), got latched as currentForegroundPackage,
+        // and stayed there for 23 straight seconds after the keyboard
+        // closed -- dismissing an IME apparently doesn't reliably fire its
+        // own matching transition back to the app underneath. Blacklisting
+        // Gboard's package specifically would only fix it for that one
+        // keyboard; checking the actual window type instead (via the
+        // service's own windows list, already enabled through
+        // flagRetrieveInteractiveWindows) generalizes to any keyboard app.
+        val isImeWindow = event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
+            windows.any { it.id == event.windowId && it.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD }
+
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && !isImeWindow) {
             if (eventPackage != currentForegroundPackage) {
                 val fgRelevant = eventPackage == INSTAGRAM_PACKAGE || currentForegroundPackage == INSTAGRAM_PACKAGE
                 if (fgRelevant) {

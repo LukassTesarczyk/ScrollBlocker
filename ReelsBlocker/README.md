@@ -119,6 +119,31 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.22 -- stejný bug, tentokrát u klávesnice (opraveno obecně)
+
+Nejnovější log ukázal úplně stejnou třídu chyby jako v1.21, ale tentokrát
+kolem klávesnice: `com.google.android.inputmethod.latin` (Gboard) jednou
+vyvolala skutečné přepnutí okna (typicky když píšeš komentář/popisek/
+hledáš), appka to vzala jako "teď je aktivní klávesnice", a zůstala v
+tom přesvědčení **23 vteřin** i po zavření klávesnice -- zavření
+klávesnice zjevně nevyvolá spolehlivě odpovídající přepnutí zpátky na
+appku pod ní.
+
+- **Tentokrát jsem to neopravil natvrdo jménem balíčku** (jako u
+  `miui.systemui.plugin`), protože klávesnice se liší telefon od
+  telefonu (Gboard, Mi klávesnice, SwiftKey...) -- to by opravilo jen
+  tenhle jeden případ. Appka se teď místo toho ptá systému přímo, jestli
+  je okno, co si o sobě myslí, že je "aktivní", doopravdy klávesnice
+  (`AccessibilityWindowInfo.TYPE_INPUT_METHOD`) -- a pokud ano, appka to
+  ignoruje úplně, ať už to hlásí jakákoliv appka. Mělo by to fungovat
+  bez ohledu na to, jakou klávesnici máš nastavenou.
+- Mrkl jsem taky na ten jeden reel, kde tě to vyhodilo až po (podle tebe)
+  třech scrollech -- v logu je vidět 7 vteřin ticha mezi posledním
+  ignorovaným "usazovacím" pohybem a skutečným swipnutím, což vypadá, že
+  jsi ten reel prostě sledoval o něco déle, než jsi swipnul dál -- appka
+  na to správně počkala. Pokud se ti to bude dít dál a bude to vypadat
+  jinak, klidně pošli log s debug štítkem zapnutým.
+
 ## v1.21 -- konečná oprava "not IG" i přes to, že jsi byl v Reels
 
 Log z v1.20 (díky novému štítku i bez něj) ukázal přesně to, co jsi
