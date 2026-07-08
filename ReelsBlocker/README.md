@@ -119,6 +119,32 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.26 -- Shutdown místo restartu, větší ikonka oznámení, příprava na TikTok
+
+- **Tlačítko Shutdown App v bočním menu.** Restart tlačítko z Nastavení
+  je pryč -- místo něj je úplně dole v bočním menu (pod Home / Settings /
+  Log / Languages) červené "Vypnout aplikaci". Po klepnutí appka vypne
+  accessibility službu (jediný způsob, jak systému zabránit, aby ji na
+  pozadí okamžitě znovu nastartoval), zruší oznámení a kompletně ukončí
+  všechny svoje procesy. **Důležité: po vypnutí je potřeba službu znovu
+  zapnout ručně v Nastavení -> Přístupnost, než appka zase začne
+  blokovat** -- to je nevyhnutelná daň za skutečně kompletní vypnutí,
+  ne opomenutí.
+- **Větší ikonka v oznámení.** Mozek v stavové liště teď vyplňuje skoro
+  celou povolenou plochu (velikost samotné ikonky ve stavové liště
+  omezuje Android, víc než ~24dp nedovolí nikomu) a v rozbaleném
+  oznámení navíc přibyla velká barevná ikonka mozku vpravo.
+- **Graf "Kde trávíš čas" a DMs na nule:** appka zatím neumí DM obrazovku
+  poznat -- nemá ověřené ID (proto čas z DMs padá do "Ostatní", ne že by
+  se ztrácel). Přidal jsem záznam, který si při pobytu na nerozpoznané
+  obrazovce (DMs, historky, hledání...) zapíše, jaká ID tam skutečně
+  jsou (max 1× za 5 vteřin, jen při změně obrazovky) -- z příštího logu
+  po chvíli brouzdání v DMs už detekci postavím najisto.
+- **Příprava na TikTok:** když v hubu zapneš TikTok na Run a budeš ho
+  chvíli používat, appka si stejným způsobem zapíše, z čeho se jeho
+  obrazovky skládají -- z toho pak postavím skutečnou detekci (For You
+  feed atd.), stejně jako kdysi u Instagramu, ale rovnou z dat.
+
 ## v1.25 -- diagnostika pro poslední zbylý zdroj problémů
 
 Nejdřív dobrá zpráva: oprava úniku paměti z v1.24 drží -- v novém logu

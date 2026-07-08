@@ -1,6 +1,7 @@
 package com.example.reelsblocker
 
 import android.Manifest
+import android.app.NotificationManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnOpenOtherPermissions).setOnClickListener {
             openAppInfo()
         }
-        findViewById<Button>(R.id.btnRestartApp).setOnClickListener { restartApp() }
+        findViewById<View>(R.id.btnMenuShutdown).setOnClickListener { shutdownApp() }
 
         findViewById<Button>(R.id.btnRun).setOnClickListener {
             ensureNotificationPermission()
@@ -245,24 +246,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Full app restart -- kills this process (which the accessibility
-    // service also runs in, so it goes down too) and schedules the app
-    // to relaunch itself moments later. Android brings the accessibility
-    // service back once the app process restarts and the service is
-    // still enabled in Settings, same as after any other process kill.
-    // A scheduled AlarmManager relaunch used to sit here, but on MIUI/
-    // HyperOS a non-exact alarm targeting an already-killed process is
-    // frequently deferred or dropped entirely by battery management --
-    // the app would just vanish and never come back. makeRestartActivityTask
-    // starts the fresh task synchronously, before the process actually dies,
-    // so it isn't subject to any of that scheduling.
-    private fun restartApp() {
-        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
-        if (launchIntent != null) {
-            val restartIntent = Intent.makeRestartActivityTask(launchIntent.component)
-            restartIntent.action = ACTION_OPEN_HOME
-            startActivity(restartIntent)
-        }
+    // Complete shutdown -- unlike the old Restart button, nothing comes
+    // back afterwards. Just killing the process wouldn't be enough: as
+    // long as the accessibility service stays enabled in system settings,
+    // Android resurrects it (and with it the whole process) moments after
+    // any kill. disableSelf() is the one API that actually turns the
+    // service's toggle off, so the system stops bringing it back. The
+    // cost is that starting the app again requires re-enabling the
+    // service in Accessibility settings -- that's inherent to a true
+    // full shutdown, not an oversight.
+    private fun shutdownApp() {
+        ReelsAccessibilityService.instance?.disableSelf()
+        getSystemService(NotificationManager::class.java)?.cancelAll()
+        finishAffinity()
         Runtime.getRuntime().exit(0)
     }
 
@@ -526,7 +522,6 @@ class MainActivity : AppCompatActivity() {
         setupContainer.visibility = if (tab == "setup") View.VISIBLE else View.GONE
         debugContainer.visibility = if (tab == "debug") View.VISIBLE else View.GONE
         languagesContainer.visibility = if (tab == "languages") View.VISIBLE else View.GONE
-        findViewById<Button>(R.id.btnRestartApp).visibility = if (tab == "setup") View.VISIBLE else View.GONE
 
         btnMenuOverview.setBackgroundResource(if (tab == "overview") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
         btnMenuSetup.setBackgroundResource(if (tab == "setup") R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)

@@ -428,22 +428,6 @@
             </LinearLayout>
         </ScrollView>
 
-        <!-- Pinned outside the ScrollView on purpose: it kept getting
-             reported as "missing" when it lived at the bottom of the
-             (long, especially with translated instructions text) Settings
-             scroll content. Always visible now, no scrolling needed. -->
-        <Button
-            android:id="@+id/btnRestartApp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="12dp"
-            android:text="@string/restart_app"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#C62828"
-            android:visibility="gone" />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -727,6 +711,36 @@
             <TextView
                 android:text="@string/menu_languages"
                 android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/btnMenuShutdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="14dp"
+            android:background="@drawable/bg_menu_item"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginBottom="20dp">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="14dp"
+                android:tint="#C62828"
+                android:src="@drawable/ic_menu_power" />
+            <TextView
+                android:text="@string/shutdown_app"
+                android:textColor="#C62828"
                 android:textSize="15sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

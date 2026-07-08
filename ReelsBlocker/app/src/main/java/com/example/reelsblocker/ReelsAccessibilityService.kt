@@ -33,6 +33,14 @@ class ReelsAccessibilityService : AccessibilityService() {
     companion object {
         private const val TAG = "ReelsBlocker"
         private const val INSTAGRAM_PACKAGE = "com.instagram.android"
+        private const val TIKTOK_PACKAGE = "com.zhiliaoapp.musically"
+
+        // Lets MainActivity's Shutdown button stop the accessibility
+        // service properly (disableSelf) before killing the process --
+        // without this, Android would just resurrect the service moments
+        // after killProcess, defeating the point of a full shutdown.
+        @Volatile var instance: ReelsAccessibilityService? = null
+            private set
 
         // "reel_viewer_root" used to be in here too, but the v1.17.2 log
         // showed it matching right after "Tab icon missing" every single
@@ -139,6 +147,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        instance = this
         AppLog.d(this, TAG, "Service connected")
         prefs = getSharedPreferences(PrefsKeys.PREFS_NAME, MODE_PRIVATE)
         statusBarHeightPx = getStatusBarHeight()
@@ -188,6 +197,10 @@ class ReelsAccessibilityService : AccessibilityService() {
             )
             val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification)
+                // The status-bar glyph (small icon) is capped at ~24dp by
+                // Android itself -- the large icon is the way to get a
+                // visibly bigger, colored brain in the expanded shade.
+                .setLargeIcon(android.graphics.BitmapFactory.decodeResource(resources, R.drawable.ic_launcher_foreground))
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -519,6 +532,24 @@ class ReelsAccessibilityService : AccessibilityService() {
             hideOverlay()
             inReelsViewer = false
             lastTimeTickAt = 0L
+            // TikTok groundwork: no detection exists yet because its
+            // internal ids have never been observed -- while its Run
+            // toggle is on, record what's actually on screen so the real
+            // detection can be built from data, same as Instagram's was.
+            if (currentForegroundPackage == TIKTOK_PACKAGE &&
+                ::prefs.isInitialized && prefs.getBoolean(PrefsKeys.enabledKeyFor("tiktok"), false)
+            ) {
+                val tkRoot = rootInActiveWindow
+                if (tkRoot != null) {
+                    try {
+                        if (tkRoot.packageName?.toString() == TIKTOK_PACKAGE) {
+                            reconDumpScreenIds(tkRoot, "TikTok recon")
+                        }
+                    } finally {
+                        tkRoot.recycle()
+                    }
+                }
+            }
             updateDebugBadge("not IG", "#808080")
             return
         }
@@ -546,6 +577,13 @@ class ReelsAccessibilityService : AccessibilityService() {
             // Time tracking runs regardless of the Run/Stop toggle -- it's
             // a passive usage insight, not part of the blocking feature.
             tickTimeTracking(classifyScreen(root))
+
+            // Screens the chart can't classify (DMs, Stories, search...)
+            // currently all land in "Other" -- record what ids these
+            // screens actually contain so they can be told apart properly.
+            if (lastTimeCategory == TimeCategory.OTHER && !inReelsViewer) {
+                reconDumpScreenIds(root, "IG screen recon")
+            }
 
             if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)) {
                 hideOverlay()
@@ -863,6 +901,42 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
+    private var lastReconAt = 0L
+    private var lastReconSignature = ""
+
+    // DM/Story screens show 0 in the time chart (and TikTok has no
+    // detection at all) because their resource ids have never actually
+    // been observed -- this collects the distinct view ids present on an
+    // unrecognized screen so classification can be built from measured
+    // data instead of guesses (CLAUDE.md rule 5). Throttled hard: at most
+    // one dump per 5s, and only when the id set actually changed.
+    private fun reconDumpScreenIds(root: AccessibilityNodeInfo, label: String) {
+        val now = System.currentTimeMillis()
+        if (now - lastReconAt < 5000L) return
+        try {
+            val ids = sortedSetOf<String>()
+            collectViewIds(root, ids, depth = 0)
+            if (ids.isEmpty()) return
+            val signature = ids.joinToString(",")
+            if (signature == lastReconSignature) return
+            lastReconAt = now
+            lastReconSignature = signature
+            AppLog.d(this, TAG, "$label ids: $signature")
+        } catch (e: Exception) {
+            AppLog.w(this, TAG, "Recon dump failed: ${e.message}")
+        }
+    }
+
+    private fun collectViewIds(node: AccessibilityNodeInfo, out: MutableSet<String>, depth: Int) {
+        if (depth > 14 || out.size >= 25) return
+        node.viewIdResourceName?.let { out.add(it.substringAfterLast('/')) }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            collectViewIds(child, out, depth + 1)
+            child.recycle()
+        }
+    }
+
     private fun collectBottomNavCandidates(
         node: AccessibilityNodeInfo,
         screenHeight: Int,
@@ -933,6 +1007,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        if (instance === this) instance = null
         teardownOverlays()
         colorSampleExecutor.shutdownNow()
         if (::prefs.isInitialized) {

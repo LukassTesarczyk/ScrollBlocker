@@ -44,6 +44,7 @@
     <string name="notification_title">Reels Blocker ist aktiv</string>
     <string name="notification_text">Blockiert Instagram Reels. Zum Pausieren in der App auf Stopp tippen.</string>
     <string name="restart_app">App neu starten</string>
+    <string name="shutdown_app">App beenden</string>
     <string name="pill_back_to_feed">↩ Zurück zum Feed</string>
     <string name="pill_left_reels">↩ Reels verlassen</string>
 </resources>
