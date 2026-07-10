@@ -9,7 +9,7 @@
     <string name="setup_open_accessibility">Toegankelijkheidsinstellingen openen</string>
     <string name="setup_open_battery">Batterij-instellingen van de app openen</string>
     <string name="setup_open_other_permissions">App-info openen (overige machtigingen)</string>
-    <string name="setup_instructions">1. Tik op “Toegankelijkheidsinstellingen openen” en schakel “Reels Blocker Service” in. Blijft de schakelaar niet aan: App-info -&gt; ⋮-menu (rechtsboven) -&gt; “Beperkte instellingen toestaan”.\n\n2. Tik op “Batterij-instellingen van de app openen”, zet batterijgebruik op “Geen beperkingen” en schakel Autostart in (specifiek voor Xiaomi/HyperOS).\n\n3. Zelfde scherm -&gt; Overige machtigingen -&gt; sta “Pop-upvensters weergeven terwijl op de achtergrond actief” toe.\n\n4. Open ook recente apps en tik op het slotje bij Reels Blocker zodat HyperOS de app niet op de achtergrond afsluit -- als de service ooit als “werkt niet” verschijnt bij Toegankelijkheid, komt dat meestal hierdoor, en het opnieuw inschakelen van de schakelaar lost het op.\n\n5. Gebruik Run/Stop hierboven om het blokkeren op elk moment te pauzeren, per app.\n\n6. Tik linksboven op de pijl -&gt; Log als er iets misgaat -- kopieer en stuur het door zodat het precies opgelost kan worden.</string>
+    <string name="setup_instructions">1. Tik op “Toegankelijkheidsinstellingen openen” en schakel “ScrollGuard Service” in. Blijft de schakelaar niet aan: App-info -&gt; ⋮-menu (rechtsboven) -&gt; “Beperkte instellingen toestaan”.\n\n2. Tik op “Batterij-instellingen van de app openen”, zet batterijgebruik op “Geen beperkingen” en schakel Autostart in (specifiek voor Xiaomi/HyperOS).\n\n3. Zelfde scherm -&gt; Overige machtigingen -&gt; sta “Pop-upvensters weergeven terwijl op de achtergrond actief” toe.\n\n4. Open ook recente apps en tik op het slotje bij ScrollGuard zodat HyperOS de app niet op de achtergrond afsluit -- als de service ooit als “werkt niet” verschijnt bij Toegankelijkheid, komt dat meestal hierdoor, en het opnieuw inschakelen van de schakelaar lost het op.\n\n5. Gebruik Run/Stop hierboven om het blokkeren op elk moment te pauzeren, per app.\n\n6. Tik linksboven op de pijl -&gt; Log als er iets misgaat -- kopieer en stuur het door zodat het precies opgelost kan worden.</string>
     <string name="debug_intro">Het logboek wordt alleen lokaal op dit apparaat opgeslagen -- er wordt niets ergens naartoe verstuurd. Kopieer en deel het als er iets misgaat.</string>
     <string name="refresh">Vernieuwen</string>
     <string name="copy">Kopiëren</string>
@@ -34,7 +34,7 @@
     <string name="service_not_implemented">Detectie nog niet geïmplementeerd</string>
     <string name="not_implemented_note">Detectie voor %1$s is nog niet geïmplementeerd -- Run/Stop wordt bewaard voor later, maar er wordt nog niets geblokkeerd of bijgehouden.</string>
     <string name="notification_channel_name">Blokkering actief</string>
-    <string name="notification_title">Reels Blocker is actief</string>
+    <string name="notification_title">ScrollGuard is actief</string>
     <string name="notification_text">Instagram Reels wordt geblokkeerd. Tik op Stop in de app om te pauzeren.</string>
     <string name="restart_app">App herstarten</string>
     <string name="pill_back_to_feed">↩ Terug naar feed</string>

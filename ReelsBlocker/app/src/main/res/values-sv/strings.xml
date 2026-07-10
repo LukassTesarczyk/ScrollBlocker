@@ -9,7 +9,7 @@
     <string name="setup_open_accessibility">Öppna tillgänglighetsinställningar</string>
     <string name="setup_open_battery">Öppna appens batteriinställningar</string>
     <string name="setup_open_other_permissions">Öppna appinfo (övriga behörigheter)</string>
-    <string name="setup_instructions">1. Tryck på “Öppna tillgänglighetsinställningar” och aktivera “Reels Blocker Service”. Om reglaget inte förblir aktiverat: Appinfo -&gt; ⋮-menyn (uppe till höger) -&gt; “Tillåt begränsade inställningar”.\n\n2. Tryck på “Öppna appens batteriinställningar”, ställ batterianvändning till “Inga begränsningar” och aktivera Autostart (specifikt för Xiaomi/HyperOS).\n\n3. Samma skärm -&gt; Övriga behörigheter -&gt; tillåt “Visa popup-fönster medan appen körs i bakgrunden”.\n\n4. Öppna även senaste appar och tryck på hänglåsikonen vid Reels Blocker så att HyperOS inte stänger den i bakgrunden -- om tjänsten någonsin visas som “fungerar inte” under tillgänglighet beror det oftast på detta, och att aktivera reglaget igen löser det.\n\n5. Använd Run/Stop ovan för att pausa blockeringen när som helst, per app.\n\n6. Tryck på pilen uppe till vänster -&gt; Log om något krånglar -- kopiera och skicka den så att det kan åtgärdas exakt.</string>
+    <string name="setup_instructions">1. Tryck på “Öppna tillgänglighetsinställningar” och aktivera “ScrollGuard Service”. Om reglaget inte förblir aktiverat: Appinfo -&gt; ⋮-menyn (uppe till höger) -&gt; “Tillåt begränsade inställningar”.\n\n2. Tryck på “Öppna appens batteriinställningar”, ställ batterianvändning till “Inga begränsningar” och aktivera Autostart (specifikt för Xiaomi/HyperOS).\n\n3. Samma skärm -&gt; Övriga behörigheter -&gt; tillåt “Visa popup-fönster medan appen körs i bakgrunden”.\n\n4. Öppna även senaste appar och tryck på hänglåsikonen vid ScrollGuard så att HyperOS inte stänger den i bakgrunden -- om tjänsten någonsin visas som “fungerar inte” under tillgänglighet beror det oftast på detta, och att aktivera reglaget igen löser det.\n\n5. Använd Run/Stop ovan för att pausa blockeringen när som helst, per app.\n\n6. Tryck på pilen uppe till vänster -&gt; Log om något krånglar -- kopiera och skicka den så att det kan åtgärdas exakt.</string>
     <string name="debug_intro">Loggen sparas endast lokalt på den här enheten -- inget skickas någonstans. Kopiera och dela den om något går sönder.</string>
     <string name="refresh">Uppdatera</string>
     <string name="copy">Kopiera</string>
@@ -34,7 +34,7 @@
     <string name="service_not_implemented">Identifiering inte implementerad än</string>
     <string name="not_implemented_note">Identifiering för %1$s är inte implementerad än -- Run/Stop sparas till senare, men just nu blockeras eller registreras inget.</string>
     <string name="notification_channel_name">Blockering aktiv</string>
-    <string name="notification_title">Reels Blocker är aktiv</string>
+    <string name="notification_title">ScrollGuard är aktiv</string>
     <string name="notification_text">Blockerar Instagram Reels. Tryck på Stopp i appen för att pausa.</string>
     <string name="restart_app">Starta om appen</string>
     <string name="pill_back_to_feed">↩ Tillbaka till flödet</string>

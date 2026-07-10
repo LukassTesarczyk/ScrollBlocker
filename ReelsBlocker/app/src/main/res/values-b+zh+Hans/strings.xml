@@ -9,7 +9,7 @@
     <string name="setup_open_accessibility">打开无障碍设置</string>
     <string name="setup_open_battery">打开应用电池设置</string>
     <string name="setup_open_other_permissions">打开应用信息（其他权限）</string>
-    <string name="setup_instructions">1. 点击“打开无障碍设置”并启用“Reels Blocker Service”。如果开关无法保持开启：应用信息 -&gt; ⋮ 菜单（右上角）-&gt; “允许受限设置”。\n\n2. 点击“打开应用电池设置”，将电池使用设为“无限制”，并开启自启动（Xiaomi/HyperOS 专属）。\n\n3. 在同一屏幕上 -&gt; 其他权限 -&gt; 允许“后台运行时显示弹出窗口”。\n\n4. 同时打开最近任务列表，点击 Reels Blocker 上的锁定图标，防止 HyperOS 在后台关闭它 -- 如果该服务在无障碍设置中显示为“未运行”，通常就是这个原因，重新开启开关即可解决。\n\n5. 使用上方的 Run/Stop 可随时按应用暂停屏蔽。\n\n6. 如果出现问题，点击左上角箭头 -&gt; Log，复制后发送，以便精确修复。</string>
+    <string name="setup_instructions">1. 点击“打开无障碍设置”并启用“ScrollGuard Service”。如果开关无法保持开启：应用信息 -&gt; ⋮ 菜单（右上角）-&gt; “允许受限设置”。\n\n2. 点击“打开应用电池设置”，将电池使用设为“无限制”，并开启自启动（Xiaomi/HyperOS 专属）。\n\n3. 在同一屏幕上 -&gt; 其他权限 -&gt; 允许“后台运行时显示弹出窗口”。\n\n4. 同时打开最近任务列表，点击 ScrollGuard 上的锁定图标，防止 HyperOS 在后台关闭它 -- 如果该服务在无障碍设置中显示为“未运行”，通常就是这个原因，重新开启开关即可解决。\n\n5. 使用上方的 Run/Stop 可随时按应用暂停屏蔽。\n\n6. 如果出现问题，点击左上角箭头 -&gt; Log，复制后发送，以便精确修复。</string>
     <string name="debug_intro">日志仅保存在本设备本地 -- 不会发送到任何地方。如出现问题，请复制并分享日志。</string>
     <string name="refresh">刷新</string>
     <string name="copy">复制</string>
@@ -34,7 +34,7 @@
     <string name="service_not_implemented">检测功能尚未实现</string>
     <string name="not_implemented_note">%1$s 的检测功能尚未实现 -- Run/Stop 状态会被保存以备将来使用，但目前不会屏蔽或跟踪任何内容。</string>
     <string name="notification_channel_name">屏蔽已启用</string>
-    <string name="notification_title">Reels Blocker 正在运行</string>
+    <string name="notification_title">ScrollGuard 正在运行</string>
     <string name="notification_text">正在屏蔽 Instagram Reels。在应用中点击停止即可暂停。</string>
     <string name="restart_app">重启应用</string>
     <string name="pill_back_to_feed">↩ 返回动态</string>

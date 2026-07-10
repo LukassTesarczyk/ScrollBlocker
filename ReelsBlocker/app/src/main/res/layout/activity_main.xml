@@ -681,7 +681,7 @@
         android:visibility="gone">
 
         <TextView
-            android:text="Reels Blocker"
+            android:text="@string/app_name"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
             android:textSize="17sp"

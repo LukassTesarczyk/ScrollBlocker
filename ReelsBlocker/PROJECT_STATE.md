@@ -1,4 +1,4 @@
-# ReelsBlocker -- stav projektu (pro novou Claude Code session)
+# ScrollGuard (dříve "Reels Blocker") -- stav projektu (pro novou Claude Code session)
 
 Tenhle soubor se aktualizuje po každé dokončené verzi appky. Účel: dát
 nové konverzaci (bez historie té staré) rychlý a úplný obrázek o tom, o
@@ -18,8 +18,12 @@ Lukáš, appka je jeho osobní nástroj, ne appka pro širokou distribuci
 (žádný Play Store, instaluje se ručně přes staženej `.apk` z GitHub
 Actions).
 
-Balíček: `com.example.reelsblocker`. Repo na GitHubu se jmenuje
-`scrollblocker`, ale kód je v podsložce `ReelsBlocker/`.
+Appka se na telefonu (ikonka, název appky, Nastavení přístupnosti,
+oznámení) jmenuje **ScrollGuard** -- do v1.28 se jmenovala "Reels
+Blocker", přejmenováno ve v1.29. Balíček (`com.example.reelsblocker`),
+GitHub repo (`scrollblocker`), podsložka s kódem (`ReelsBlocker/`) a
+názvy tříd v Kotlin kódu (`ReelsAccessibilityService` atd.) se NEMĚNILY
+-- jde čistě o zobrazovaný název, ne o technický rename.
 
 ## Jak appka funguje (princip)
 
@@ -37,23 +41,36 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    vzorkuje ze skutečného screenshotu obrazovky, aby splynula s
    pozadím) -- vizuálně "schová" lákadlo.
 4. **Sledovat čas strávený** v jednotlivých kategoriích obrazovek
-   (Reels/Feed/DM/Stories/Other u Instagramu, Feed/Other u TikToku) a
-   kolikrát blokování zafungovalo -- pro statistiky v appce.
+   (Reels/Feed/DM/Stories/Other u Instagramu, Reels [zobrazeno jako
+   "Videa"]/Other u TikToku) a kolikrát blokování zafungovalo -- pro
+   statistiky v appce.
 
 Detekce Instagramu je založená na resource-id změřených ze skutečných
 logů (ne z dokumentace -- ta neexistuje). TikTok detekce je založená na
 `viewpager` + `long_press_layout` (For You feed), ostatní id jsou
 per-build obfuskovaná.
 
+**TikTok detekce má dvě úrovně (od v1.29):** vstup do feedu vyžaduje
+přísnou shodu (`viewpager` + `long_press_layout`), ale jakmile je session
+jednou potvrzená, k setrvání ve feedu stačí samotné `viewpager` --
+`long_press_layout` totiž podle logu z 2026-07-08 chybí u některých
+videí (reklamy, videa s nálepkami), takže přísná podmínka na každém
+eventu session resetovala dřív, než se stihlo zachytit skutečné swipnutí
+pryč, a blokování tak fakticky nikdy nezafungovalo. Vstup zůstává
+přísný schválně, ať se drafty/vlastní profil (mají `viewpager` bez
+`long_press_layout`) nikdy nezačnou počítat jako feed.
+
 ## Podporované appky
 
 - **Instagram** (`com.instagram.android`) -- plně implementováno:
   detekce Reels/Feed/DM/Stories, blokování, overlay na ikonce, time
   tracking.
-- **TikTok** (`com.zhiliaoapp.musically`) -- implementováno od v1.27:
-  detekce For You feedu, "1 video pak ven" blokování (exit do Inboxu),
-  overlay na Home ikonce, time tracking (jen Feed/Other kategorie,
-  žádné DM/Stories jako u Instagramu).
+- **TikTok** (`com.zhiliaoapp.musically`) -- implementováno od v1.27,
+  detekce opravená v v1.29 (viz výše): detekce For You feedu, "1 video
+  pak ven" blokování (exit do Inboxu), overlay na Home ikonce, time
+  tracking (jen Reels/Other kategorie -- Reels se v UI přejmenovává na
+  "Videa" pro TikTok kontext, Feed se u TikToku vůbec nezobrazuje,
+  protože je vždycky nulový).
 - **Snapchat** -- zatím jen UI (přepínač v hubu), žádná detekční logika.
   Appka na to sama upozorňuje textem u vybrané appky.
 
@@ -64,7 +81,8 @@ per-build obfuskovaná.
   - **Home** -- status (Running/Stopped), Run/Stop tlačítka, statistiky
     (Total blocked / Today, graf posledních 7 dní jako sloupce, graf
     "Time spent today" jako donut + legenda -- **resetuje se denně**,
-    **každá appka má svoje vlastní statistiky** nezávisle na ostatních).
+    **každá appka má svoje vlastní statistiky** nezávisle na ostatních,
+    **nulové kategorie se v legendě nezobrazují**).
   - **Settings** -- návod k nastavení (accessibility, battery, permissions),
     PIN lock sekce, Shutdown App tlačítko.
   - **Log** -- lokální debug log appky (žádný adb potřeba), jde
@@ -78,12 +96,15 @@ per-build obfuskovaná.
   klepnutím, ne fyzickým tažením.
 - **PIN lock** (volitelný, 4-6 číslic) -- chrání před impulzivním
   vypnutím blokování (Stop, Run/Stop v hubu, Shutdown). Vlastní tmavý
-  dialog (ne systémový), sedí do designu appky.
-- **Dva home-screen widgety** (od v1.28, oba jen pro Instagram):
-  1. Donut widget -- kolečko (time-spent graf) + kompaktní legenda
-     vpravo, stejné barvy jako v appce.
+  dialog (ne systémový), sedí do designu appky, 340dp široký (rozšířeno
+  v v1.29, ať se text tlačítek vejde na jeden řádek).
+- **Dva home-screen widgety** (oba jen pro Instagram):
+  1. Donut widget -- kolečko (time-spent graf) + jedna hodnota celkového
+     času vpravo (zjednodušeno z v1.28, kde byla celá legenda -- na
+     minimální velikosti 2x2 se nevešla). Default 3x3, jde zmenšit na
+     2x2.
   2. Bars widget -- sloupcový graf posledních 7 dní, stejný vzhled jako
-     v appce.
+     v appce. Default 4x3, jde zmenšit na 3x2.
 
 ## Design systém
 
@@ -92,7 +113,7 @@ akcentová barva teal `#26A69A`, destruktivní akce červená `#C62828`.
 Sériový font všude (`serif` -- skutečný Times New Roman není součástí
 Androidu). Detaily viz `CLAUDE.md` sekce "Design systém".
 
-Barvy grafu kategorií (od v1.28, výraznější než dřív): Reels fialová
+Barvy grafu kategorií (výraznější od v1.28): Reels/Videa fialová
 `#A855F7`, DM zelená `#22C55E`, Feed modrá `#3B82F6`, Stories růžová
 `#EC4899`, Other šedá `#70706C`.
 

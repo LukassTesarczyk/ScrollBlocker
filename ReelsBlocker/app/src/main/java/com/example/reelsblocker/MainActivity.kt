@@ -721,13 +721,24 @@ class MainActivity : AppCompatActivity() {
     private fun renderTimeChart() {
         val density = resources.displayMetrics.density
         val times = TimeStats.today(this, selectedApp)
+        // TikTok has no real equivalent of Instagram's home feed -- its
+        // watched-video time lands in the same REELS bucket Instagram
+        // Reels uses (see ReelsAccessibilityService/TimeStats), so the
+        // label needs to say "Videos" there instead of "Reels", and the
+        // always-zero FEED row simply won't render (zero-value rows are
+        // filtered out below).
+        val reelsLabel = if (selectedApp == "tiktok") {
+            getString(R.string.time_spent_videos)
+        } else {
+            getString(R.string.time_spent_reels)
+        }
         val entries = listOf(
-            Triple(getString(R.string.time_spent_reels), times[TimeCategory.REELS] ?: 0L, "#A855F7"),
+            Triple(reelsLabel, times[TimeCategory.REELS] ?: 0L, "#A855F7"),
             Triple(getString(R.string.time_spent_dm), times[TimeCategory.DM] ?: 0L, "#22C55E"),
             Triple(getString(R.string.time_spent_feed), times[TimeCategory.FEED] ?: 0L, "#3B82F6"),
             Triple(getString(R.string.time_spent_stories), times[TimeCategory.STORY] ?: 0L, "#EC4899"),
             Triple(getString(R.string.time_spent_other), times[TimeCategory.OTHER] ?: 0L, "#70706C")
-        )
+        ).filter { (_, value, _) -> value > 0 }
 
         findViewById<DonutChartView>(R.id.timeDonutChart).setSegments(
             entries.map { (_, value, color) -> DonutChartView.Segment(value, Color.parseColor(color)) }

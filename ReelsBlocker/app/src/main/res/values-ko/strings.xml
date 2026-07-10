@@ -9,7 +9,7 @@
     <string name="setup_open_accessibility">접근성 설정 열기</string>
     <string name="setup_open_battery">앱 배터리 설정 열기</string>
     <string name="setup_open_other_permissions">앱 정보 열기(기타 권한)</string>
-    <string name="setup_instructions">1. \"접근성 설정 열기\"를 탭하고 \"Reels Blocker Service\"를 켜세요. 스위치가 켜진 상태로 유지되지 않으면: 앱 정보 -&gt; ⋮ 메뉴(오른쪽 상단) -&gt; \"제한된 설정 허용\".\n\n2. \"앱 배터리 설정 열기\"를 탭하고 배터리 사용을 \"제한 없음\"으로 설정하고 자동 시작을 켜세요(Xiaomi/HyperOS 전용).\n\n3. 같은 화면에서 -&gt; 기타 권한 -&gt; \"백그라운드에서 실행 중 팝업 창 표시\"를 허용하세요.\n\n4. 최근 앱 목록도 열어서 Reels Blocker의 자물쇠 아이콘을 탭하여 HyperOS가 백그라운드에서 앱을 종료하지 않도록 하세요 -- 서비스가 접근성에서 \"작동하지 않음\"으로 표시된다면 대개 이 때문이며, 스위치를 다시 켜면 해결됩니다.\n\n5. 위의 Run/Stop을 사용하여 앱별로 언제든지 차단을 일시 중지할 수 있습니다.\n\n6. 문제가 있으면 왼쪽 상단의 화살표 -&gt; Log를 탭하세요 -- 복사해서 보내주시면 정확히 수정할 수 있습니다.</string>
+    <string name="setup_instructions">1. \"접근성 설정 열기\"를 탭하고 \"ScrollGuard Service\"를 켜세요. 스위치가 켜진 상태로 유지되지 않으면: 앱 정보 -&gt; ⋮ 메뉴(오른쪽 상단) -&gt; \"제한된 설정 허용\".\n\n2. \"앱 배터리 설정 열기\"를 탭하고 배터리 사용을 \"제한 없음\"으로 설정하고 자동 시작을 켜세요(Xiaomi/HyperOS 전용).\n\n3. 같은 화면에서 -&gt; 기타 권한 -&gt; \"백그라운드에서 실행 중 팝업 창 표시\"를 허용하세요.\n\n4. 최근 앱 목록도 열어서 ScrollGuard의 자물쇠 아이콘을 탭하여 HyperOS가 백그라운드에서 앱을 종료하지 않도록 하세요 -- 서비스가 접근성에서 \"작동하지 않음\"으로 표시된다면 대개 이 때문이며, 스위치를 다시 켜면 해결됩니다.\n\n5. 위의 Run/Stop을 사용하여 앱별로 언제든지 차단을 일시 중지할 수 있습니다.\n\n6. 문제가 있으면 왼쪽 상단의 화살표 -&gt; Log를 탭하세요 -- 복사해서 보내주시면 정확히 수정할 수 있습니다.</string>
     <string name="debug_intro">로그는 이 기기에만 로컬로 저장됩니다 -- 어디로도 전송되지 않습니다. 문제가 발생하면 복사해서 공유해 주세요.</string>
     <string name="refresh">새로고침</string>
     <string name="copy">복사</string>
@@ -34,7 +34,7 @@
     <string name="service_not_implemented">감지 기능이 아직 구현되지 않았습니다</string>
     <string name="not_implemented_note">%1$s의 감지 기능은 아직 구현되지 않았습니다 -- Run/Stop은 나중을 위해 저장되지만 현재는 차단이나 추적이 이루어지지 않습니다.</string>
     <string name="notification_channel_name">차단 활성화됨</string>
-    <string name="notification_title">Reels Blocker가 활성 상태입니다</string>
+    <string name="notification_title">ScrollGuard가 활성 상태입니다</string>
     <string name="notification_text">Instagram Reels를 차단 중입니다. 일시 중지하려면 앱에서 중지를 탭하세요.</string>
     <string name="restart_app">앱 재시작</string>
     <string name="pill_back_to_feed">↩ 피드로 돌아가기</string>

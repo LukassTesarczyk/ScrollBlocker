@@ -545,8 +545,14 @@ class ReelsAccessibilityService : AccessibilityService() {
                         if (tkRoot.packageName?.toString() == TIKTOK_PACKAGE) {
                             reconDumpScreenIds(tkRoot, "TikTok recon")
                             updateTikTokOverlay(tkRoot)
-                            tickTimeTracking("tiktok", if (isTikTokFeedScreen(tkRoot)) TimeCategory.FEED else TimeCategory.OTHER)
                             handleTikTokSession(tkRoot, event)
+                            // Read after handleTikTokSession so this tick's
+                            // category matches the same continuation-aware
+                            // state the session logic just used -- counted
+                            // as REELS (short-form video watching, same
+                            // bucket Instagram Reels uses) rather than FEED,
+                            // which TikTok has no real equivalent of.
+                            tickTimeTracking("tiktok", if (inTikTokFeed) TimeCategory.REELS else TimeCategory.OTHER)
                         }
                     } catch (e: Exception) {
                         AppLog.w(this, TAG, "TikTok handling failed: ${e.message}")
@@ -904,8 +910,28 @@ class ReelsAccessibilityService : AccessibilityService() {
     // exactly the requested behavior (block feed scrolling, keep drafts
     // and own-profile videos accessible). Everything else in TikTok's
     // tree is per-build obfuscated ("be1", "hpk"...) and useless to match.
+    // Kept strict for ENTRY specifically -- see isTikTokFeedContinuation
+    // below for why staying in an already-confirmed feed session uses a
+    // looser check.
     private fun isTikTokFeedScreen(root: AccessibilityNodeInfo): Boolean {
         return hasAnyTikTokNodeById(root, "viewpager") && hasAnyTikTokNodeById(root, "long_press_layout")
+    }
+
+    // The 2026-07-08 log showed "long_press_layout" isn't actually present
+    // for every video -- some had "feed_multi_tag_layout" or
+    // "video_sticker_panel_page_rv" instead (likely ads/sponsored or
+    // sticker-overlay variants), with "viewpager" the only id common to
+    // literally every recon dump while the user was still visibly sitting
+    // in the feed. Requiring the strict match on every single event meant
+    // hitting VIEWER_MISS_TOLERANCE and resetting the session within a few
+    // seconds of any such video, well before a real swipe could ever
+    // register -- which is why blocking silently never fired ("tiktok
+    // vubec nefunguje"). Once a session is already confirmed via the
+    // strict entry check, viewpager alone is enough to keep counting as
+    // "still in the feed" -- entry itself stays strict so drafts/editor
+    // (viewpager without long_press_layout) still never trigger it.
+    private fun isTikTokFeedContinuation(root: AccessibilityNodeInfo): Boolean {
+        return hasAnyTikTokNodeById(root, "viewpager")
     }
 
     private fun hasAnyTikTokNodeById(root: AccessibilityNodeInfo, id: String): Boolean {
@@ -940,7 +966,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     }
 
     private fun handleTikTokSession(root: AccessibilityNodeInfo, event: AccessibilityEvent) {
-        val inFeed = isTikTokFeedScreen(root)
+        val inFeed = if (inTikTokFeed) isTikTokFeedContinuation(root) else isTikTokFeedScreen(root)
         val now = System.currentTimeMillis()
 
         if (inFeed) {

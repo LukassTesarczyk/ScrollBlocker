@@ -6,13 +6,13 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:background="@drawable/bg_widget"
-    android:padding="14dp">
+    android:padding="12dp">
 
     <ImageView
         android:id="@+id/widgetDonutImage"
-        android:layout_width="84dp"
-        android:layout_height="84dp"
-        android:layout_marginEnd="16dp" />
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="12dp" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -20,144 +20,20 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/legendRow0"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/widgetDonutLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="4dp">
-            <View
-                android:id="@+id/legendDot0"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_dot" />
-            <TextView
-                android:id="@+id/legendLabel0"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="#B0B0B0"
-                android:textSize="11sp" />
-            <TextView
-                android:id="@+id/legendValue0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="11sp" />
-        </LinearLayout>
+            android:textColor="#808080"
+            android:textSize="10sp" />
 
-        <LinearLayout
-            android:id="@+id/legendRow1"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/widgetDonutValue"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="4dp">
-            <View
-                android:id="@+id/legendDot1"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_dot" />
-            <TextView
-                android:id="@+id/legendLabel1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="#B0B0B0"
-                android:textSize="11sp" />
-            <TextView
-                android:id="@+id/legendValue1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="11sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/legendRow2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="4dp">
-            <View
-                android:id="@+id/legendDot2"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_dot" />
-            <TextView
-                android:id="@+id/legendLabel2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="#B0B0B0"
-                android:textSize="11sp" />
-            <TextView
-                android:id="@+id/legendValue2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="11sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/legendRow3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="4dp">
-            <View
-                android:id="@+id/legendDot3"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_dot" />
-            <TextView
-                android:id="@+id/legendLabel3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="#B0B0B0"
-                android:textSize="11sp" />
-            <TextView
-                android:id="@+id/legendValue3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="11sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/legendRow4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <View
-                android:id="@+id/legendDot4"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/bg_dot" />
-            <TextView
-                android:id="@+id/legendLabel4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="#B0B0B0"
-                android:textSize="11sp" />
-            <TextView
-                android:id="@+id/legendValue4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
-                android:textSize="11sp" />
-        </LinearLayout>
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="18sp" />
 
     </LinearLayout>
 

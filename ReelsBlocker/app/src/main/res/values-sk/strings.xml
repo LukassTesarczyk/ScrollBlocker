@@ -8,6 +8,7 @@
     <string name="last_7_days">Posledných 7 dní</string>
     <string name="time_spent_title">Kde tráviš čas</string>
     <string name="time_spent_reels">Reels</string>
+    <string name="time_spent_videos">Videá</string>
     <string name="time_spent_dm">Správy</string>
     <string name="time_spent_feed">Feed</string>
     <string name="time_spent_stories">Príbehy</string>
@@ -15,7 +16,7 @@
     <string name="setup_open_accessibility">Otvoriť nastavenia zjednodušenia ovládania</string>
     <string name="setup_open_battery">Otvoriť nastavenia batérie appky</string>
     <string name="setup_open_other_permissions">Otvoriť info o appke (Ďalšie povolenia)</string>
-    <string name="setup_instructions">1. Klepni na „Otvoriť nastavenia zjednodušenia ovládania“ a zapni „Reels Blocker Service“. Ak prepínač nezostane zapnutý: Info o appke -&gt; menu ⋮ (vpravo hore) -&gt; „Povoliť obmedzené nastavenia“.\n\n2. Klepni na „Otvoriť nastavenia batérie appky“ a nastav využitie batérie na „Bez obmedzení“ a zapni Autoštart (špecifické pre Xiaomi/HyperOS).\n\n3. Na tej istej obrazovke -&gt; Ďalšie povolenia -&gt; povoľ „Zobrazovať vyskakovacie okná na pozadí“.\n\n4. Otvor aj posledné aplikácie a klepni na ikonu zámku pri appke Reels Blocker, aby ju HyperOS neukončoval na pozadí -- ak sa služba niekedy zobrazí ako „nefunkčná“ v nastaveniach zjednodušenia ovládania, zvyčajne je to tento dôvod a pomôže znova zapnúť prepínač.\n\n5. Prepínačom Run/Stop hore môžeš blokovanie kedykoľvek pozastaviť, pre každú appku zvlášť.\n\n6. Klepni na šípku vľavo hore -&gt; Log, ak niečo nefunguje -- skopíruj ho a pošli, aby sa to dalo presne opraviť.</string>
+    <string name="setup_instructions">1. Klepni na „Otvoriť nastavenia zjednodušenia ovládania“ a zapni „ScrollGuard Service“. Ak prepínač nezostane zapnutý: Info o appke -&gt; menu ⋮ (vpravo hore) -&gt; „Povoliť obmedzené nastavenia“.\n\n2. Klepni na „Otvoriť nastavenia batérie appky“ a nastav využitie batérie na „Bez obmedzení“ a zapni Autoštart (špecifické pre Xiaomi/HyperOS).\n\n3. Na tej istej obrazovke -&gt; Ďalšie povolenia -&gt; povoľ „Zobrazovať vyskakovacie okná na pozadí“.\n\n4. Otvor aj posledné aplikácie a klepni na ikonu zámku pri appke ScrollGuard, aby ju HyperOS neukončoval na pozadí -- ak sa služba niekedy zobrazí ako „nefunkčná“ v nastaveniach zjednodušenia ovládania, zvyčajne je to tento dôvod a pomôže znova zapnúť prepínač.\n\n5. Prepínačom Run/Stop hore môžeš blokovanie kedykoľvek pozastaviť, pre každú appku zvlášť.\n\n6. Klepni na šípku vľavo hore -&gt; Log, ak niečo nefunguje -- skopíruj ho a pošli, aby sa to dalo presne opraviť.</string>
     <string name="debug_intro">Log sa ukladá lokálne len v tomto zariadení -- nič sa nikam neposiela. Skopíruj a pošli ho, keď sa niečo pokazí.</string>
     <string name="refresh">Obnoviť</string>
     <string name="copy">Kopírovať</string>
@@ -42,7 +43,7 @@
     <string name="service_not_implemented">Detekcia zatiaľ nie je implementovaná</string>
     <string name="not_implemented_note">%1$s zatiaľ nemá implementovanú detekciu -- Run/Stop sa ukladá na neskôr, ale zatiaľ nič neblokuje ani nesleduje.</string>
     <string name="notification_channel_name">Aktívne blokovanie</string>
-    <string name="notification_title">Reels Blocker je aktívny</string>
+    <string name="notification_title">ScrollGuard je aktívny</string>
     <string name="notification_text">Blokuje Instagram Reels. Zastavíš to tlačidlom Stop v appke.</string>
     <string name="restart_app">Reštartovať appku</string>
     <string name="shutdown_app">Vypnúť aplikáciu</string>
