@@ -60,4 +60,8 @@
     <string name="pin_enter_title">Zadej PIN</string>
     <string name="pin_wrong">Špatný PIN</string>
     <string name="pin_length_hint">PIN musí mít 4-6 číslic</string>
+    <string name="pill_feed_top">↑ Zpět na začátek</string>
+    <string name="block_feed_on">Blokovat scrollování feedu: ZAPNUTO</string>
+    <string name="block_feed_off">Blokovat scrollování feedu: VYPNUTO</string>
+    <string name="block_feed_hint">Když je zapnuto, utne se i nekonečné scrollování feedu: jakmile odscrolluješ pod řádek s historkami a chvíli pokračuješ, další scroll tě vrátí na začátek feedu.</string>
 </resources>

@@ -60,4 +60,8 @@
     <string name="pin_enter_title">Saisir le PIN</string>
     <string name="pin_wrong">PIN incorrect</string>
     <string name="pin_length_hint">Le PIN doit comporter 4-6 chiffres</string>
+    <string name="pill_feed_top">↑ Retour en haut</string>
+    <string name="block_feed_on">Bloquer le défilement du fil : ACTIVÉ</string>
+    <string name="block_feed_off">Bloquer le défilement du fil : DÉSACTIVÉ</string>
+    <string name="block_feed_hint">Si activé, le défilement infini du fil est aussi coupé : une fois la rangée de stories dépassée et après un moment, le prochain défilement vous ramène en haut du fil.</string>
 </resources>

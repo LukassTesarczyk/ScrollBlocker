@@ -14,6 +14,9 @@ object PrefsKeys {
     // this is a self-control speed bump against impulsively disabling the
     // blocker, not a security boundary against another person.
     const val KEY_PIN = "pin_code"
+    // Optional extra: also cut endless FEED scrolling short (Instagram
+    // only) -- see ReelsAccessibilityService.handleFeedSession.
+    const val KEY_BLOCK_FEED = "block_feed_instagram"
 
     // Order here is the default hub layout for fresh installs --
     // Instagram in the middle slot, since it's the only one that's

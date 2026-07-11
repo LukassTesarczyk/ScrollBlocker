@@ -60,4 +60,8 @@
     <string name="pin_enter_title">PIN eingeben</string>
     <string name="pin_wrong">Falsche PIN</string>
     <string name="pin_length_hint">PIN muss 4-6 Ziffern haben</string>
+    <string name="pill_feed_top">↑ Zurück nach oben</string>
+    <string name="block_feed_on">Feed-Scrollen blockieren: AN</string>
+    <string name="block_feed_off">Feed-Scrollen blockieren: AUS</string>
+    <string name="block_feed_hint">Wenn aktiviert, wird auch endloses Feed-Scrollen unterbunden: Sobald du an der Story-Leiste vorbeigescrollt bist und eine Weile weitermachst, bringt dich der nächste Scroll zurück an den Anfang des Feeds.</string>
 </resources>

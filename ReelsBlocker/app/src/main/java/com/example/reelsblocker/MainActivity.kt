@@ -126,6 +126,16 @@ class MainActivity : AppCompatActivity() {
                 refreshStatus()
             }
         }
+        findViewById<TextView>(R.id.btnBlockFeedToggle).setOnClickListener {
+            val enabled = prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false)
+            val apply = {
+                prefs.edit().putBoolean(PrefsKeys.KEY_BLOCK_FEED, !enabled).apply()
+                refreshBlockFeedToggle()
+            }
+            // Turning the extra protection OFF is a weak-willed-moment
+            // action just like Stop -- same PIN gate; turning it ON is free.
+            if (enabled) requirePin(apply) else apply()
+        }
 
         btnOpenMenu.setOnClickListener { if (drawerOpen) closeDrawer() else openDrawer() }
         drawerScrim.setOnClickListener { closeDrawer() }
@@ -686,6 +696,25 @@ class MainActivity : AppCompatActivity() {
         } else {
             tvServiceStatus.text = getString(R.string.service_not_implemented)
         }
+        refreshBlockFeedToggle()
+    }
+
+    // Feed blocking only exists for Instagram (TikTok's whole app IS the
+    // feed), so the row hides entirely for the other hub apps.
+    private fun refreshBlockFeedToggle() {
+        val toggle = findViewById<TextView>(R.id.btnBlockFeedToggle)
+        val hint = findViewById<TextView>(R.id.tvBlockFeedHint)
+        if (selectedApp != "instagram") {
+            toggle.visibility = View.GONE
+            hint.visibility = View.GONE
+            return
+        }
+        val enabled = prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false)
+        toggle.visibility = View.VISIBLE
+        hint.visibility = View.VISIBLE
+        toggle.text = getString(if (enabled) R.string.block_feed_on else R.string.block_feed_off)
+        toggle.setBackgroundResource(if (enabled) R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
+        toggle.setTextColor(Color.parseColor(if (enabled) "#26A69A" else "#FFFFFF"))
     }
 
     private fun renderStats() {

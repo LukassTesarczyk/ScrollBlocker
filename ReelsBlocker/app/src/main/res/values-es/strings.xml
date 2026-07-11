@@ -60,4 +60,8 @@
     <string name="pin_enter_title">Introduce el PIN</string>
     <string name="pin_wrong">PIN incorrecto</string>
     <string name="pin_length_hint">El PIN debe tener 4-6 dígitos</string>
+    <string name="pill_feed_top">↑ Volver arriba</string>
+    <string name="block_feed_on">Bloquear scroll del feed: ACTIVADO</string>
+    <string name="block_feed_off">Bloquear scroll del feed: DESACTIVADO</string>
+    <string name="block_feed_hint">Cuando está activado, también se corta el scroll infinito del feed: cuando pasas la fila de historias y sigues un rato, el siguiente scroll te devuelve al inicio del feed.</string>
 </resources>

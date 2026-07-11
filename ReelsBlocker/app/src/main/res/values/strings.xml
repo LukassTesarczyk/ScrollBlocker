@@ -61,6 +61,11 @@
     <string name="pill_back_to_feed">↩ Back to feed</string>
     <string name="pill_left_reels">↩ Left Reels</string>
     <string name="pill_left_feed">↩ Left the video feed</string>
+    <string name="pill_feed_top">↑ Back to top</string>
+
+    <string name="block_feed_on">Block feed scrolling: ON</string>
+    <string name="block_feed_off">Block feed scrolling: OFF</string>
+    <string name="block_feed_hint">When on, endless feed scrolling gets cut short too: once you scroll past the stories row and keep going for a bit, the next scroll sends you back to the top of the feed.</string>
 
     <string name="section_guide">Guide</string>
     <string name="section_permissions">Permissions</string>

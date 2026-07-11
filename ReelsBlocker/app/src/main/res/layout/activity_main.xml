@@ -126,6 +126,31 @@
                             android:textColor="#909090"
                             android:gravity="center" />
 
+                        <TextView
+                            android:id="@+id/btnBlockFeedToggle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:padding="14dp"
+                            android:textSize="14sp"
+                            android:textColor="#FFFFFF"
+                            android:background="@drawable/bg_menu_item"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tvBlockFeedHint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:textSize="12sp"
+                            android:textColor="#808080"
+                            android:text="@string/block_feed_hint"
+                            android:visibility="gone" />
+
                     </LinearLayout>
 
                     <TextView

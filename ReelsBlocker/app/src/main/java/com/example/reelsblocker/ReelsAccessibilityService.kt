@@ -108,6 +108,34 @@ class ReelsAccessibilityService : AccessibilityService() {
         // actually apply for people who already had the old LOW channel.
         private const val NOTIFICATION_CHANNEL_ID = "blocking_active_v2"
         private const val NOTIFICATION_ID = 1
+
+        // TYPE_WINDOW_CONTENT_CHANGED arrives in bursts (dozens per second
+        // while media plays or a list rebinds), and each one used to run
+        // 5+ full-tree id lookups on the main thread. Sustained main-thread
+        // saturation is the classic way an accessibility service ends up
+        // flagged "Not working" in settings (the system gives up on a
+        // service that stops responding to its event pipe). Content-change
+        // floods get sampled down to this interval; window-state changes
+        // and scrolls (the events blocking decisions actually hang on) are
+        // always processed.
+        private const val CONTENT_EVENT_MIN_INTERVAL_MS = 200L
+
+        // Feed blocking (opt-in): how long after the stories tray scrolls
+        // off screen the block arms -- the next feed scroll after this
+        // sends the user back to the top.
+        private const val FEED_BLOCK_ARM_MS = 5000L
+
+        // "stories_tray" is Instagram's long-standing id for the stories
+        // row at the top of the feed -- unlike the ids in classifyScreen
+        // it hasn't been confirmed from this user's own recon logs yet, so
+        // handleFeedSession logs its found/gone transitions; if the id is
+        // wrong for the current Instagram build, the log will show the
+        // block arming immediately on entering the feed, and the real id
+        // can be read out of an "IG screen recon" dump. Degrades to
+        // "arm 5s after entering the feed" rather than breaking.
+        private val STORIES_TRAY_RESOURCE_ID_CANDIDATES = listOf(
+            "stories_tray"
+        )
     }
 
     private var inReelsViewer = false
@@ -117,6 +145,10 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var viewerEnteredAt = 0L
     private var viewerMissCount = 0
     private var lastActionTime = 0L
+    private var lastContentEventAt = 0L
+    // 0 = stories tray currently visible (or not in feed); otherwise the
+    // moment the tray scrolled off screen, for the feed-block arm timer.
+    private var feedStoriesGoneAt = 0L
     private var lastLoggedPackage: String? = null
     private var currentForegroundPackage: String? = null
 
@@ -419,6 +451,21 @@ class ReelsAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
+        // One uncaught exception anywhere in here takes down the whole
+        // service process, and Android then shows the service as "Not
+        // working" in Accessibility settings until it's toggled again --
+        // exactly the symptom being reported. The Instagram and TikTok
+        // branches were individually wrapped, but the shared foreground-
+        // tracking code above them wasn't; nothing in this handler is
+        // worth dying for, so the whole thing gets one outer net.
+        try {
+            handleEvent(event)
+        } catch (e: Exception) {
+            AppLog.w(this, TAG, "Unhandled error in event handler: ${e.message}")
+        }
+    }
+
+    private fun handleEvent(event: AccessibilityEvent) {
         val eventPackage = event.packageName?.toString()
 
         // The service isn't package-filtered (on purpose -- see the v1.0
@@ -536,6 +583,15 @@ class ReelsAccessibilityService : AccessibilityService() {
         // baseline" path below and lose a whole in-between delta.
         val isTikTok = currentForegroundPackage == TIKTOK_PACKAGE
 
+        // Sample down content-change floods before any tree work happens
+        // (see CONTENT_EVENT_MIN_INTERVAL_MS). Applied here so both the
+        // Instagram and TikTok paths benefit.
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+            val nowThrottle = System.currentTimeMillis()
+            if (nowThrottle - lastContentEventAt < CONTENT_EVENT_MIN_INTERVAL_MS) return
+            lastContentEventAt = nowThrottle
+        }
+
         if (!isInstagram) {
             inReelsViewer = false
             if (isTikTok && ::prefs.isInitialized && prefs.getBoolean(PrefsKeys.enabledKeyFor("tiktok"), false)) {
@@ -609,6 +665,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
             updateOverlay(root)
             handleReelSession(root, event)
+            handleFeedSession(root, event)
         } catch (e: Exception) {
             AppLog.w(this, TAG, "Error handling accessibility event: ${e.message}")
         } finally {
@@ -878,6 +935,14 @@ class ReelsAccessibilityService : AccessibilityService() {
                     AppLog.d(this, TAG, "Ignoring scroll ${now - viewerEnteredAt}ms after entry (likely settle, not a real swipe)")
                     return
                 }
+                if (!isPagerScroll(event, "clips_viewer_view_pager")) {
+                    // Scrolling the comments sheet (or any inner list drawn
+                    // over the player) fires the same event type while the
+                    // pager is still full-screen in the tree -- that's what
+                    // was kicking the user out of a reel for just reading
+                    // comments. Only the pager itself scrolling is a swipe.
+                    return
+                }
                 if (now - lastActionTime > COOLDOWN_MS) {
                     AppLog.d(this, TAG, "Swiped past the first reel -- exiting to Home feed")
                     lastActionTime = now
@@ -899,6 +964,93 @@ class ReelsAccessibilityService : AccessibilityService() {
             // animation isn't treated as actually leaving -- avoids
             // silently re-granting a fresh "free reel" on every swipe.
         }
+    }
+
+    // A TYPE_VIEW_SCROLLED doesn't say WHAT scrolled unless you ask the
+    // event's source node. Treating every scroll as a page swipe is what
+    // caused the "kicked out of a reel for opening comments" reports: the
+    // comments sheet scrolls while the pager is still full-screen in the
+    // tree. Only a scroll whose source is the pager itself counts as a
+    // swipe. Lenient on missing data on purpose: a null source or a source
+    // with no id keeps the old treat-as-swipe behavior, so if Instagram
+    // ever stops reporting sources the core blocking degrades to its old
+    // (over-eager) self instead of silently dying. The source id gets
+    // logged either way so a future log can confirm what comments
+    // scrolls actually report.
+    private fun isPagerScroll(event: AccessibilityEvent, pagerIdSuffix: String): Boolean {
+        val source = try { event.source } catch (_: Exception) { null } ?: return true
+        val id = try { source.viewIdResourceName } finally { source.recycle() }
+        if (id == null) return true
+        val isPager = id.substringAfterLast('/') == pagerIdSuffix
+        if (!isPager) {
+            AppLog.d(this, TAG, "Ignoring scroll from non-pager view: $id")
+        }
+        return isPager
+    }
+
+    // ---- Optional feed blocking (opt-in toggle on the Home tab) ----
+
+    // The deal: one look at the feed is fine, doomscrolling isn't. The
+    // stories tray sits at the very top of the feed, so it being scrolled
+    // off screen means the user went down into the feed. Once it's been
+    // gone for FEED_BLOCK_ARM_MS, the next scroll clicks the (already
+    // selected) Home tab -- which Instagram treats as "jump back to top" --
+    // so the feed snaps back to the start instead of feeding the scroll.
+    private fun handleFeedSession(root: AccessibilityNodeInfo, event: AccessibilityEvent) {
+        if (!prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false)) {
+            feedStoriesGoneAt = 0L
+            return
+        }
+        if (lastTimeCategory != TimeCategory.FEED) {
+            feedStoriesGoneAt = 0L
+            return
+        }
+        val now = System.currentTimeMillis()
+        if (hasVisibleStoriesTray(root)) {
+            feedStoriesGoneAt = 0L
+            return
+        }
+        if (feedStoriesGoneAt == 0L) {
+            feedStoriesGoneAt = now
+            AppLog.d(this, TAG, "Feed: stories tray gone -- feed block arms in ${FEED_BLOCK_ARM_MS}ms")
+            return
+        }
+        if (now - feedStoriesGoneAt < FEED_BLOCK_ARM_MS) return
+        if (event.eventType != AccessibilityEvent.TYPE_VIEW_SCROLLED) return
+        if (now - lastActionTime <= COOLDOWN_MS) return
+
+        AppLog.d(this, TAG, "Feed scroll ${now - feedStoriesGoneAt}ms after tray left -- sending back to top")
+        lastActionTime = now
+        val homeNode = findHomeTabNode(root)
+        val clicked = homeNode?.let { clickNodeOrAncestor(it) } ?: false
+        homeNode?.recycle()
+        if (clicked) {
+            Stats.recordBlock(this, "instagram")
+            playExitAnimation(R.string.pill_feed_top)
+            feedStoriesGoneAt = 0L
+            updateDebugBadge("FEED→TOP", "#FF5252")
+        } else {
+            // No forced back-press fallback here on purpose: a wrong exit
+            // from the feed would dump the user out of Instagram entirely,
+            // which is far more annoying than one missed feed block.
+            AppLog.d(this, TAG, "Feed block: Home tab not found, skipping")
+            dumpBottomNavCandidates(root)
+        }
+    }
+
+    private fun hasVisibleStoriesTray(root: AccessibilityNodeInfo): Boolean {
+        for (id in STORIES_TRAY_RESOURCE_ID_CANDIDATES) {
+            val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$id")
+            var visible = false
+            for (m in matches) {
+                val bounds = Rect()
+                m.getBoundsInScreen(bounds)
+                if (bounds.width() > 0 && bounds.height() > 0) visible = true
+            }
+            matches.forEach { it.recycle() }
+            if (visible) return true
+        }
+        return false
     }
 
     // ---- TikTok: one video per session ----
@@ -979,6 +1131,11 @@ class ReelsAccessibilityService : AccessibilityService() {
             } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
                 if (now - tiktokEnteredAt < ENTRY_GRACE_MS) {
                     AppLog.d(this, TAG, "Ignoring TikTok scroll ${now - tiktokEnteredAt}ms after entry (settle)")
+                    return
+                }
+                if (!isPagerScroll(event, "viewpager")) {
+                    // Same comments-sheet protection as the Reels session
+                    // above -- only the For You pager scrolling is a swipe.
                     return
                 }
                 if (now - lastActionTime > COOLDOWN_MS) {

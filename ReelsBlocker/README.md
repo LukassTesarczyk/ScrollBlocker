@@ -122,6 +122,42 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.30 -- blokování feedu, konec vyhazování z komentářů, stabilnější služba
+
+Velká (a možná poslední velká) verze -- tři věci:
+
+- **Nové: volitelné blokování feedu.** Na Home záložce (jen u Instagramu)
+  přibyl přepínač "Blokovat scrollování feedu". Když je zapnutý, funguje
+  to přesně podle zadání: appka pozná, že jsi ve feedu (domeček) a že
+  zmizel řádek s historkami nahoře (= odscrolloval jsi dolů). Po 5
+  vteřinách od zmizení historek tě další scroll vrátí na začátek feedu
+  (klepnutím na domeček -- Instagram to bere jako "skoč nahoru", takže
+  nikam nevyletíš z appky, jen se feed vrátí na vršek). Ukáže se pilulka
+  "↑ Zpět na začátek" a počítá se to do statistik. Vypnutí přepínače
+  chce PIN (když je PIN zapnutý), zapnutí ne -- stejná logika jako Stop.
+  Pozn.: id řádku s historkami (`stories_tray`) je jediná věc v téhle
+  verzi, která zatím není potvrzená z tvého logu -- appka loguje, kdy
+  historky vidí/nevidí, takže kdyby to id nesedělo, pozná se to z logu
+  (blokování by se "natahovalo" hned po vstupu do feedu) a půjde doladit.
+- **Oprava: komentáře už tě nevyhodí z reelu.** Scrollování v komentářích
+  (nebo v jakémkoli seznamu vykresleném přes přehrávač) posílalo úplně
+  stejnou "scroll" událost jako swipe na další reel -- appka to brala
+  jako "swipnul sis další reel" a vyhodila tě. Teď se u každého scrollu
+  kontroluje, CO se vlastně scrollovalo: jen scroll samotného přehrávače
+  (pageru) se počítá jako swipe. Platí pro Instagram i TikTok. Ignorované
+  scrolly se logují i s id prvku, takže kdyby něco, z logu se pozná co.
+- **Stabilita: proti stavu "Nefunguje" v nastavení přístupnosti.** Dvě
+  příčiny, obě opravené: (1) jakákoli neošetřená chyba v obsluze událostí
+  shodila celou službu -- teď je celá obsluha v ochranné síti a chyba se
+  jen zapíše do logu; (2) Instagram při přehrávání sype desítky "změna
+  obsahu" událostí za vteřinu a appka na každou dělala několik průchodů
+  celým stromem obrazovky na hlavním vlákně -- přetížená služba je přesně
+  to, co systém po chvíli označí "Nefunguje". Tyhle záplavy se teď
+  vzorkují (max. 1 za 200 ms); události důležité pro blokování (přepnutí
+  okna, scrolly) se zpracovávají vždycky hned. Kdyby se stav "Nefunguje"
+  ještě někdy objevil, je to skoro jistě HyperOS killer -- pomáhá zámek
+  v posledních aplikacích (bod 4 v návodu).
+
 ## v1.29 -- oprava TikToku podle logu, přejmenování na ScrollGuard, doladění widgetů
 
 Reakce na tvůj test v1.28 + čerstvý TikTok log:

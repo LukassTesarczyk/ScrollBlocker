@@ -36,14 +36,29 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    resource-id prvků v UI stromu.
 2. **Nechat projít jeden reel/video**, ale při dalším swipu uživatele
    přesměrovat pryč -- u Instagramu kliknutím na Home tab (zpět do
-   feedu), u TikToku kliknutím na Inbox tab.
-3. **Zakrýt ikonku Reels** v Instagramu barevným overlayem (barva se
+   feedu), u TikToku kliknutím na Inbox tab. Za swipe se počítá jen
+   scroll samotného přehrávače/pageru (kontrola zdroje události, od
+   v1.30) -- scrollování komentářů apod. blokování nespustí.
+3. **Volitelně blokovat i scrollování feedu** (přepínač na Home záložce,
+   jen Instagram, od v1.30): když je uživatel ve feedu a řádek s
+   historkami (`stories_tray` -- kandidátní id, zatím nepotvrzené z
+   logu) je 5+ vteřin pryč z obrazovky (= odscrolloval dolů), další
+   scroll klikne na Home tab, což Instagram bere jako "skoč na začátek
+   feedu". Počítá se do statistik, pilulka "↑ Zpět na začátek".
+4. **Zakrýt ikonku Reels** v Instagramu barevným overlayem (barva se
    vzorkuje ze skutečného screenshotu obrazovky, aby splynula s
    pozadím) -- vizuálně "schová" lákadlo.
-4. **Sledovat čas strávený** v jednotlivých kategoriích obrazovek
+5. **Sledovat čas strávený** v jednotlivých kategoriích obrazovek
    (Reels/Feed/DM/Stories/Other u Instagramu, Reels [zobrazeno jako
    "Videa"]/Other u TikToku) a kolikrát blokování zafungovalo -- pro
    statistiky v appce.
+
+Stabilita služby (od v1.30): celá obsluha accessibility událostí je
+zabalená v try/catch (jedna chyba dřív shodila celou službu -> stav
+"Nefunguje" v nastavení přístupnosti) a záplavy content-change událostí
+se vzorkují na max. 1 za 200 ms (přetížené hlavní vlákno byl druhý
+kandidát na "Nefunguje"). Window-state a scroll události se zpracovávají
+vždy.
 
 Detekce Instagramu je založená na resource-id změřených ze skutečných
 logů (ne z dokumentace -- ta neexistuje). TikTok detekce je založená na
@@ -95,9 +110,13 @@ přísný schválně, ať se drafty/vlastní profil (mají `viewpager` bez
   otevře action sheet (Stats / Move / Run-Stop). "Move" = reorder
   klepnutím, ne fyzickým tažením.
 - **PIN lock** (volitelný, 4-6 číslic) -- chrání před impulzivním
-  vypnutím blokování (Stop, Run/Stop v hubu, Shutdown). Vlastní tmavý
-  dialog (ne systémový), sedí do designu appky, 340dp široký (rozšířeno
-  v v1.29, ať se text tlačítek vejde na jeden řádek).
+  vypnutím blokování (Stop, Run/Stop v hubu, Shutdown, vypnutí blokování
+  feedu). Vlastní tmavý dialog (ne systémový), sedí do designu appky,
+  340dp široký (rozšířeno v v1.29, ať se text tlačítek vejde na jeden
+  řádek).
+- **Přepínač "Blokovat scrollování feedu"** (od v1.30) -- na Home
+  záložce, viditelný jen pro Instagram, aktivní stav teal. Vypnutí chce
+  PIN, zapnutí ne.
 - **Dva home-screen widgety** (oba jen pro Instagram):
   1. Donut widget -- kolečko (time-spent graf) + jedna hodnota celkového
      času vpravo (zjednodušeno z v1.28, kde byla celá legenda -- na
@@ -125,6 +144,12 @@ neškrtá. Aktuální verze appky je vidět v appce vpravo nahoře.
 
 ## Otevřené/rozdělané věci
 
+- **Id řádku s historkami (`stories_tray`) pro blokování feedu není
+  potvrzené z logu** -- je to jediný nezměřený odhad v detekci (viz
+  komentář u STORIES_TRAY_RESOURCE_ID_CANDIDATES). Appka loguje "stories
+  tray gone -- feed block arms", takže z prvního logu s zapnutým
+  blokováním feedu půjde poznat, jestli id sedí (pokud ne, blokování se
+  natahuje hned po vstupu do feedu místo až po odscrollování).
 - **Inbox (seznam DM konverzací) se v grafu/badge chybně hlásí jako
   FEED**, ne DMS. Otevřená DM konverzace (thread) se detekuje správně
   (`thread_fragment_container`/`message_list`), ale samotný seznam
