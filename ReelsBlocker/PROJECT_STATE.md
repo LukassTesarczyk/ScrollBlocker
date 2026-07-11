@@ -44,7 +44,11 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    historkami (`stories_tray` -- kandidátní id, zatím nepotvrzené z
    logu) je 5+ vteřin pryč z obrazovky (= odscrolloval dolů), další
    scroll klikne na Home tab, což Instagram bere jako "skoč na začátek
-   feedu". Počítá se do statistik, pilulka "↑ Zpět na začátek".
+   feedu". Počítá se do statistik, pilulka "↑ Zpět na začátek". Od
+   v1.31 se navíc před každým krokem (arming i spuštění) živě ověřuje,
+   že Home tab je opravdu `isSelected` -- bez toho se blokování mylně
+   spouštělo i při klepnutí do DMs (Inbox se klasifikuje jako FEED,
+   známá mezera níž).
 4. **Zakrýt ikonku Reels** v Instagramu barevným overlayem (barva se
    vzorkuje ze skutečného screenshotu obrazovky, aby splynula s
    pozadím) -- vizuálně "schová" lákadlo.
@@ -118,10 +122,13 @@ přísný schválně, ať se drafty/vlastní profil (mají `viewpager` bez
   záložce, viditelný jen pro Instagram, aktivní stav teal. Vypnutí chce
   PIN, zapnutí ne.
 - **Dva home-screen widgety** (oba jen pro Instagram):
-  1. Donut widget -- kolečko (time-spent graf) + jedna hodnota celkového
-     času vpravo (zjednodušeno z v1.28, kde byla celá legenda -- na
-     minimální velikosti 2x2 se nevešla). Default 3x3, jde zmenšit na
-     2x2.
+  1. Donut widget (přepracován v v1.31) -- celá plocha widgetu je graf:
+     kolečko + legenda s rozpadem podle kategorií (nulové kategorie se
+     neukazují). Široký tvar = kolečko vlevo, legenda vpravo; čtverec =
+     legenda uvnitř kolečka. Každá instance se vykresluje ve své
+     skutečné velikosti (onAppWidgetOptionsChanged -> okamžité
+     překreslení po resize), bitmapa 2px/dp. Default 3x3, resize
+     libovolně oběma směry (min 110dp).
   2. Bars widget -- sloupcový graf posledních 7 dní, stejný vzhled jako
      v appce. Default 4x3, jde zmenšit na 3x2.
 

@@ -1005,6 +1005,21 @@ class ReelsAccessibilityService : AccessibilityService() {
             feedStoriesGoneAt = 0L
             return
         }
+        // classifyScreen's FEED verdict isn't enough on its own: the DM
+        // inbox (and possibly other overlaid screens) can still classify
+        // as FEED (known gap -- Home tab underneath keeps reporting
+        // selected in some states, list ids unmeasured), and scroll events
+        // fired right as the user taps into DMs were triggering the
+        // back-to-top click on a screen that wasn't the feed at all. Ask
+        // the Home tab node directly, right now, and stand down -- arm
+        // state included -- unless it's genuinely the selected tab.
+        val homeCheck = findHomeTabNode(root)
+        val homeSelected = homeCheck?.isSelected == true
+        homeCheck?.recycle()
+        if (!homeSelected) {
+            feedStoriesGoneAt = 0L
+            return
+        }
         val now = System.currentTimeMillis()
         if (hasVisibleStoriesTray(root)) {
             feedStoriesGoneAt = 0L

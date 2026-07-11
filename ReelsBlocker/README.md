@@ -122,6 +122,24 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.31 -- feed block jen při aktivním domečku, kolečkový widget přes celou plochu
+
+- **Blokování feedu už tě nevyhodí, když klepneš do DMs.** Klasifikace
+  obrazovky brala i Inbox jako "feed" (známá mezera -- domeček pod ním
+  zůstává označený jako aktivní) a scroll při přechodu do zpráv tak
+  spouštěl "zpět na začátek" mimo feed. Teď se appka před každým krokem
+  feed-blocku (i před natahováním časovače) ptá přímo domečku, jestli je
+  právě teď opravdu aktivní záložkou -- když ne, celý stav se resetuje a
+  nic se nespustí.
+- **Kolečkový widget je teď "vyříznutý graf z appky".** Celá plocha
+  widgetu je graf: kolečko + rozpad podle kategorií (Reels, Zprávy,
+  Feed, Historky, Ostatní -- nulové se neukazují). Na širokém obdélníku
+  je kolečko vlevo a legenda vedle (jako v appce), na čtverci je legenda
+  uvnitř kolečka. Widget jde zvětšovat i zmenšovat v obou směrech a graf
+  se vždycky roztáhne přes celou plochu -- každá instance widgetu se
+  vykresluje ve své skutečné velikosti a překreslí se hned po přetažení
+  úchytu (ne až při další aktualizaci dat).
+
 ## v1.30 -- blokování feedu, konec vyhazování z komentářů, stabilnější služba
 
 Velká (a možná poslední velká) verze -- tři věci:
