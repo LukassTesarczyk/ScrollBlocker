@@ -9,7 +9,7 @@
     <string name="setup_open_accessibility">Otvori postavke pristupačnosti</string>
     <string name="setup_open_battery">Otvori postavke baterije aplikacije</string>
     <string name="setup_open_other_permissions">Otvori informacije o aplikaciji (Ostale dozvole)</string>
-    <string name="setup_instructions">1. Dodirni “Otvori postavke pristupačnosti” i uključi “Reels Blocker Service”. Ako prekidač ne ostane uključen: Informacije o aplikaciji -&gt; izbornik ⋮ (gore desno) -&gt; “Dopusti ograničene postavke”.\n\n2. Dodirni “Otvori postavke baterije aplikacije”, postavi potrošnju baterije na “Bez ograničenja” i uključi automatsko pokretanje (specifično za Xiaomi/HyperOS).\n\n3. Na istom zaslonu -&gt; Ostale dozvole -&gt; dopusti “Prikaz skočnih prozora dok radi u pozadini”.\n\n4. Otvori i nedavne aplikacije te dodirni ikonu lokota kod Reels Blockera kako ga HyperOS ne bi zatvarao u pozadini -- ako se usluga ikada prikaže kao “ne radi” u pristupačnosti, obično je to razlog, a ponovno uključivanje prekidača to rješava.\n\n5. Koristi Run/Stop iznad za privremenu obustavu blokiranja u bilo kojem trenutku, po aplikaciji.\n\n6. Dodirni strelicu gore lijevo -&gt; Log ako nešto ne radi -- kopiraj ga i pošalji kako bi se moglo precizno popraviti.</string>
+    <string name="setup_instructions">1. Dodirni “Otvori postavke pristupačnosti” i uključi “ScrollGuard Service”. Ako prekidač ne ostane uključen: Informacije o aplikaciji -&gt; izbornik ⋮ (gore desno) -&gt; “Dopusti ograničene postavke”.\n\n2. Dodirni “Otvori postavke baterije aplikacije”, postavi potrošnju baterije na “Bez ograničenja” i uključi automatsko pokretanje (specifično za Xiaomi/HyperOS).\n\n3. Na istom zaslonu -&gt; Ostale dozvole -&gt; dopusti “Prikaz skočnih prozora dok radi u pozadini”.\n\n4. Otvori i nedavne aplikacije te dodirni ikonu lokota kod ScrollGuarda kako ga HyperOS ne bi zatvarao u pozadini -- ako se usluga ikada prikaže kao “ne radi” u pristupačnosti, obično je to razlog, a ponovno uključivanje prekidača to rješava.\n\n5. Koristi Run/Stop iznad za privremenu obustavu blokiranja u bilo kojem trenutku, po aplikaciji.\n\n6. Dodirni strelicu gore lijevo -&gt; Log ako nešto ne radi -- kopiraj ga i pošalji kako bi se moglo precizno popraviti.</string>
     <string name="debug_intro">Zapisnik se pohranjuje samo lokalno na ovom uređaju -- ništa se nikamo ne šalje. Kopiraj ga i podijeli ako nešto ne radi kako treba.</string>
     <string name="refresh">Osvježi</string>
     <string name="copy">Kopiraj</string>
@@ -34,7 +34,7 @@
     <string name="service_not_implemented">Otkrivanje još nije implementirano</string>
     <string name="not_implemented_note">Otkrivanje za %1$s još nije implementirano -- Run/Stop se sprema za kasnije, ali trenutačno se ništa ne blokira niti prati.</string>
     <string name="notification_channel_name">Blokiranje aktivno</string>
-    <string name="notification_title">Reels Blocker je aktivan</string>
+    <string name="notification_title">ScrollGuard je aktivan</string>
     <string name="notification_text">Blokira Instagram Reels. Dodirni Zaustavi u aplikaciji za pauzu.</string>
     <string name="restart_app">Ponovno pokreni aplikaciju</string>
     <string name="pill_back_to_feed">↩ Natrag na feed</string>

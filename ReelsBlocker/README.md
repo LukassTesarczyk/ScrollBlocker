@@ -1,4 +1,7 @@
-# Reels Blocker (Android)
+# ScrollGuard (Android)
+
+(Formerly "Reels Blocker" -- renamed in v1.29. Repo folder, package id and
+class names are unchanged, only the name shown on the phone changed.)
 
 A small accessibility-service app that detects when Instagram shows the
 Reels tab and automatically presses "back" to exit it. Everything else
@@ -118,6 +121,92 @@ friend". It uses the next best thing — session + scroll counting —
 which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
+
+## v1.31 -- feed block jen při aktivním domečku, kolečkový widget přes celou plochu
+
+- **Blokování feedu už tě nevyhodí, když klepneš do DMs.** Klasifikace
+  obrazovky brala i Inbox jako "feed" (známá mezera -- domeček pod ním
+  zůstává označený jako aktivní) a scroll při přechodu do zpráv tak
+  spouštěl "zpět na začátek" mimo feed. Teď se appka před každým krokem
+  feed-blocku (i před natahováním časovače) ptá přímo domečku, jestli je
+  právě teď opravdu aktivní záložkou -- když ne, celý stav se resetuje a
+  nic se nespustí.
+- **Kolečkový widget je teď "vyříznutý graf z appky".** Celá plocha
+  widgetu je graf: kolečko + rozpad podle kategorií (Reels, Zprávy,
+  Feed, Historky, Ostatní -- nulové se neukazují). Na širokém obdélníku
+  je kolečko vlevo a legenda vedle (jako v appce), na čtverci je legenda
+  uvnitř kolečka. Widget jde zvětšovat i zmenšovat v obou směrech a graf
+  se vždycky roztáhne přes celou plochu -- každá instance widgetu se
+  vykresluje ve své skutečné velikosti a překreslí se hned po přetažení
+  úchytu (ne až při další aktualizaci dat).
+
+## v1.30 -- blokování feedu, konec vyhazování z komentářů, stabilnější služba
+
+Velká (a možná poslední velká) verze -- tři věci:
+
+- **Nové: volitelné blokování feedu.** Na Home záložce (jen u Instagramu)
+  přibyl přepínač "Blokovat scrollování feedu". Když je zapnutý, funguje
+  to přesně podle zadání: appka pozná, že jsi ve feedu (domeček) a že
+  zmizel řádek s historkami nahoře (= odscrolloval jsi dolů). Po 5
+  vteřinách od zmizení historek tě další scroll vrátí na začátek feedu
+  (klepnutím na domeček -- Instagram to bere jako "skoč nahoru", takže
+  nikam nevyletíš z appky, jen se feed vrátí na vršek). Ukáže se pilulka
+  "↑ Zpět na začátek" a počítá se to do statistik. Vypnutí přepínače
+  chce PIN (když je PIN zapnutý), zapnutí ne -- stejná logika jako Stop.
+  Pozn.: id řádku s historkami (`stories_tray`) je jediná věc v téhle
+  verzi, která zatím není potvrzená z tvého logu -- appka loguje, kdy
+  historky vidí/nevidí, takže kdyby to id nesedělo, pozná se to z logu
+  (blokování by se "natahovalo" hned po vstupu do feedu) a půjde doladit.
+- **Oprava: komentáře už tě nevyhodí z reelu.** Scrollování v komentářích
+  (nebo v jakémkoli seznamu vykresleném přes přehrávač) posílalo úplně
+  stejnou "scroll" událost jako swipe na další reel -- appka to brala
+  jako "swipnul sis další reel" a vyhodila tě. Teď se u každého scrollu
+  kontroluje, CO se vlastně scrollovalo: jen scroll samotného přehrávače
+  (pageru) se počítá jako swipe. Platí pro Instagram i TikTok. Ignorované
+  scrolly se logují i s id prvku, takže kdyby něco, z logu se pozná co.
+- **Stabilita: proti stavu "Nefunguje" v nastavení přístupnosti.** Dvě
+  příčiny, obě opravené: (1) jakákoli neošetřená chyba v obsluze událostí
+  shodila celou službu -- teď je celá obsluha v ochranné síti a chyba se
+  jen zapíše do logu; (2) Instagram při přehrávání sype desítky "změna
+  obsahu" událostí za vteřinu a appka na každou dělala několik průchodů
+  celým stromem obrazovky na hlavním vlákně -- přetížená služba je přesně
+  to, co systém po chvíli označí "Nefunguje". Tyhle záplavy se teď
+  vzorkují (max. 1 za 200 ms); události důležité pro blokování (přepnutí
+  okna, scrolly) se zpracovávají vždycky hned. Kdyby se stav "Nefunguje"
+  ještě někdy objevil, je to skoro jistě HyperOS killer -- pomáhá zámek
+  v posledních aplikacích (bod 4 v návodu).
+
+## v1.29 -- oprava TikToku podle logu, přejmenování na ScrollGuard, doladění widgetů
+
+Reakce na tvůj test v1.28 + čerstvý TikTok log:
+
+- **TikTok konečně opravdu blokuje.** Z logu bylo vidět, proč "vůbec
+  nefungoval": appka požadovala, aby na obrazovce bylo současně
+  `viewpager` I `long_press_layout`, jenže `long_press_layout` chybí u
+  některých videí (reklamy, videa s nálepkami) -- appka to vyhodnotila
+  jako "opustil jsi feed" během pár vteřin, session se pořád resetovala
+  a k opravdovému blokování se to nikdy nedostalo. Teď appka rozlišuje
+  vstup (přísná podmínka, aby drafty/vlastní profil zůstaly nedotčené) a
+  setrvání ve feedu (stačí `viewpager`, který byl ve všech úsecích logu
+  přítomný pořád) -- takže krátký výpadek `long_press_layout` už session
+  nezruší.
+- **Graf u TikToku má teď smysluplné popisky.** Čas u TikToku se teď
+  počítá do stejné kategorie jako Instagram Reels (přejmenované u
+  TikToku na "Videa"), a řádek "Feed" (u TikToku vždycky nulový a matoucí)
+  se v grafu i legendě prostě nezobrazuje -- obecně teď mizí jakákoli
+  nulová kategorie, ne jen u TikToku.
+- **PIN dialog rozšířený**, ať se "Potvrdit" vejde na jeden řádek.
+- **Widget s kolečkem byl zjednodušený** (kolečko + jedna hodnota času
+  místo nabité tabulky, která se na menší velikost nevešla pořádně) a
+  oba widgety teď jdou zmenšit: kolečkový widget je defaultně 3x3 a jde
+  zmenšit až na 2x2, sloupcový graf jde zmenšit až na 3x2.
+- **Ikonka appky mírně zmenšená** (prstenec zabírá méně místa v rámci
+  bezpečné zóny).
+- **Appka se teď jmenuje ScrollGuard** -- ve všech ~30 jazycích, v
+  Nastavení přístupnosti (dřív "Reels Blocker Service", teď "ScrollGuard
+  Service" -- po aktualizaci ho tak najdeš i tam) i v oznámení. Složka v
+  repu (`ReelsBlocker/`), balíček appky a názvy tříd v kódu se neměnily,
+  jde jen o jméno, které appka ukazuje na telefonu.
 
 ## v1.28 -- vlastní statistiky pro každou appku, dva widgety, hezčí PIN, TikTok do Inboxu
 
@@ -955,7 +1044,7 @@ Instagram, and it doesn't send data anywhere.
   miss (e.g. if Instagram A/B-tests a new layout for some accounts).
 - Xiaomi/HyperOS battery management can still kill the background
   service even with the settings above; if it stops working, check
-  Settings → Apps → Reels Blocker → Battery again after any HyperOS
+  Settings → Apps → ScrollGuard → Battery again after any HyperOS
   update, since those settings sometimes reset.
 - This only works on Android. iOS does not allow this kind of
   cross-app UI access without a jailbreak.

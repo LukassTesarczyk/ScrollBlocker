@@ -126,6 +126,16 @@ class MainActivity : AppCompatActivity() {
                 refreshStatus()
             }
         }
+        findViewById<TextView>(R.id.btnBlockFeedToggle).setOnClickListener {
+            val enabled = prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false)
+            val apply = {
+                prefs.edit().putBoolean(PrefsKeys.KEY_BLOCK_FEED, !enabled).apply()
+                refreshBlockFeedToggle()
+            }
+            // Turning the extra protection OFF is a weak-willed-moment
+            // action just like Stop -- same PIN gate; turning it ON is free.
+            if (enabled) requirePin(apply) else apply()
+        }
 
         btnOpenMenu.setOnClickListener { if (drawerOpen) closeDrawer() else openDrawer() }
         drawerScrim.setOnClickListener { closeDrawer() }
@@ -686,6 +696,25 @@ class MainActivity : AppCompatActivity() {
         } else {
             tvServiceStatus.text = getString(R.string.service_not_implemented)
         }
+        refreshBlockFeedToggle()
+    }
+
+    // Feed blocking only exists for Instagram (TikTok's whole app IS the
+    // feed), so the row hides entirely for the other hub apps.
+    private fun refreshBlockFeedToggle() {
+        val toggle = findViewById<TextView>(R.id.btnBlockFeedToggle)
+        val hint = findViewById<TextView>(R.id.tvBlockFeedHint)
+        if (selectedApp != "instagram") {
+            toggle.visibility = View.GONE
+            hint.visibility = View.GONE
+            return
+        }
+        val enabled = prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false)
+        toggle.visibility = View.VISIBLE
+        hint.visibility = View.VISIBLE
+        toggle.text = getString(if (enabled) R.string.block_feed_on else R.string.block_feed_off)
+        toggle.setBackgroundResource(if (enabled) R.drawable.bg_menu_item_active else R.drawable.bg_menu_item)
+        toggle.setTextColor(Color.parseColor(if (enabled) "#26A69A" else "#FFFFFF"))
     }
 
     private fun renderStats() {
@@ -721,13 +750,24 @@ class MainActivity : AppCompatActivity() {
     private fun renderTimeChart() {
         val density = resources.displayMetrics.density
         val times = TimeStats.today(this, selectedApp)
+        // TikTok has no real equivalent of Instagram's home feed -- its
+        // watched-video time lands in the same REELS bucket Instagram
+        // Reels uses (see ReelsAccessibilityService/TimeStats), so the
+        // label needs to say "Videos" there instead of "Reels", and the
+        // always-zero FEED row simply won't render (zero-value rows are
+        // filtered out below).
+        val reelsLabel = if (selectedApp == "tiktok") {
+            getString(R.string.time_spent_videos)
+        } else {
+            getString(R.string.time_spent_reels)
+        }
         val entries = listOf(
-            Triple(getString(R.string.time_spent_reels), times[TimeCategory.REELS] ?: 0L, "#A855F7"),
+            Triple(reelsLabel, times[TimeCategory.REELS] ?: 0L, "#A855F7"),
             Triple(getString(R.string.time_spent_dm), times[TimeCategory.DM] ?: 0L, "#22C55E"),
             Triple(getString(R.string.time_spent_feed), times[TimeCategory.FEED] ?: 0L, "#3B82F6"),
             Triple(getString(R.string.time_spent_stories), times[TimeCategory.STORY] ?: 0L, "#EC4899"),
             Triple(getString(R.string.time_spent_other), times[TimeCategory.OTHER] ?: 0L, "#70706C")
-        )
+        ).filter { (_, value, _) -> value > 0 }
 
         findViewById<DonutChartView>(R.id.timeDonutChart).setSegments(
             entries.map { (_, value, color) -> DonutChartView.Segment(value, Color.parseColor(color)) }

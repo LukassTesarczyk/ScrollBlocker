@@ -8,6 +8,7 @@
     <string name="last_7_days">Posledních 7 dní</string>
     <string name="time_spent_title">Kde trávíš čas</string>
     <string name="time_spent_reels">Reels</string>
+    <string name="time_spent_videos">Videa</string>
     <string name="time_spent_dm">Zprávy</string>
     <string name="time_spent_feed">Feed</string>
     <string name="time_spent_stories">Historky</string>
@@ -15,7 +16,7 @@
     <string name="setup_open_accessibility">Otevřít nastavení přístupnosti</string>
     <string name="setup_open_battery">Otevřít nastavení baterie appky</string>
     <string name="setup_open_other_permissions">Otevřít info o appce (Další oprávnění)</string>
-    <string name="setup_instructions">1. Klepni na „Otevřít nastavení přístupnosti“ a zapni „Reels Blocker Service“. Pokud přepínač nezůstane zapnutý: Info o appce -&gt; nabídka ⋮ (vpravo nahoře) -&gt; „Povolit omezená nastavení“.\n\n2. Klepni na „Otevřít nastavení baterie appky“ a nastav využití baterie na „Bez omezení“ a zapni Autostart (specifické pro Xiaomi/HyperOS).\n\n3. Na stejné obrazovce -&gt; Další oprávnění -&gt; povol „Zobrazovat vyskakovací okna na pozadí“.\n\n4. Otevři taky poslední aplikace a klepni na ikonku zámku u appky Reels Blocker, ať ji HyperOS neukončuje na pozadí -- pokud se služba někdy ukáže jako „nefunkční“ v nastavení přístupnosti, je to obvykle tímhle a pomůže znovu zapnout přepínač.\n\n5. Přepínačem Run/Stop nahoře můžeš blokování kdykoli pozastavit, pro každou appku zvlášť.\n\n6. Klepni na šipku vlevo nahoře -&gt; Log, pokud něco nefunguje -- zkopíruj ho a pošli, ať se to dá přesně opravit.</string>
+    <string name="setup_instructions">1. Klepni na „Otevřít nastavení přístupnosti“ a zapni „ScrollGuard Service“. Pokud přepínač nezůstane zapnutý: Info o appce -&gt; nabídka ⋮ (vpravo nahoře) -&gt; „Povolit omezená nastavení“.\n\n2. Klepni na „Otevřít nastavení baterie appky“ a nastav využití baterie na „Bez omezení“ a zapni Autostart (specifické pro Xiaomi/HyperOS).\n\n3. Na stejné obrazovce -&gt; Další oprávnění -&gt; povol „Zobrazovat vyskakovací okna na pozadí“.\n\n4. Otevři taky poslední aplikace a klepni na ikonku zámku u appky ScrollGuard, ať ji HyperOS neukončuje na pozadí -- pokud se služba někdy ukáže jako „nefunkční“ v nastavení přístupnosti, je to obvykle tímhle a pomůže znovu zapnout přepínač.\n\n5. Přepínačem Run/Stop nahoře můžeš blokování kdykoli pozastavit, pro každou appku zvlášť.\n\n6. Klepni na šipku vlevo nahoře -&gt; Log, pokud něco nefunguje -- zkopíruj ho a pošli, ať se to dá přesně opravit.</string>
     <string name="debug_intro">Log se ukládá lokálně jen v tomto zařízení -- nic se nikam neposílá. Zkopíruj a pošli ho, když se něco pokazí.</string>
     <string name="refresh">Obnovit</string>
     <string name="copy">Kopírovat</string>
@@ -42,7 +43,7 @@
     <string name="service_not_implemented">Detekce zatím není implementována</string>
     <string name="not_implemented_note">%1$s zatím nemá implementovanou detekci -- Run/Stop se ukládá pro až to bude hotové, ale zatím nic neblokuje ani nesleduje.</string>
     <string name="notification_channel_name">Aktivní blokování</string>
-    <string name="notification_title">Reels Blocker je aktivní</string>
+    <string name="notification_title">ScrollGuard je aktivní</string>
     <string name="notification_text">Blokuje Instagram Reels. Zastavíš to tlačítkem Stop v appce.</string>
     <string name="restart_app">Restartovat appku</string>
     <string name="shutdown_app">Vypnout aplikaci</string>
@@ -59,4 +60,8 @@
     <string name="pin_enter_title">Zadej PIN</string>
     <string name="pin_wrong">Špatný PIN</string>
     <string name="pin_length_hint">PIN musí mít 4-6 číslic</string>
+    <string name="pill_feed_top">↑ Zpět na začátek</string>
+    <string name="block_feed_on">Blokovat scrollování feedu: ZAPNUTO</string>
+    <string name="block_feed_off">Blokovat scrollování feedu: VYPNUTO</string>
+    <string name="block_feed_hint">Když je zapnuto, utne se i nekonečné scrollování feedu: jakmile odscrolluješ pod řádek s historkami a chvíli pokračuješ, další scroll tě vrátí na začátek feedu.</string>
 </resources>

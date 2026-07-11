@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Reels Blocker</string>
+    <string name="app_name">ScrollGuard</string>
     <string name="accessibility_service_description">Watches for the Instagram Reels tab and automatically backs out of it. Only reads on-screen content from Instagram -- does not read or store any personal data, and does not act in any other app.</string>
 
     <string name="version_format">v%1$s</string>
@@ -11,6 +11,7 @@
     <string name="last_7_days">Last 7 days</string>
     <string name="time_spent_title">Time spent today</string>
     <string name="time_spent_reels">Reels</string>
+    <string name="time_spent_videos">Videos</string>
     <string name="time_spent_dm">DMs</string>
     <string name="time_spent_feed">Feed</string>
     <string name="time_spent_stories">Stories</string>
@@ -19,7 +20,7 @@
     <string name="setup_open_accessibility">Open Accessibility Settings</string>
     <string name="setup_open_battery">Open App Battery Settings</string>
     <string name="setup_open_other_permissions">Open App Info (Other permissions)</string>
-    <string name="setup_instructions">1. Tap \"Open Accessibility Settings\" and enable \"Reels Blocker Service\". If the switch won\'t stay on: App info -> ⋮ menu (top right) -> \"Allow restricted settings\".\n\n2. Tap \"Open App Battery Settings\" and set battery usage to \"No restrictions\" and enable Autostart (Xiaomi/HyperOS specific).\n\n3. Same screen -> Other permissions -> allow \"Display pop-up windows while running in the background\".\n\n4. Also open recent apps and tap the lock icon on Reels Blocker so HyperOS doesn\'t kill it in the background -- if the service ever shows as \"not working\" in Accessibility settings, this is usually why, and re-enabling the toggle fixes it.\n\n5. Use Run/Stop above to pause blocking anytime, per app.\n\n6. Tap the arrow top-left -> Log if something misbehaves -- copy it and send it over so it can be fixed precisely.</string>
+    <string name="setup_instructions">1. Tap \"Open Accessibility Settings\" and enable \"ScrollGuard Service\". If the switch won\'t stay on: App info -> ⋮ menu (top right) -> \"Allow restricted settings\".\n\n2. Tap \"Open App Battery Settings\" and set battery usage to \"No restrictions\" and enable Autostart (Xiaomi/HyperOS specific).\n\n3. Same screen -> Other permissions -> allow \"Display pop-up windows while running in the background\".\n\n4. Also open recent apps and tap the lock icon on ScrollGuard so HyperOS doesn\'t kill it in the background -- if the service ever shows as \"not working\" in Accessibility settings, this is usually why, and re-enabling the toggle fixes it.\n\n5. Use Run/Stop above to pause blocking anytime, per app.\n\n6. Tap the arrow top-left -> Log if something misbehaves -- copy it and send it over so it can be fixed precisely.</string>
 
     <string name="debug_intro">The log is stored locally on this device only -- nothing is sent anywhere. Copy it and share it if something breaks.</string>
     <string name="refresh">Refresh</string>
@@ -51,7 +52,7 @@
     <string name="not_implemented_note">%1$s detection isn\'t implemented yet -- Run/Stop is saved for when it is, but nothing is blocked or tracked for it yet.</string>
 
     <string name="notification_channel_name">Blocking active</string>
-    <string name="notification_title">Reels Blocker is active</string>
+    <string name="notification_title">ScrollGuard is active</string>
     <string name="notification_text">Blocking Instagram Reels. Tap Stop in the app to pause.</string>
 
     <string name="restart_app">Restart App</string>
@@ -60,6 +61,11 @@
     <string name="pill_back_to_feed">↩ Back to feed</string>
     <string name="pill_left_reels">↩ Left Reels</string>
     <string name="pill_left_feed">↩ Left the video feed</string>
+    <string name="pill_feed_top">↑ Back to top</string>
+
+    <string name="block_feed_on">Block feed scrolling: ON</string>
+    <string name="block_feed_off">Block feed scrolling: OFF</string>
+    <string name="block_feed_hint">When on, endless feed scrolling gets cut short too: once you scroll past the stories row and keep going for a bit, the next scroll sends you back to the top of the feed.</string>
 
     <string name="section_guide">Guide</string>
     <string name="section_permissions">Permissions</string>

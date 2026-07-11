@@ -8,6 +8,7 @@
     <string name="last_7_days">Letzte 7 Tage</string>
     <string name="time_spent_title">Zeit verbracht</string>
     <string name="time_spent_reels">Reels</string>
+    <string name="time_spent_videos">Videos</string>
     <string name="time_spent_dm">Nachrichten</string>
     <string name="time_spent_feed">Feed</string>
     <string name="time_spent_stories">Storys</string>
@@ -15,7 +16,7 @@
     <string name="setup_open_accessibility">Bedienungshilfen-Einstellungen öffnen</string>
     <string name="setup_open_battery">Akku-Einstellungen der App öffnen</string>
     <string name="setup_open_other_permissions">App-Info öffnen (weitere Berechtigungen)</string>
-    <string name="setup_instructions">1. Tippe auf „Bedienungshilfen-Einstellungen öffnen“ und aktiviere „Reels Blocker Service“. Bleibt der Schalter nicht an: App-Info -&gt; ⋮-Menü (oben rechts) -&gt; „Eingeschränkte Einstellungen zulassen“.\n\n2. Tippe auf „Akku-Einstellungen der App öffnen“, stelle den Akkuverbrauch auf „Keine Einschränkungen“ und aktiviere Autostart (Xiaomi/HyperOS-spezifisch).\n\n3. Gleicher Bildschirm -&gt; Weitere Berechtigungen -&gt; „Pop-up-Fenster im Hintergrund anzeigen“ erlauben.\n\n4. Öffne außerdem die zuletzt verwendeten Apps und tippe beim Reels Blocker auf das Schloss-Symbol, damit HyperOS ihn nicht im Hintergrund beendet -- wenn der Dienst jemals als „nicht funktionsfähig“ in den Bedienungshilfen angezeigt wird, liegt es meist daran, und erneutes Aktivieren des Schalters behebt es.\n\n5. Mit Run/Stop oben kannst du die Blockierung jederzeit pro App pausieren.\n\n6. Tippe oben links auf den Pfeil -&gt; Log, wenn etwas nicht funktioniert -- kopiere ihn und schicke ihn, damit es gezielt behoben werden kann.</string>
+    <string name="setup_instructions">1. Tippe auf „Bedienungshilfen-Einstellungen öffnen“ und aktiviere „ScrollGuard Service“. Bleibt der Schalter nicht an: App-Info -&gt; ⋮-Menü (oben rechts) -&gt; „Eingeschränkte Einstellungen zulassen“.\n\n2. Tippe auf „Akku-Einstellungen der App öffnen“, stelle den Akkuverbrauch auf „Keine Einschränkungen“ und aktiviere Autostart (Xiaomi/HyperOS-spezifisch).\n\n3. Gleicher Bildschirm -&gt; Weitere Berechtigungen -&gt; „Pop-up-Fenster im Hintergrund anzeigen“ erlauben.\n\n4. Öffne außerdem die zuletzt verwendeten Apps und tippe beim ScrollGuard auf das Schloss-Symbol, damit HyperOS ihn nicht im Hintergrund beendet -- wenn der Dienst jemals als „nicht funktionsfähig“ in den Bedienungshilfen angezeigt wird, liegt es meist daran, und erneutes Aktivieren des Schalters behebt es.\n\n5. Mit Run/Stop oben kannst du die Blockierung jederzeit pro App pausieren.\n\n6. Tippe oben links auf den Pfeil -&gt; Log, wenn etwas nicht funktioniert -- kopiere ihn und schicke ihn, damit es gezielt behoben werden kann.</string>
     <string name="debug_intro">Das Log wird nur lokal auf diesem Gerät gespeichert -- es wird nichts irgendwohin gesendet. Kopiere und teile es, wenn etwas nicht funktioniert.</string>
     <string name="refresh">Aktualisieren</string>
     <string name="copy">Kopieren</string>
@@ -42,7 +43,7 @@
     <string name="service_not_implemented">Erkennung noch nicht implementiert</string>
     <string name="not_implemented_note">Die Erkennung für %1$s ist noch nicht implementiert -- Run/Stop wird für später gespeichert, aktuell wird aber noch nichts blockiert oder erfasst.</string>
     <string name="notification_channel_name">Blockierung aktiv</string>
-    <string name="notification_title">Reels Blocker ist aktiv</string>
+    <string name="notification_title">ScrollGuard ist aktiv</string>
     <string name="notification_text">Blockiert Instagram Reels. Zum Pausieren in der App auf Stopp tippen.</string>
     <string name="restart_app">App neu starten</string>
     <string name="shutdown_app">App beenden</string>
@@ -59,4 +60,8 @@
     <string name="pin_enter_title">PIN eingeben</string>
     <string name="pin_wrong">Falsche PIN</string>
     <string name="pin_length_hint">PIN muss 4-6 Ziffern haben</string>
+    <string name="pill_feed_top">↑ Zurück nach oben</string>
+    <string name="block_feed_on">Feed-Scrollen blockieren: AN</string>
+    <string name="block_feed_off">Feed-Scrollen blockieren: AUS</string>
+    <string name="block_feed_hint">Wenn aktiviert, wird auch endloses Feed-Scrollen unterbunden: Sobald du an der Story-Leiste vorbeigescrollt bist und eine Weile weitermachst, bringt dich der nächste Scroll zurück an den Anfang des Feeds.</string>
 </resources>

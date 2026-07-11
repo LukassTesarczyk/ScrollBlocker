@@ -9,7 +9,7 @@
     <string name="setup_open_accessibility">פתח הגדרות נגישות</string>
     <string name="setup_open_battery">פתח הגדרות סוללה של האפליקציה</string>
     <string name="setup_open_other_permissions">פתח פרטי אפליקציה (הרשאות נוספות)</string>
-    <string name="setup_instructions">1. הקש על \"פתח הגדרות נגישות\" והפעל את \"Reels Blocker Service\". אם המתג לא נשאר דלוק: פרטי אפליקציה -&gt; תפריט ⋮ (למעלה מימין) -&gt; \"אפשר הגדרות מוגבלות\".\n\n2. הקש על \"פתח הגדרות סוללה של האפליקציה\", הגדר את השימוש בסוללה ל\"ללא הגבלות\" והפעל הפעלה אוטומטית (ספציפי ל-Xiaomi/HyperOS).\n\n3. באותו מסך -&gt; הרשאות נוספות -&gt; אפשר \"הצגת חלונות קופצים בזמן פעולה ברקע\".\n\n4. פתח גם את האפליקציות האחרונות והקש על סמל המנעול ליד Reels Blocker כדי ש-HyperOS לא יסגור אותה ברקע -- אם השירות אי פעם מוצג כ\"לא פועל\" בנגישות, זו בדרך כלל הסיבה, והפעלה מחדש של המתג פותרת זאת.\n\n5. השתמש ב-Run/Stop למעלה כדי להשהות את החסימה בכל עת, לכל אפליקציה בנפרד.\n\n6. הקש על החץ בפינה השמאלית העליונה -&gt; Log אם משהו לא עובד -- העתק ושלח כדי שניתן יהיה לתקן זאת במדויק.</string>
+    <string name="setup_instructions">1. הקש על \"פתח הגדרות נגישות\" והפעל את \"ScrollGuard Service\". אם המתג לא נשאר דלוק: פרטי אפליקציה -&gt; תפריט ⋮ (למעלה מימין) -&gt; \"אפשר הגדרות מוגבלות\".\n\n2. הקש על \"פתח הגדרות סוללה של האפליקציה\", הגדר את השימוש בסוללה ל\"ללא הגבלות\" והפעל הפעלה אוטומטית (ספציפי ל-Xiaomi/HyperOS).\n\n3. באותו מסך -&gt; הרשאות נוספות -&gt; אפשר \"הצגת חלונות קופצים בזמן פעולה ברקע\".\n\n4. פתח גם את האפליקציות האחרונות והקש על סמל המנעול ליד ScrollGuard כדי ש-HyperOS לא יסגור אותה ברקע -- אם השירות אי פעם מוצג כ\"לא פועל\" בנגישות, זו בדרך כלל הסיבה, והפעלה מחדש של המתג פותרת זאת.\n\n5. השתמש ב-Run/Stop למעלה כדי להשהות את החסימה בכל עת, לכל אפליקציה בנפרד.\n\n6. הקש על החץ בפינה השמאלית העליונה -&gt; Log אם משהו לא עובד -- העתק ושלח כדי שניתן יהיה לתקן זאת במדויק.</string>
     <string name="debug_intro">היומן נשמר רק באופן מקומי במכשיר זה -- שום דבר לא נשלח לשום מקום. העתק ושתף אותו אם משהו נשבר.</string>
     <string name="refresh">רענן</string>
     <string name="copy">העתק</string>
@@ -34,7 +34,7 @@
     <string name="service_not_implemented">הזיהוי עדיין לא מומש</string>
     <string name="not_implemented_note">הזיהוי עבור %1$s עדיין לא מומש -- Run/Stop נשמר לשימוש עתידי, אך כרגע שום דבר לא נחסם ולא נעקב.</string>
     <string name="notification_channel_name">חסימה פעילה</string>
-    <string name="notification_title">Reels Blocker פעיל</string>
+    <string name="notification_title">ScrollGuard פעיל</string>
     <string name="notification_text">חוסם את Instagram Reels. הקש על עצור באפליקציה כדי להשהות.</string>
     <string name="restart_app">הפעל מחדש את האפליקציה</string>
     <string name="pill_back_to_feed">↩ חזרה לפיד</string>

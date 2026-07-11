@@ -8,6 +8,7 @@
     <string name="last_7_days">7 derniers jours</string>
     <string name="time_spent_title">Temps passé</string>
     <string name="time_spent_reels">Reels</string>
+    <string name="time_spent_videos">Vidéos</string>
     <string name="time_spent_dm">Messages</string>
     <string name="time_spent_feed">Fil</string>
     <string name="time_spent_stories">Stories</string>
@@ -15,7 +16,7 @@
     <string name="setup_open_accessibility">Ouvrir les paramètres d\'accessibilité</string>
     <string name="setup_open_battery">Ouvrir les paramètres de batterie de l\'appli</string>
     <string name="setup_open_other_permissions">Ouvrir les infos de l\'appli (Autres autorisations)</string>
-    <string name="setup_instructions">1. Appuie sur «Ouvrir les paramètres d\'accessibilité» et active «Reels Blocker Service». Si l\'interrupteur ne reste pas activé : Infos de l\'appli -&gt; menu ⋮ (en haut à droite) -&gt; «Autoriser les paramètres restreints».\n\n2. Appuie sur «Ouvrir les paramètres de batterie de l\'appli», règle l\'utilisation de la batterie sur «Aucune restriction» et active le démarrage automatique (spécifique Xiaomi/HyperOS).\n\n3. Même écran -&gt; Autres autorisations -&gt; autorise «Afficher des fenêtres pop-up en arrière-plan».\n\n4. Ouvre aussi les applications récentes et appuie sur l\'icône de cadenas sur Reels Blocker pour que HyperOS ne le ferme pas en arrière-plan -- si le service s\'affiche un jour comme «ne fonctionne pas» dans les paramètres d\'accessibilité, c\'est généralement pour cette raison, et réactiver l\'interrupteur règle le problème.\n\n5. Utilise Run/Stop en haut pour mettre le blocage en pause à tout moment, par application.\n\n6. Appuie sur la flèche en haut à gauche -&gt; Log si quelque chose ne va pas -- copie-le et envoie-le pour que ce soit corrigé précisément.</string>
+    <string name="setup_instructions">1. Appuie sur «Ouvrir les paramètres d\'accessibilité» et active «ScrollGuard Service». Si l\'interrupteur ne reste pas activé : Infos de l\'appli -&gt; menu ⋮ (en haut à droite) -&gt; «Autoriser les paramètres restreints».\n\n2. Appuie sur «Ouvrir les paramètres de batterie de l\'appli», règle l\'utilisation de la batterie sur «Aucune restriction» et active le démarrage automatique (spécifique Xiaomi/HyperOS).\n\n3. Même écran -&gt; Autres autorisations -&gt; autorise «Afficher des fenêtres pop-up en arrière-plan».\n\n4. Ouvre aussi les applications récentes et appuie sur l\'icône de cadenas sur ScrollGuard pour que HyperOS ne le ferme pas en arrière-plan -- si le service s\'affiche un jour comme «ne fonctionne pas» dans les paramètres d\'accessibilité, c\'est généralement pour cette raison, et réactiver l\'interrupteur règle le problème.\n\n5. Utilise Run/Stop en haut pour mettre le blocage en pause à tout moment, par application.\n\n6. Appuie sur la flèche en haut à gauche -&gt; Log si quelque chose ne va pas -- copie-le et envoie-le pour que ce soit corrigé précisément.</string>
     <string name="debug_intro">Le journal est stocké uniquement en local sur cet appareil -- rien n\'est envoyé ailleurs. Copie-le et partage-le en cas de problème.</string>
     <string name="refresh">Actualiser</string>
     <string name="copy">Copier</string>
@@ -42,7 +43,7 @@
     <string name="service_not_implemented">Détection pas encore implémentée</string>
     <string name="not_implemented_note">La détection pour %1$s n\'est pas encore implémentée -- Run/Stop est enregistré pour plus tard, mais rien n\'est encore bloqué ni suivi.</string>
     <string name="notification_channel_name">Blocage actif</string>
-    <string name="notification_title">Reels Blocker est actif</string>
+    <string name="notification_title">ScrollGuard est actif</string>
     <string name="notification_text">Bloque Instagram Reels. Appuie sur Arrêter dans l\'appli pour mettre en pause.</string>
     <string name="restart_app">Redémarrer l\'appli</string>
     <string name="shutdown_app">Arrêter l\'application</string>
@@ -59,4 +60,8 @@
     <string name="pin_enter_title">Saisir le PIN</string>
     <string name="pin_wrong">PIN incorrect</string>
     <string name="pin_length_hint">Le PIN doit comporter 4-6 chiffres</string>
+    <string name="pill_feed_top">↑ Retour en haut</string>
+    <string name="block_feed_on">Bloquer le défilement du fil : ACTIVÉ</string>
+    <string name="block_feed_off">Bloquer le défilement du fil : DÉSACTIVÉ</string>
+    <string name="block_feed_hint">Si activé, le défilement infini du fil est aussi coupé : une fois la rangée de stories dépassée et après un moment, le prochain défilement vous ramène en haut du fil.</string>
 </resources>

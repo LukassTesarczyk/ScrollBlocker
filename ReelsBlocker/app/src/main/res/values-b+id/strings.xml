@@ -9,7 +9,7 @@
     <string name="setup_open_accessibility">Buka pengaturan aksesibilitas</string>
     <string name="setup_open_battery">Buka pengaturan baterai aplikasi</string>
     <string name="setup_open_other_permissions">Buka info aplikasi (Izin lainnya)</string>
-    <string name="setup_instructions">1. Ketuk \"Buka pengaturan aksesibilitas\" lalu aktifkan \"Reels Blocker Service\". Jika sakelar tidak tetap aktif: Info aplikasi -&gt; menu ⋮ (kanan atas) -&gt; \"Izinkan pengaturan terbatas\".\n\n2. Ketuk \"Buka pengaturan baterai aplikasi\", atur penggunaan baterai ke \"Tanpa batasan\" dan aktifkan Mulai otomatis (khusus Xiaomi/HyperOS).\n\n3. Di layar yang sama -&gt; Izin lainnya -&gt; izinkan \"Tampilkan jendela pop-up saat berjalan di latar belakang\".\n\n4. Buka juga aplikasi terbaru dan ketuk ikon gembok pada Reels Blocker agar HyperOS tidak menutupnya di latar belakang -- jika layanan pernah muncul sebagai \"tidak berfungsi\" di aksesibilitas, biasanya inilah sebabnya, dan mengaktifkan kembali sakelar akan memperbaikinya.\n\n5. Gunakan Run/Stop di atas untuk menjeda pemblokiran kapan saja, per aplikasi.\n\n6. Ketuk panah di kiri atas -&gt; Log jika ada yang tidak beres -- salin dan kirimkan agar dapat diperbaiki secara tepat.</string>
+    <string name="setup_instructions">1. Ketuk \"Buka pengaturan aksesibilitas\" lalu aktifkan \"ScrollGuard Service\". Jika sakelar tidak tetap aktif: Info aplikasi -&gt; menu ⋮ (kanan atas) -&gt; \"Izinkan pengaturan terbatas\".\n\n2. Ketuk \"Buka pengaturan baterai aplikasi\", atur penggunaan baterai ke \"Tanpa batasan\" dan aktifkan Mulai otomatis (khusus Xiaomi/HyperOS).\n\n3. Di layar yang sama -&gt; Izin lainnya -&gt; izinkan \"Tampilkan jendela pop-up saat berjalan di latar belakang\".\n\n4. Buka juga aplikasi terbaru dan ketuk ikon gembok pada ScrollGuard agar HyperOS tidak menutupnya di latar belakang -- jika layanan pernah muncul sebagai \"tidak berfungsi\" di aksesibilitas, biasanya inilah sebabnya, dan mengaktifkan kembali sakelar akan memperbaikinya.\n\n5. Gunakan Run/Stop di atas untuk menjeda pemblokiran kapan saja, per aplikasi.\n\n6. Ketuk panah di kiri atas -&gt; Log jika ada yang tidak beres -- salin dan kirimkan agar dapat diperbaiki secara tepat.</string>
     <string name="debug_intro">Log hanya disimpan secara lokal di perangkat ini -- tidak ada yang dikirim ke mana pun. Salin dan bagikan jika ada yang rusak.</string>
     <string name="refresh">Segarkan</string>
     <string name="copy">Salin</string>
@@ -34,7 +34,7 @@
     <string name="service_not_implemented">Deteksi belum diterapkan</string>
     <string name="not_implemented_note">Deteksi untuk %1$s belum diterapkan -- Run/Stop disimpan untuk nanti, tetapi saat ini belum ada yang diblokir atau dilacak.</string>
     <string name="notification_channel_name">Pemblokiran aktif</string>
-    <string name="notification_title">Reels Blocker aktif</string>
+    <string name="notification_title">ScrollGuard aktif</string>
     <string name="notification_text">Memblokir Instagram Reels. Ketuk Hentikan di aplikasi untuk menjeda.</string>
     <string name="restart_app">Mulai ulang aplikasi</string>
     <string name="pill_back_to_feed">↩ Kembali ke feed</string>

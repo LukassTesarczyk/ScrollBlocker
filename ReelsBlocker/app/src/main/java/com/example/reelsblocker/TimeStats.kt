@@ -16,8 +16,9 @@ import java.util.Locale
  * in the user's own recon logs (v1.26 round), not guessed: DM threads show
  * thread_fragment_container/message_list, Stories show reel_viewer_root,
  * the feed shows row_feed_* rows, and Reels shows clips_viewer_view_pager.
- * TikTok only ever reports FEED/OTHER -- it has no separate DM/Story/Reels
- * screens in this app's model.
+ * TikTok only ever reports REELS/OTHER (its For You feed counts under
+ * REELS, same short-form-video bucket Instagram Reels uses) -- it has no
+ * separate DM/Story/Feed screens in this app's model.
  */
 enum class TimeCategory(val prefKey: String) {
     REELS("reels"),
