@@ -122,6 +122,27 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.32 -- oprava: Reels už zase blokuje spolehlivě (swipy z nového přehrávače)
+
+- **Hlavní oprava: blokování Reels zase funguje.** Z logu vyšlo najevo,
+  že tě appka v novějším Instagramu často nechala projít i deset reelů za
+  sebou a vůbec tě nevyhodila. Příčina: oprava z v1.30 (aby tě to
+  nevyhazovalo, když si čteš komentáře) brala jako "opravdový swipe" jen
+  pohyb ze starého přehrávače `clips_viewer_view_pager`. Jenže novější
+  Instagram vykresluje Reels jinak (přes Compose) a **skutečné swipy mezi
+  reely teď hlásí z jiného prvku (`IgLazyColumn`)** -- appka je proto
+  považovala za "něco jiného" a zahazovala je, takže blokování tiše
+  nedělalo nic. Log ukázal čtyři takové ignorované swipy hned po sobě,
+  aniž by tě to vyhodilo.
+- **Co se změnilo:** appka teď bere jako platný swipe i tenhle nový prvek
+  (`IgLazyColumn`), takže tě po prvním reelu zase spolehlivě vrátí do
+  feedu. Hodnota je změřená přímo z tvého logu, ne odhadnutá.
+- **Na co dát pozor:** pokud by tě to teď náhodou začalo vyhazovat, i
+  když si jen posouváš komentáře pod reelem, pošli mi čerstvý log z menu
+  → Log -- appka si každý zahozený scroll pořád zapisuje ("Ignoring
+  scroll from non-swipe view: ..."), takže z něj přesně poznám, čím se
+  komentáře liší, a odfiltruju je cíleně.
+
 ## v1.31 -- feed block jen při aktivním domečku, kolečkový widget přes celou plochu
 
 - **Blokování feedu už tě nevyhodí, když klepneš do DMs.** Klasifikace

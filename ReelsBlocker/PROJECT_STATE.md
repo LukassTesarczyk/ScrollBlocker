@@ -151,6 +151,17 @@ neškrtá. Aktuální verze appky je vidět v appce vpravo nahoře.
 
 ## Otevřené/rozdělané věci
 
+- **Zdroj scrollu u komentářů pod reelem není potvrzený z logu (od
+  v1.32).** Detekce swipu mezi reely bere jako platný swipe zdroj
+  `clips_viewer_view_pager` NEBO `IgLazyColumn` -- to druhé je nový
+  Compose přehrávač, přes který novější Instagram swipuje (změřeno z logu
+  z 2026-07-11, kde se čtyři skutečné swipy zahazovaly jako "non-swipe
+  view: IgLazyColumn" a blokování tiše nedělalo nic). Zbývající neznámá:
+  jestli scrollování komentářů hlásí taky `IgLazyColumn` -- pokud ano,
+  mohlo by se vrátit vyhazování z reelu při čtení komentářů. `isPagerScroll`
+  proto pořád loguje každý zahozený zdroj ("Ignoring scroll from non-swipe
+  view: ..."), takže z prvního logu, kde by k tomu došlo, půjde komentáře
+  odfiltrovat cíleně. Bez logu se nehádá (pravidlo 5).
 - **Id řádku s historkami (`stories_tray`) pro blokování feedu není
   potvrzené z logu** -- je to jediný nezměřený odhad v detekci (viz
   komentář u STORIES_TRAY_RESOURCE_ID_CANDIDATES). Appka loguje "stories

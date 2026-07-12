@@ -935,12 +935,14 @@ class ReelsAccessibilityService : AccessibilityService() {
                     AppLog.d(this, TAG, "Ignoring scroll ${now - viewerEnteredAt}ms after entry (likely settle, not a real swipe)")
                     return
                 }
-                if (!isPagerScroll(event, "clips_viewer_view_pager")) {
+                if (!isPagerScroll(event, "clips_viewer_view_pager", "IgLazyColumn")) {
                     // Scrolling the comments sheet (or any inner list drawn
                     // over the player) fires the same event type while the
                     // pager is still full-screen in the tree -- that's what
                     // was kicking the user out of a reel for just reading
-                    // comments. Only the pager itself scrolling is a swipe.
+                    // comments. Only a real swipe surface counts (the classic
+                    // pager, or the Compose IgLazyColumn newer IG swipes
+                    // through -- see isPagerScroll).
                     return
                 }
                 if (now - lastActionTime > COOLDOWN_MS) {
@@ -970,22 +972,36 @@ class ReelsAccessibilityService : AccessibilityService() {
     // event's source node. Treating every scroll as a page swipe is what
     // caused the "kicked out of a reel for opening comments" reports: the
     // comments sheet scrolls while the pager is still full-screen in the
-    // tree. Only a scroll whose source is the pager itself counts as a
-    // swipe. Lenient on missing data on purpose: a null source or a source
-    // with no id keeps the old treat-as-swipe behavior, so if Instagram
-    // ever stops reporting sources the core blocking degrades to its old
-    // (over-eager) self instead of silently dying. The source id gets
-    // logged either way so a future log can confirm what comments
-    // scrolls actually report.
-    private fun isPagerScroll(event: AccessibilityEvent, pagerIdSuffix: String): Boolean {
+    // tree. So only a scroll whose source is one of the known swipe
+    // surfaces counts as a real swipe.
+    //
+    // v1.32: newer, Compose-based Instagram Reels stopped reporting the
+    // reel-to-reel swipe from clips_viewer_view_pager and now reports it
+    // from an "IgLazyColumn" source instead. The 2226-2224 log showed four
+    // such swipes in a row, every one logged as "Ignoring scroll from
+    // non-swipe view: IgLazyColumn" while the user was never kicked out --
+    // i.e. the v1.30 comment-scroll fix was silently throwing away the
+    // actual swipes, so blocking did nothing. IgLazyColumn is therefore
+    // accepted as a swipe source too (measured from that log, not guessed
+    // -- CLAUDE.md rule 5). If a comments scroll ever turns out to report
+    // the same source, the "Ignoring scroll" line below still logs every
+    // rejected source, so the exact culprit can be read off a future log
+    // and excluded precisely instead of guessed at.
+    //
+    // Lenient on missing data on purpose: a null source or a source with
+    // no id keeps the old treat-as-swipe behavior, so if Instagram ever
+    // stops reporting sources the core blocking degrades to its old
+    // (over-eager) self instead of silently dying.
+    private fun isPagerScroll(event: AccessibilityEvent, vararg swipeSourceIdSuffixes: String): Boolean {
         val source = try { event.source } catch (_: Exception) { null } ?: return true
         val id = try { source.viewIdResourceName } finally { source.recycle() }
         if (id == null) return true
-        val isPager = id.substringAfterLast('/') == pagerIdSuffix
-        if (!isPager) {
-            AppLog.d(this, TAG, "Ignoring scroll from non-pager view: $id")
+        val suffix = id.substringAfterLast('/')
+        val isSwipe = swipeSourceIdSuffixes.any { it == suffix }
+        if (!isSwipe) {
+            AppLog.d(this, TAG, "Ignoring scroll from non-swipe view: $id")
         }
-        return isPager
+        return isSwipe
     }
 
     // ---- Optional feed blocking (opt-in toggle on the Home tab) ----
