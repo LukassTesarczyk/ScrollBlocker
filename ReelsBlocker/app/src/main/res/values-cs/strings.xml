@@ -63,5 +63,6 @@
     <string name="pill_feed_top">↑ Zpět na začátek</string>
     <string name="block_feed_on">Blokovat scrollování feedu: ZAPNUTO</string>
     <string name="block_feed_off">Blokovat scrollování feedu: VYPNUTO</string>
-    <string name="block_feed_hint">Když je zapnuto, utne se i nekonečné scrollování feedu: jakmile odscrolluješ pod řádek s historkami a chvíli pokračuješ, další scroll tě vrátí na začátek feedu.</string>
+    <string name="block_feed_hint">Když je zapnuto, feed se rovnou zakryje: jakmile otevřeš Home tab, všechno mezi řádkem s historkami a spodní lištou schová neprůhledný blok, takže není co scrollovat. Historky a spodní lišta zůstávají funkční.</string>
+    <string name="feed_block_overlay_message">Scrollování feedu je zablokované.\nPodívej se na historky nebo přepni záložku.</string>
 </resources>

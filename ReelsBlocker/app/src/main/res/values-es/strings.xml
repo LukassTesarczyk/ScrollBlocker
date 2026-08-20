@@ -63,5 +63,6 @@
     <string name="pill_feed_top">↑ Volver arriba</string>
     <string name="block_feed_on">Bloquear scroll del feed: ACTIVADO</string>
     <string name="block_feed_off">Bloquear scroll del feed: DESACTIVADO</string>
-    <string name="block_feed_hint">Cuando está activado, también se corta el scroll infinito del feed: cuando pasas la fila de historias y sigues un rato, el siguiente scroll te devuelve al inicio del feed.</string>
+    <string name="block_feed_hint">Cuando está activado, el feed se cubre directamente: en cuanto abres la pestaña Home, todo lo que hay entre la fila de historias y la barra inferior se oculta bajo un bloque opaco, así que no hay nada que hacer scroll. Las historias y la barra inferior siguen funcionando.</string>
+    <string name="feed_block_overlay_message">El scroll del feed está bloqueado.\nMira las historias o cambia de pestaña.</string>
 </resources>

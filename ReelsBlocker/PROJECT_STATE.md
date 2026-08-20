@@ -40,15 +40,22 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    scroll samotného přehrávače/pageru (kontrola zdroje události, od
    v1.30) -- scrollování komentářů apod. blokování nespustí.
 3. **Volitelně blokovat i scrollování feedu** (přepínač na Home záložce,
-   jen Instagram, od v1.30): když je uživatel ve feedu a řádek s
-   historkami (`stories_tray` -- kandidátní id, zatím nepotvrzené z
-   logu) je 5+ vteřin pryč z obrazovky (= odscrolloval dolů), další
-   scroll klikne na Home tab, což Instagram bere jako "skoč na začátek
-   feedu". Počítá se do statistik, pilulka "↑ Zpět na začátek". Od
-   v1.31 se navíc před každým krokem (arming i spuštění) živě ověřuje,
-   že Home tab je opravdu `isSelected` -- bez toho se blokování mylně
-   spouštělo i při klepnutí do DMs (Inbox se klasifikuje jako FEED,
-   známá mezera níž).
+   jen Instagram, od v1.30, přepracováno v1.33): jakmile je uživatel na
+   Home tabu s feedem a přepínač je zapnutý, appka **okamžitě zakryje
+   celou plochu s příspěvky neprůhledným overlayem** (samostatné okno,
+   ne to samé jako overlay na ikonce Reels) -- viditelné zůstávají jen
+   řádek s historkami nahoře a spodní lišta s ikonkami dole. Horní
+   hranice bloku = spodní okraj `stories_tray` (kandidátní id, zatím
+   nepotvrzené z logu, fallback je hrubý odhad výšky
+   `FEED_OVERLAY_TOP_FALLBACK_DP` když se `stories_tray` nenajde), dolní
+   hranice = horní okraj Home tab ikonky (stejná, co appka používá pro
+   overlay na Reels ikonce). Počítá se do statistik jedním započítáním
+   při každém zobrazení bloku (ne opakovaně za každý event). Stejně jako
+   v1.31 se před zobrazením ověřuje, že Home tab je opravdu `isSelected`
+   -- bez toho by se blok mylně zobrazoval i v DMs (Inbox se klasifikuje
+   jako FEED, známá mezera níž). Starý mechanismus "počkej 5s po zmizení
+   historek, pak tě příští scroll pošle nahoru" byl tímhle nahrazen, ne
+   doplněn.
 4. **Zakrýt ikonku Reels** v Instagramu barevným overlayem (barva se
    vzorkuje ze skutečného screenshotu obrazovky, aby splynula s
    pozadím) -- vizuálně "schová" lákadlo.
@@ -162,12 +169,14 @@ neškrtá. Aktuální verze appky je vidět v appce vpravo nahoře.
   proto pořád loguje každý zahozený zdroj ("Ignoring scroll from non-swipe
   view: ..."), takže z prvního logu, kde by k tomu došlo, půjde komentáře
   odfiltrovat cíleně. Bez logu se nehádá (pravidlo 5).
-- **Id řádku s historkami (`stories_tray`) pro blokování feedu není
-  potvrzené z logu** -- je to jediný nezměřený odhad v detekci (viz
-  komentář u STORIES_TRAY_RESOURCE_ID_CANDIDATES). Appka loguje "stories
-  tray gone -- feed block arms", takže z prvního logu s zapnutým
-  blokováním feedu půjde poznat, jestli id sedí (pokud ne, blokování se
-  natahuje hned po vstupu do feedu místo až po odscrollování).
+- **Id řádku s historkami (`stories_tray`) pro overlay blokování feedu
+  není potvrzené z logu** -- je to jediný nezměřený odhad v detekci (viz
+  komentář u STORIES_TRAY_RESOURCE_ID_CANDIDATES). Appka loguje "Feed
+  overlay: stories_tray not found, using fallback top=..." pokaždé, když
+  id nenajde a spolehne se na hrubý odhad výšky
+  (FEED_OVERLAY_TOP_FALLBACK_DP) -- z prvního logu s zapnutým blokováním
+  feedu půjde poznat, jestli id sedí, a případně dolaďit přesnou hranici
+  bloku podle skutečných dat (v1.33).
 - **Inbox (seznam DM konverzací) se v grafu/badge chybně hlásí jako
   FEED**, ne DMS. Otevřená DM konverzace (thread) se detekuje správně
   (`thread_fragment_container`/`message_list`), ale samotný seznam

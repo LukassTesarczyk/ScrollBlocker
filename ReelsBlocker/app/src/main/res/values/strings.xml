@@ -65,7 +65,8 @@
 
     <string name="block_feed_on">Block feed scrolling: ON</string>
     <string name="block_feed_off">Block feed scrolling: OFF</string>
-    <string name="block_feed_hint">When on, endless feed scrolling gets cut short too: once you scroll past the stories row and keep going for a bit, the next scroll sends you back to the top of the feed.</string>
+    <string name="block_feed_hint">When on, the feed itself gets covered: as soon as you open the Home tab, everything between the stories row and the bottom bar is hidden behind a solid block, so there\'s no feed to scroll through at all. Stories and the bottom tab bar stay usable.</string>
+    <string name="feed_block_overlay_message">Feed scrolling is blocked.\nCheck Stories or switch tabs.</string>
 
     <string name="section_guide">Guide</string>
     <string name="section_permissions">Permissions</string>

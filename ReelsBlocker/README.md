@@ -122,6 +122,35 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.33 -- blokování feedu teď zakrývá celý feed, ne jen "vrátí nahoru"
+
+Na tvou žádost -- dosavadní blokování feedu (od v1.30) fungovalo tak, že
+sis mohl chvíli scrollovat a teprve po 5 vteřinách od zmizení řádku s
+historkami tě další scroll poslal zpátky nahoru. Teď je to mnohem
+přímočařejší:
+
+- **Jakmile je přepínač "Blokovat scrollování feedu" zapnutý a otevřeš
+  Home tab, celá plocha s příspěvky se hned zakryje neprůhledným blokem**
+  -- vidíš jen řádek s historkami nahoře a spodní lištu s ikonkami dole,
+  žádný příspěvek se vůbec neukáže. Přes blok je uprostřed krátká
+  vysvětlující zpráva ("Scrollování feedu je zablokované"), aby to
+  nepůsobilo jako chyba appky.
+- **Historky a spodní lišta zůstávají funkční** -- klepnutím na historku
+  nebo přepnutím na jinou záložku (Reels, Profil, DMs...) blok zmizí,
+  protože přestaneš být na Home tabu s feedem.
+- Starý mechanismus "počkej 5s po zmizení historek, pak tě příští scroll
+  vrátí nahoru" je pryč -- nahradilo ho tohle okamžité zakrytí.
+- Technicky: blok se počítá do statistik zablokování stejně jako dřív
+  (jedno započítání při každém zobrazení bloku, ne opakovaně), a stejně
+  jako u ostatních overlayů appky se řídí design systémem (tmavé pozadí
+  ladící s appkou, fade animace při objevení).
+- **Na co dát pozor:** hranice bloku (kde přesně končí historky a kde
+  začíná spodní lišta) appka odvozuje ze stejných prvků, které už dřív
+  používala pro zjišťování, jestli jsi ve feedu -- pokud by blok
+  nesouhlasil s tím, co vidíš (moc velký/malý, kousek postu vykukuje),
+  pošli čerstvý log z menu → Log, ať to jde doladit podle skutečných dat,
+  ne odhadem.
+
 ## v1.32 -- oprava: Reels už zase blokuje spolehlivě (swipy z nového přehrávače)
 
 - **Hlavní oprava: blokování Reels zase funguje.** Z logu vyšlo najevo,

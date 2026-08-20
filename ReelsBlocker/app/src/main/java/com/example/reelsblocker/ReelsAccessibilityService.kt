@@ -120,22 +120,26 @@ class ReelsAccessibilityService : AccessibilityService() {
         // always processed.
         private const val CONTENT_EVENT_MIN_INTERVAL_MS = 200L
 
-        // Feed blocking (opt-in): how long after the stories tray scrolls
-        // off screen the block arms -- the next feed scroll after this
-        // sends the user back to the top.
-        private const val FEED_BLOCK_ARM_MS = 5000L
-
         // "stories_tray" is Instagram's long-standing id for the stories
         // row at the top of the feed -- unlike the ids in classifyScreen
         // it hasn't been confirmed from this user's own recon logs yet, so
-        // handleFeedSession logs its found/gone transitions; if the id is
+        // handleFeedBlockOverlay logs when it can't find it; if the id is
         // wrong for the current Instagram build, the log will show the
-        // block arming immediately on entering the feed, and the real id
-        // can be read out of an "IG screen recon" dump. Degrades to
-        // "arm 5s after entering the feed" rather than breaking.
+        // fallback estimate being used every time, and the real id can be
+        // read out of an "IG screen recon" dump. Degrades to a fixed
+        // estimate of the header+stories height (FEED_OVERLAY_TOP_FALLBACK_DP)
+        // rather than breaking.
         private val STORIES_TRAY_RESOURCE_ID_CANDIDATES = listOf(
             "stories_tray"
         )
+
+        // v1.33: rough estimate of where the stories row ends (status bar +
+        // Instagram's own top app bar + the stories row itself) for when
+        // STORIES_TRAY_RESOURCE_ID_CANDIDATES doesn't match -- unmeasured,
+        // same caveat as the id list above. Only used as a fallback so the
+        // feed-block overlay still has *a* top edge instead of not showing
+        // at all.
+        private const val FEED_OVERLAY_TOP_FALLBACK_DP = 170
     }
 
     private var inReelsViewer = false
@@ -146,9 +150,6 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var viewerMissCount = 0
     private var lastActionTime = 0L
     private var lastContentEventAt = 0L
-    // 0 = stories tray currently visible (or not in feed); otherwise the
-    // moment the tray scrolled off screen, for the feed-block arm timer.
-    private var feedStoriesGoneAt = 0L
     private var lastLoggedPackage: String? = null
     private var currentForegroundPackage: String? = null
 
@@ -160,6 +161,15 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var lastAppliedBounds: Rect? = null
     private var lastRepositionAt = 0L
     private var lastSeenTabAt = 0L
+
+    // Separate window from overlayView above -- that one is small (icon-
+    // sized) and follows the Reels/Home tab icon; this one is a big block
+    // over the whole post area, shown/hidden independently while the user
+    // sits on the Feed tab with feed blocking on.
+    private var feedOverlayView: View? = null
+    private var feedOverlayParams: WindowManager.LayoutParams? = null
+    private var lastFeedOverlayBounds: Rect? = null
+    private var feedOverlayShown = false
     @Volatile private var sampledColor: Int? = null
     private var lastColorSampleTime = 0L
     @Volatile private var colorSampleInFlight = false
@@ -193,6 +203,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         // silently duplicates it and can throw on some OEM skins.
         teardownOverlays()
         setupOverlay()
+        setupFeedOverlay()
         setupTransitionOverlay()
         setupNotificationChannel()
         prefs.registerOnSharedPreferenceChangeListener(prefsListener)
@@ -255,10 +266,17 @@ class ReelsAccessibilityService : AccessibilityService() {
         } catch (_: Exception) {
         }
         try {
+            feedOverlayView?.let { windowManager?.removeView(it) }
+        } catch (_: Exception) {
+        }
+        try {
             transitionRoot?.let { windowManager?.removeView(it) }
         } catch (_: Exception) {
         }
         overlayView = null
+        feedOverlayView = null
+        feedOverlayShown = false
+        lastFeedOverlayBounds = null
         transitionRoot = null
         transitionLabel = null
         debugBadge = null
@@ -317,6 +335,58 @@ class ReelsAccessibilityService : AccessibilityService() {
         } catch (e: Exception) {
             AppLog.w(this, TAG, "Overlay setup failed: ${e.message}")
             overlayAdded = false
+        }
+    }
+
+    // Big opaque block over the whole feed post area (see
+    // handleFeedBlockOverlay) -- unlike overlayView above, this one carries
+    // a centered explanatory label so it reads as an intentional block
+    // instead of a rendering glitch, and it's fully opaque (not
+    // color-sampled) since the point is to hide the content underneath, not
+    // blend in with it.
+    private fun setupFeedOverlay() {
+        try {
+            val wm = windowManager ?: (getSystemService(WINDOW_SERVICE) as WindowManager)
+            windowManager = wm
+            val density = resources.displayMetrics.density
+
+            val root = FrameLayout(this).apply {
+                setBackgroundColor(Color.parseColor("#F5121212"))
+                visibility = View.GONE
+                // Same reasoning as overlayView: must consume taps itself,
+                // otherwise they'd fall through to the (hidden) post below.
+                isClickable = true
+                setOnClickListener { }
+            }
+            val label = TextView(this).apply {
+                text = localizedString(R.string.feed_block_overlay_message)
+                setTextColor(Color.parseColor("#909090"))
+                textSize = 15f
+                gravity = Gravity.CENTER
+                setPadding((32 * density).toInt(), 0, (32 * density).toInt(), 0)
+            }
+            root.addView(
+                label,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                ).apply { gravity = Gravity.CENTER }
+            )
+
+            val params = WindowManager.LayoutParams(
+                0, 0, 0, 0,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+            }
+
+            wm.addView(root, params)
+            feedOverlayView = root
+            feedOverlayParams = params
+        } catch (e: Exception) {
+            AppLog.w(this, TAG, "Feed overlay setup failed: ${e.message}")
         }
     }
 
@@ -622,6 +692,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             // the next resumed session doesn't count the gap as usage time.
             lastTimeTickAt = 0L
             hideOverlay()
+            hideFeedBlockOverlay()
             inTikTokFeed = false
             updateDebugBadge("not IG", "#808080")
             return
@@ -659,13 +730,14 @@ class ReelsAccessibilityService : AccessibilityService() {
 
             if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)) {
                 hideOverlay()
+                hideFeedBlockOverlay()
                 updateDebugBadge("IG (blocking off)", "#808080")
                 return
             }
 
             updateOverlay(root)
             handleReelSession(root, event)
-            handleFeedSession(root, event)
+            handleFeedBlockOverlay(root)
         } catch (e: Exception) {
             AppLog.w(this, TAG, "Error handling accessibility event: ${e.message}")
         } finally {
@@ -1006,82 +1078,127 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     // ---- Optional feed blocking (opt-in toggle on the Home tab) ----
 
-    // The deal: one look at the feed is fine, doomscrolling isn't. The
-    // stories tray sits at the very top of the feed, so it being scrolled
-    // off screen means the user went down into the feed. Once it's been
-    // gone for FEED_BLOCK_ARM_MS, the next scroll clicks the (already
-    // selected) Home tab -- which Instagram treats as "jump back to top" --
-    // so the feed snaps back to the start instead of feeding the scroll.
-    private fun handleFeedSession(root: AccessibilityNodeInfo, event: AccessibilityEvent) {
+    // v1.33: replaced the old "scroll past the stories row, wait, then get
+    // snapped back to the top on the next scroll" mechanic (which still let
+    // you freely scroll through posts for a while) with an immediate,
+    // persistent cover: the instant the user is on the Feed tab with this
+    // toggle on, the whole post area between the stories row and the bottom
+    // tab bar gets hidden under an opaque overlay -- no post is ever
+    // actually scrollable/visible. Stories (glanceable, not doomscroll-able)
+    // and the bottom nav (so the user can still navigate away) stay
+    // uncovered. Per user request, not a log-driven change.
+    private fun handleFeedBlockOverlay(root: AccessibilityNodeInfo) {
         if (!prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false)) {
-            feedStoriesGoneAt = 0L
+            hideFeedBlockOverlay()
             return
         }
         if (lastTimeCategory != TimeCategory.FEED) {
-            feedStoriesGoneAt = 0L
+            hideFeedBlockOverlay()
             return
         }
         // classifyScreen's FEED verdict isn't enough on its own: the DM
         // inbox (and possibly other overlaid screens) can still classify
         // as FEED (known gap -- Home tab underneath keeps reporting
-        // selected in some states, list ids unmeasured), and scroll events
-        // fired right as the user taps into DMs were triggering the
-        // back-to-top click on a screen that wasn't the feed at all. Ask
-        // the Home tab node directly, right now, and stand down -- arm
-        // state included -- unless it's genuinely the selected tab.
-        val homeCheck = findHomeTabNode(root)
-        val homeSelected = homeCheck?.isSelected == true
-        homeCheck?.recycle()
-        if (!homeSelected) {
-            feedStoriesGoneAt = 0L
-            return
-        }
-        val now = System.currentTimeMillis()
-        if (hasVisibleStoriesTray(root)) {
-            feedStoriesGoneAt = 0L
-            return
-        }
-        if (feedStoriesGoneAt == 0L) {
-            feedStoriesGoneAt = now
-            AppLog.d(this, TAG, "Feed: stories tray gone -- feed block arms in ${FEED_BLOCK_ARM_MS}ms")
-            return
-        }
-        if (now - feedStoriesGoneAt < FEED_BLOCK_ARM_MS) return
-        if (event.eventType != AccessibilityEvent.TYPE_VIEW_SCROLLED) return
-        if (now - lastActionTime <= COOLDOWN_MS) return
-
-        AppLog.d(this, TAG, "Feed scroll ${now - feedStoriesGoneAt}ms after tray left -- sending back to top")
-        lastActionTime = now
+        // selected in some states, list ids unmeasured). Ask the Home tab
+        // node directly, right now, and stand down unless it's genuinely
+        // the selected tab -- same guard the old mechanic used.
         val homeNode = findHomeTabNode(root)
-        val clicked = homeNode?.let { clickNodeOrAncestor(it) } ?: false
+        val homeBounds = Rect()
+        val homeSelected = homeNode?.isSelected == true
+        if (homeNode != null) homeNode.getBoundsInScreen(homeBounds)
         homeNode?.recycle()
-        if (clicked) {
-            Stats.recordBlock(this, "instagram")
-            playExitAnimation(R.string.pill_feed_top)
-            feedStoriesGoneAt = 0L
-            updateDebugBadge("FEED→TOP", "#FF5252")
-        } else {
-            // No forced back-press fallback here on purpose: a wrong exit
-            // from the feed would dump the user out of Instagram entirely,
-            // which is far more annoying than one missed feed block.
-            AppLog.d(this, TAG, "Feed block: Home tab not found, skipping")
-            dumpBottomNavCandidates(root)
+        if (!homeSelected) {
+            hideFeedBlockOverlay()
+            return
         }
+
+        val metrics = resources.displayMetrics
+        val storiesBounds = findStoriesTrayBounds(root)
+        val top = storiesBounds?.bottom
+            ?: (statusBarHeightPx + (FEED_OVERLAY_TOP_FALLBACK_DP * metrics.density).toInt())
+        // Only trust the Home tab's own bounds as the bottom edge when they
+        // look like an actual bottom-nav icon (same sanity check the Reels-
+        // icon overlay applies) -- an unplausible bounds read (e.g. a
+        // desc-matched node elsewhere in the tree) falls back to the full
+        // screen height instead of covering the nav bar or clipping short.
+        val bottom = if (isPlausibleTabIconBounds(homeBounds)) homeBounds.top else metrics.heightPixels
+        if (storiesBounds == null) {
+            AppLog.d(this, TAG, "Feed overlay: stories_tray not found, using fallback top=$top")
+        }
+        if (bottom - top < metrics.density * 40) {
+            // Bounds don't make sense (e.g. a transient layout pass) --
+            // skip this tick rather than show a near-zero-height overlay.
+            return
+        }
+        showFeedBlockOverlayAt(Rect(0, top, metrics.widthPixels, bottom))
     }
 
-    private fun hasVisibleStoriesTray(root: AccessibilityNodeInfo): Boolean {
+    private fun findStoriesTrayBounds(root: AccessibilityNodeInfo): Rect? {
         for (id in STORIES_TRAY_RESOURCE_ID_CANDIDATES) {
             val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$id")
-            var visible = false
+            var result: Rect? = null
             for (m in matches) {
                 val bounds = Rect()
                 m.getBoundsInScreen(bounds)
-                if (bounds.width() > 0 && bounds.height() > 0) visible = true
+                if (bounds.width() > 0 && bounds.height() > 0) result = bounds
             }
             matches.forEach { it.recycle() }
-            if (visible) return true
+            if (result != null) return result
         }
-        return false
+        return null
+    }
+
+    private fun showFeedBlockOverlayAt(bounds: Rect) {
+        val wm = windowManager ?: return
+        val view = feedOverlayView ?: return
+        val params = feedOverlayParams ?: return
+        if (bounds.width() <= 0 || bounds.height() <= 0) return
+
+        val wasHidden = view.visibility != View.VISIBLE
+        if (wasHidden || lastFeedOverlayBounds != bounds) {
+            params.x = bounds.left
+            params.y = bounds.top - statusBarHeightPx
+            params.width = bounds.width()
+            params.height = bounds.height()
+            try {
+                wm.updateViewLayout(view, params)
+                lastFeedOverlayBounds = Rect(bounds)
+            } catch (e: Exception) {
+                AppLog.w(this, TAG, "Feed overlay update failed: ${e.message}")
+                return
+            }
+        }
+        if (wasHidden) {
+            view.animate().cancel()
+            view.visibility = View.VISIBLE
+            view.alpha = 0f
+            view.animate().alpha(1f).setDuration(FADE_MS).start()
+        }
+        if (!feedOverlayShown) {
+            feedOverlayShown = true
+            Stats.recordBlock(this, "instagram")
+            updateDebugBadge("FEED■BLOCKED", "#FF5252")
+        }
+    }
+
+    // Not animated for the same reason hideOverlay() isn't -- disappearing
+    // should feel immediate, not lingering.
+    private fun hideFeedBlockOverlay() {
+        val view = feedOverlayView ?: return
+        val params = feedOverlayParams ?: return
+        feedOverlayShown = false
+        if (view.visibility == View.GONE) return
+        val wm = windowManager ?: return
+        lastFeedOverlayBounds = null
+        view.animate().cancel()
+        view.alpha = 0f
+        view.visibility = View.GONE
+        params.width = 0
+        params.height = 0
+        try {
+            wm.updateViewLayout(view, params)
+        } catch (_: Exception) {
+        }
     }
 
     // ---- TikTok: one video per session ----
