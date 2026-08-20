@@ -63,6 +63,6 @@
     <string name="pill_feed_top">↑ Retour en haut</string>
     <string name="block_feed_on">Bloquer le défilement du fil : ACTIVÉ</string>
     <string name="block_feed_off">Bloquer le défilement du fil : DÉSACTIVÉ</string>
-    <string name="block_feed_hint">Si activé, le fil est directement masqué : dès que vous ouvrez l\'onglet Accueil, tout ce qui se trouve entre la rangée de stories et la barre du bas est caché sous un bloc opaque -- il n\'y a donc rien à faire défiler. Les stories et la barre du bas restent utilisables.</string>
+    <string name="block_feed_hint">Si activé, la zone des publications est masquée dès que vous ouvrez l\'onglet Accueil. Le défilement fonctionne toujours normalement, mais le bloc s\'agrandit alors jusqu\'à couvrir tout l\'écran -- il n\'y a donc rien à voir. Remontez jusqu\'à la rangée de stories et le bloc se réduit à nouveau. Les stories et la barre du bas restent toujours visibles et utilisables.</string>
     <string name="feed_block_overlay_message">Le défilement du fil est bloqué.\nRegardez les stories ou changez d\'onglet.</string>
 </resources>

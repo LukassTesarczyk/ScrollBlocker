@@ -65,7 +65,7 @@
 
     <string name="block_feed_on">Block feed scrolling: ON</string>
     <string name="block_feed_off">Block feed scrolling: OFF</string>
-    <string name="block_feed_hint">When on, the feed itself gets covered: as soon as you open the Home tab, everything between the stories row and the bottom bar is hidden behind a solid block, so there\'s no feed to scroll through at all. Stories and the bottom tab bar stay usable.</string>
+    <string name="block_feed_hint">When on, the post area gets covered as soon as you open the Home tab. Scrolling still works normally, but the block grows to cover the whole screen while you do -- there\'s nothing to actually see. Scroll back up to the stories row and it shrinks back down. Stories and the bottom tab bar always stay visible and usable.</string>
     <string name="feed_block_overlay_message">Feed scrolling is blocked.\nCheck Stories or switch tabs.</string>
 
     <string name="section_guide">Guide</string>

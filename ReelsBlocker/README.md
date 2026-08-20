@@ -122,6 +122,35 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.34 -- blok feedu teď propouští scroll, roztahuje se a smršťuje plynule
+
+Na tvou žádost -- doladění v1.33, protože blok předtím úplně blokoval
+dotyky (appka mohla vypadat "zaseklá", nešlo skrz ni scrollovat vůbec):
+
+- **Skrz blok teď jde normálně scrollovat.** Appce už dotyky vůbec
+  neblokuje (technicky: okno je teď "click-through", `FLAG_NOT_TOUCHABLE`)
+  -- dotyky propadnou rovnou do Instagramu pod ním, takže se feed pod
+  blokem doopravdy posouvá. Nic se necítí zaseklé, jen není co vidět.
+- **Blok se teď chová dynamicky podle toho, kde v feedu jsi:**
+  - Když appka vidí řádek s historkami (jsi nahoře/blízko vrcholu
+    feedu), blok zakrývá jen plochu s příspěvky -- jako dřív ve v1.33.
+  - **Jakmile odscrolluješ tak, že historky zmizí z obrazovky, blok se
+    zvětší přes celou obrazovku** (i přes historky a spodní lištu
+    vizuálně) -- protože appka pořád vidí do skutečné struktury
+    Instagramu (i když je vizuálně schovaná), pozná přesně kdy scrolluješ
+    pryč a kdy se vrátíš.
+  - **Jakmile se historky zase objeví (odscrolloval jsi zpátky nahoru),
+    blok se zase stáhne** na menší velikost (jen plocha s příspěvky).
+- **Zvětšování a zmenšování je teď plynulá animace** (~220ms), ne
+  okamžitý skok -- stejné časování jako appka používá jinde pro
+  vysouvací panely (boční menu, action sheet u hubu).
+- **Blok je teď plně neprůhledný** (dřív byl skoro, ale ne úplně --
+  jemný rozdíl v alpha kanálu).
+- Technicky: appka teď drží jedno okno přes celou obrazovku (podobně
+  jako vnitřní "exit pill" overlay) a jen zvětšuje/zmenšuje neprůhledný
+  obdélník uvnitř něj -- žádné opakované volání systému kvůli
+  přemisťování okna, takže je to plynulejší i výkonově levnější.
+
 ## v1.33 -- blokování feedu teď zakrývá celý feed, ne jen "vrátí nahoru"
 
 Na tvou žádost -- dosavadní blokování feedu (od v1.30) fungovalo tak, že

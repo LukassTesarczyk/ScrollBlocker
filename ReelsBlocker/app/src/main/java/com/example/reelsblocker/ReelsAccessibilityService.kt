@@ -1,6 +1,7 @@
 package com.example.reelsblocker
 
 import android.accessibilityservice.AccessibilityService
+import android.animation.ValueAnimator
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -123,23 +124,19 @@ class ReelsAccessibilityService : AccessibilityService() {
         // "stories_tray" is Instagram's long-standing id for the stories
         // row at the top of the feed -- unlike the ids in classifyScreen
         // it hasn't been confirmed from this user's own recon logs yet, so
-        // handleFeedBlockOverlay logs when it can't find it; if the id is
-        // wrong for the current Instagram build, the log will show the
-        // fallback estimate being used every time, and the real id can be
-        // read out of an "IG screen recon" dump. Degrades to a fixed
-        // estimate of the header+stories height (FEED_OVERLAY_TOP_FALLBACK_DP)
-        // rather than breaking.
+        // handleFeedBlockOverlay logs when it can't find it. If the id is
+        // wrong for the current Instagram build, the feed-block overlay
+        // just degrades to always covering the full screen (see
+        // handleFeedBlockOverlay) instead of breaking outright.
         private val STORIES_TRAY_RESOURCE_ID_CANDIDATES = listOf(
             "stories_tray"
         )
 
-        // v1.33: rough estimate of where the stories row ends (status bar +
-        // Instagram's own top app bar + the stories row itself) for when
-        // STORIES_TRAY_RESOURCE_ID_CANDIDATES doesn't match -- unmeasured,
-        // same caveat as the id list above. Only used as a fallback so the
-        // feed-block overlay still has *a* top edge instead of not showing
-        // at all.
-        private const val FEED_OVERLAY_TOP_FALLBACK_DP = 170
+        // v1.34: how long the feed-block overlay takes to grow/shrink
+        // between covering just the post area and covering the whole
+        // screen. Matches the app's established drawer/panel timing
+        // (CLAUDE.md: "translationX/translationY animace ~160-220ms").
+        private const val FEED_OVERLAY_MORPH_MS = 220L
     }
 
     private var inReelsViewer = false
@@ -163,13 +160,18 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var lastSeenTabAt = 0L
 
     // Separate window from overlayView above -- that one is small (icon-
-    // sized) and follows the Reels/Home tab icon; this one is a big block
-    // over the whole post area, shown/hidden independently while the user
-    // sits on the Feed tab with feed blocking on.
-    private var feedOverlayView: View? = null
-    private var feedOverlayParams: WindowManager.LayoutParams? = null
-    private var lastFeedOverlayBounds: Rect? = null
+    // sized) and follows the Reels/Home tab icon. This one is always a
+    // full-screen, touch-through (FLAG_NOT_TOUCHABLE) window added once;
+    // feedOverlayBlock is the actual opaque rectangle inside it, resized
+    // (not moved as a whole window) to morph between covering just the
+    // post area and covering the whole screen -- see handleFeedBlockOverlay.
+    private var feedOverlayRoot: FrameLayout? = null
+    private var feedOverlayBlock: View? = null
+    private var feedOverlayAnimator: ValueAnimator? = null
+    // null = not currently shown at all.
+    private var feedOverlayCurrentRect: Rect? = null
     private var feedOverlayShown = false
+    private var lastFeedOverlayFullLogAt = 0L
     @Volatile private var sampledColor: Int? = null
     private var lastColorSampleTime = 0L
     @Volatile private var colorSampleInFlight = false
@@ -266,7 +268,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         } catch (_: Exception) {
         }
         try {
-            feedOverlayView?.let { windowManager?.removeView(it) }
+            feedOverlayRoot?.let { windowManager?.removeView(it) }
         } catch (_: Exception) {
         }
         try {
@@ -274,9 +276,12 @@ class ReelsAccessibilityService : AccessibilityService() {
         } catch (_: Exception) {
         }
         overlayView = null
-        feedOverlayView = null
+        feedOverlayAnimator?.cancel()
+        feedOverlayAnimator = null
+        feedOverlayRoot = null
+        feedOverlayBlock = null
+        feedOverlayCurrentRect = null
         feedOverlayShown = false
-        lastFeedOverlayBounds = null
         transitionRoot = null
         transitionLabel = null
         debugBadge = null
@@ -338,26 +343,45 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
-    // Big opaque block over the whole feed post area (see
-    // handleFeedBlockOverlay) -- unlike overlayView above, this one carries
-    // a centered explanatory label so it reads as an intentional block
-    // instead of a rendering glitch, and it's fully opaque (not
-    // color-sampled) since the point is to hide the content underneath, not
-    // blend in with it.
+    // Big opaque block over the feed (see handleFeedBlockOverlay) -- unlike
+    // overlayView above, this one carries a centered explanatory label so
+    // it reads as an intentional block instead of a rendering glitch, and
+    // it's fully opaque (not color-sampled) since the point is to hide the
+    // content underneath, not blend in with it.
+    //
+    // v1.34: this window is FLAG_NOT_TOUCHABLE -- touches pass straight
+    // through it to Instagram underneath, so scrolling still actually works
+    // (Instagram keeps scrolling for real, nothing freezes) even while
+    // visually covered. That's also what lets handleFeedBlockOverlay detect
+    // "user scrolled back up to the stories row": Instagram's own scroll
+    // position is genuinely moving the whole time, our overlay is just
+    // sitting on top of it. The window itself is always full-screen (added
+    // once, like transitionRoot below); feedOverlayBlock is the actual
+    // opaque rectangle whose top/height get resized to grow/shrink between
+    // "just the post area" and "the whole screen" -- see morphFeedOverlayTo.
     private fun setupFeedOverlay() {
         try {
             val wm = windowManager ?: (getSystemService(WINDOW_SERVICE) as WindowManager)
             windowManager = wm
-            val density = resources.displayMetrics.density
+            val metrics = resources.displayMetrics
+            val density = metrics.density
 
-            val root = FrameLayout(this).apply {
-                setBackgroundColor(Color.parseColor("#F5121212"))
+            val root = FrameLayout(this)
+
+            val block = FrameLayout(this).apply {
+                // Fully opaque -- unlike the color-sampled icon overlay,
+                // this one's whole point is to hide what's under it.
+                setBackgroundColor(Color.parseColor("#121212"))
                 visibility = View.GONE
-                // Same reasoning as overlayView: must consume taps itself,
-                // otherwise they'd fall through to the (hidden) post below.
-                isClickable = true
-                setOnClickListener { }
+                alpha = 0f
             }
+            root.addView(
+                block,
+                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 0).apply {
+                    topMargin = 0
+                }
+            )
+
             val label = TextView(this).apply {
                 text = localizedString(R.string.feed_block_overlay_message)
                 setTextColor(Color.parseColor("#909090"))
@@ -365,7 +389,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                 gravity = Gravity.CENTER
                 setPadding((32 * density).toInt(), 0, (32 * density).toInt(), 0)
             }
-            root.addView(
+            block.addView(
                 label,
                 FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -374,17 +398,20 @@ class ReelsAccessibilityService : AccessibilityService() {
             )
 
             val params = WindowManager.LayoutParams(
-                0, 0, 0, 0,
+                metrics.widthPixels,
+                metrics.heightPixels,
+                0, 0,
                 WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 PixelFormat.TRANSLUCENT
             ).apply {
                 gravity = Gravity.TOP or Gravity.START
             }
 
             wm.addView(root, params)
-            feedOverlayView = root
-            feedOverlayParams = params
+            feedOverlayRoot = root
+            feedOverlayBlock = block
         } catch (e: Exception) {
             AppLog.w(this, TAG, "Feed overlay setup failed: ${e.message}")
         }
@@ -1078,15 +1105,17 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     // ---- Optional feed blocking (opt-in toggle on the Home tab) ----
 
-    // v1.33: replaced the old "scroll past the stories row, wait, then get
-    // snapped back to the top on the next scroll" mechanic (which still let
-    // you freely scroll through posts for a while) with an immediate,
-    // persistent cover: the instant the user is on the Feed tab with this
-    // toggle on, the whole post area between the stories row and the bottom
-    // tab bar gets hidden under an opaque overlay -- no post is ever
-    // actually scrollable/visible. Stories (glanceable, not doomscroll-able)
-    // and the bottom nav (so the user can still navigate away) stay
-    // uncovered. Per user request, not a log-driven change.
+    // v1.34: touches now pass straight through the feed overlay (see
+    // setupFeedOverlay) instead of being swallowed, and it morphs smoothly
+    // between two sizes instead of snapping: SMALL covers just the post
+    // area (same rect v1.33 used) whenever the stories row is actually
+    // found on screen; FULL covers the entire screen the instant it isn't
+    // (i.e. the user scrolled down into the feed). Because touches pass
+    // through, Instagram keeps genuinely scrolling underneath the whole
+    // time -- scrolling still "works" (nothing freezes), there's just
+    // nothing to see while doing it, and scrolling back up until the
+    // stories row reappears is what shrinks the block back down. Per user
+    // request, not a log-driven change.
     private fun handleFeedBlockOverlay(root: AccessibilityNodeInfo) {
         if (!prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false)) {
             hideFeedBlockOverlay()
@@ -1114,23 +1143,37 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         val metrics = resources.displayMetrics
         val storiesBounds = findStoriesTrayBounds(root)
-        val top = storiesBounds?.bottom
-            ?: (statusBarHeightPx + (FEED_OVERLAY_TOP_FALLBACK_DP * metrics.density).toInt())
-        // Only trust the Home tab's own bounds as the bottom edge when they
-        // look like an actual bottom-nav icon (same sanity check the Reels-
-        // icon overlay applies) -- an unplausible bounds read (e.g. a
-        // desc-matched node elsewhere in the tree) falls back to the full
-        // screen height instead of covering the nav bar or clipping short.
-        val bottom = if (isPlausibleTabIconBounds(homeBounds)) homeBounds.top else metrics.heightPixels
-        if (storiesBounds == null) {
-            AppLog.d(this, TAG, "Feed overlay: stories_tray not found, using fallback top=$top")
+        if (storiesBounds != null) {
+            // Only trust the Home tab's own bounds as the bottom edge when
+            // they look like an actual bottom-nav icon (same sanity check
+            // the Reels-icon overlay applies) -- an unplausible bounds read
+            // falls back to the full screen height instead of covering the
+            // nav bar or clipping short.
+            val top = storiesBounds.bottom
+            val bottom = if (isPlausibleTabIconBounds(homeBounds)) homeBounds.top else metrics.heightPixels
+            if (bottom - top < metrics.density * 40) {
+                // Bounds don't make sense (e.g. a transient layout pass) --
+                // skip this tick rather than morph to a near-zero rect.
+                return
+            }
+            morphFeedOverlayTo(Rect(0, top, metrics.widthPixels, bottom))
+        } else {
+            // stories_tray not found -- either the user has scrolled it
+            // off screen (the normal case this is meant to catch) or the
+            // id is wrong for this Instagram build (unmeasured, see
+            // STORIES_TRAY_RESOURCE_ID_CANDIDATES). Either way, covering
+            // the full screen is the safe degrade. Logged (throttled --
+            // this branch is the expected path for as long as someone is
+            // genuinely scrolled down, not just a failure case) so a wrong
+            // id still shows up as "always full screen, never shrinks"
+            // in a log instead of silently misbehaving.
+            val now = System.currentTimeMillis()
+            if (now - lastFeedOverlayFullLogAt > 5000L) {
+                lastFeedOverlayFullLogAt = now
+                AppLog.d(this, TAG, "Feed overlay: stories_tray not found -- covering full screen")
+            }
+            morphFeedOverlayTo(Rect(0, 0, metrics.widthPixels, metrics.heightPixels))
         }
-        if (bottom - top < metrics.density * 40) {
-            // Bounds don't make sense (e.g. a transient layout pass) --
-            // skip this tick rather than show a near-zero-height overlay.
-            return
-        }
-        showFeedBlockOverlayAt(Rect(0, top, metrics.widthPixels, bottom))
     }
 
     private fun findStoriesTrayBounds(root: AccessibilityNodeInfo): Rect? {
@@ -1148,57 +1191,79 @@ class ReelsAccessibilityService : AccessibilityService() {
         return null
     }
 
-    private fun showFeedBlockOverlayAt(bounds: Rect) {
-        val wm = windowManager ?: return
-        val view = feedOverlayView ?: return
-        val params = feedOverlayParams ?: return
-        if (bounds.width() <= 0 || bounds.height() <= 0) return
+    // Smoothly resizes feedOverlayBlock's top/bottom edges to `target`.
+    // First appearance (nothing shown yet) snaps straight to the right
+    // size and fades in instead -- morphing a size from nothing wouldn't
+    // mean anything, and this matches how the rest of the app's overlays
+    // introduce themselves (fade in, see showOverlayAt).
+    private fun morphFeedOverlayTo(target: Rect) {
+        val block = feedOverlayBlock ?: return
+        val current = feedOverlayCurrentRect
 
-        val wasHidden = view.visibility != View.VISIBLE
-        if (wasHidden || lastFeedOverlayBounds != bounds) {
-            params.x = bounds.left
-            params.y = bounds.top - statusBarHeightPx
-            params.width = bounds.width()
-            params.height = bounds.height()
-            try {
-                wm.updateViewLayout(view, params)
-                lastFeedOverlayBounds = Rect(bounds)
-            } catch (e: Exception) {
-                AppLog.w(this, TAG, "Feed overlay update failed: ${e.message}")
-                return
-            }
+        if (current != null &&
+            Math.abs(current.top - target.top) <= REPOSITION_THRESHOLD_PX &&
+            Math.abs(current.bottom - target.bottom) <= REPOSITION_THRESHOLD_PX
+        ) {
+            return
         }
-        if (wasHidden) {
-            view.animate().cancel()
-            view.visibility = View.VISIBLE
-            view.alpha = 0f
-            view.animate().alpha(1f).setDuration(FADE_MS).start()
-        }
+
         if (!feedOverlayShown) {
             feedOverlayShown = true
             Stats.recordBlock(this, "instagram")
             updateDebugBadge("FEED■BLOCKED", "#FF5252")
         }
+
+        if (current == null) {
+            feedOverlayAnimator?.cancel()
+            applyFeedOverlayRect(target)
+            feedOverlayCurrentRect = Rect(target)
+            block.animate().cancel()
+            block.visibility = View.VISIBLE
+            block.alpha = 0f
+            block.animate().alpha(1f).setDuration(FADE_MS).start()
+            return
+        }
+
+        feedOverlayAnimator?.cancel()
+        val startTop = current.top
+        val startBottom = current.bottom
+        val endTop = target.top
+        val endBottom = target.bottom
+        feedOverlayCurrentRect = Rect(target)
+        feedOverlayAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = FEED_OVERLAY_MORPH_MS
+            interpolator = DecelerateInterpolator()
+            addUpdateListener { anim ->
+                val f = anim.animatedValue as Float
+                val top = startTop + ((endTop - startTop) * f).toInt()
+                val bottom = startBottom + ((endBottom - startBottom) * f).toInt()
+                applyFeedOverlayRect(Rect(0, top, resources.displayMetrics.widthPixels, bottom))
+            }
+            start()
+        }
+    }
+
+    private fun applyFeedOverlayRect(rect: Rect) {
+        val block = feedOverlayBlock ?: return
+        val params = block.layoutParams as? FrameLayout.LayoutParams ?: return
+        params.topMargin = rect.top
+        params.height = (rect.bottom - rect.top).coerceAtLeast(0)
+        block.layoutParams = params
     }
 
     // Not animated for the same reason hideOverlay() isn't -- disappearing
-    // should feel immediate, not lingering.
+    // should feel immediate, not lingering. Only the SMALL<->FULL morph
+    // (while still in the feed) is meant to be smooth.
     private fun hideFeedBlockOverlay() {
-        val view = feedOverlayView ?: return
-        val params = feedOverlayParams ?: return
+        feedOverlayAnimator?.cancel()
+        feedOverlayAnimator = null
+        feedOverlayCurrentRect = null
         feedOverlayShown = false
-        if (view.visibility == View.GONE) return
-        val wm = windowManager ?: return
-        lastFeedOverlayBounds = null
-        view.animate().cancel()
-        view.alpha = 0f
-        view.visibility = View.GONE
-        params.width = 0
-        params.height = 0
-        try {
-            wm.updateViewLayout(view, params)
-        } catch (_: Exception) {
-        }
+        val block = feedOverlayBlock ?: return
+        if (block.visibility == View.GONE) return
+        block.animate().cancel()
+        block.alpha = 0f
+        block.visibility = View.GONE
     }
 
     // ---- TikTok: one video per session ----

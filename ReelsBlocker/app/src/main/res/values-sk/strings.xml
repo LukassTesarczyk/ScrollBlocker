@@ -63,6 +63,6 @@
     <string name="pill_feed_top">↑ Späť na začiatok</string>
     <string name="block_feed_on">Blokovať scrollovanie feedu: ZAPNUTÉ</string>
     <string name="block_feed_off">Blokovať scrollovanie feedu: VYPNUTÉ</string>
-    <string name="block_feed_hint">Keď je zapnuté, feed sa rovno zakryje: hneď ako otvoríš Home tab, všetko medzi riadkom s príbehmi a spodnou lištou schová nepriehľadný blok, takže nie je čo scrollovať. Príbehy a spodná lišta zostávajú funkčné.</string>
+    <string name="block_feed_hint">Keď je zapnuté, plocha s príspevkami sa zakryje hneď po otvorení Home tabu. Scrollovať sa dá naďalej normálne, ale blok sa pritom roztiahne cez celú obrazovku, takže nie je čo vidieť. Odscrolluj späť k príbehom a blok sa zase stiahne. Príbehy a spodná lišta zostávajú vždy viditeľné a funkčné.</string>
     <string name="feed_block_overlay_message">Scrollovanie feedu je zablokované.\nPozri sa na príbehy alebo prepni záložku.</string>
 </resources>
