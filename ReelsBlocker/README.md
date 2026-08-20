@@ -122,6 +122,28 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.35 -- diagnostika pro "blok je pořád přes celou obrazovku"
+
+Reakce na tvůj log a hlášení "teď to je přes celou obrazovku" (po v1.34):
+
+- **Příčina zjištěná z logu:** appka to id, podle kterýho pozná řádek s
+  historkami (`stories_tray`), na tvým Instagramu vůbec nenašla -- kompletní
+  výpis id z Feed obrazovky v logu žádné "story" id neobsahuje. Bez
+  něj appka nemá jak poznat "jsi nahoře", takže blok zůstává pořád v
+  režimu "přes celou obrazovku" (bezpečný, ale ne ten hezčí menší
+  režim z v1.34).
+- **Co appka teď dělá:** protože neexistuje oficiální dokumentace
+  Instagramu a hádat nové id naslepo by mohlo dopadnout špatně (pravidlo
+  5 v CLAUDE.md), appka teď místo hádání loguje (max jednou za 5s) id,
+  třídu a souřadnice všeho, co se vyskytuje v horní pětině obrazovky --
+  přesně tam, kde historky vizuálně jsou. Až mi pošleš čerstvý log
+  pořízený chvíli po otevření Feedu (se zapnutým blokováním feedu),
+  uvidím přesně, jak se ten prvek doopravdy jmenuje, a doplním správné
+  id -- pak se malý/velký režim z v1.34 rozjede podle plánu.
+- Chování appky se jinak nemění -- blok pořád funguje (jen zatím ve
+  variantě "vždycky přes celou obrazovku", ne "malý nahoře, velký při
+  scrollu").
+
 ## v1.34 -- blok feedu teď propouští scroll, roztahuje se a smršťuje plynule
 
 Na tvou žádost -- doladění v1.33, protože blok předtím úplně blokoval

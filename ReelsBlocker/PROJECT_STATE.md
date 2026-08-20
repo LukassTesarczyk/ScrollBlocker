@@ -47,8 +47,10 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    (`FLAG_NOT_TOUCHABLE`), takže dotyky propadají do Instagramu pod ním a
    feed se pod blokem doopravdy scrolluje** (nic se necítí zaseklé).
    Velikost bloku se **plynule animuje (~220ms)** mezi dvěma stavy podle
-   toho, jestli appka aktuálně vidí `stories_tray` (kandidátní id, zatím
-   nepotvrzené z logu) v UI stromu:
+   toho, jestli appka aktuálně vidí `stories_tray` v UI stromu -- id je
+   ale od v1.35 potvrzené jako ŠPATNÉ pro tohohle uživatele (viz "Otevřené
+   resty" níž), takže appka je prozatím prakticky pořád ve stavu "blok
+   přes celou obrazovku":
    - Vidí historky -> blok jen přes plochu s příspěvky (horní hranice =
      spodní okraj historek, dolní hranice = horní okraj Home tab ikonky,
      stejná jako u overlaye na Reels ikonce).
@@ -176,15 +178,17 @@ neškrtá. Aktuální verze appky je vidět v appce vpravo nahoře.
   proto pořád loguje každý zahozený zdroj ("Ignoring scroll from non-swipe
   view: ..."), takže z prvního logu, kde by k tomu došlo, půjde komentáře
   odfiltrovat cíleně. Bez logu se nehádá (pravidlo 5).
-- **Id řádku s historkami (`stories_tray`) pro overlay blokování feedu
-  není potvrzené z logu** -- je to jediný nezměřený odhad v detekci (viz
-  komentář u STORIES_TRAY_RESOURCE_ID_CANDIDATES). Appka od v1.34
-  degraduje na "blok přes celou obrazovku pořád" místo hrubého odhadu
-  výšky, když id nesedí (bezpečnější default než dřívější odhad
-  FEED_OVERLAY_TOP_FALLBACK_DP, který v1.34 odstranila) -- z prvního
-  logu s zapnutým blokováním feedu (log "Feed overlay: stories_tray not
-  found -- covering full screen") půjde poznat, jestli id sedí, a
-  případně dolaďit přesnou hranici malého bloku podle skutečných dat.
+- **Id řádku s historkami (`stories_tray`) je od v1.35 potvrzené jako
+  ŠPATNÉ pro uživatelův Instagram build** -- log ukázal kompletní výpis
+  id z Feed obrazovky (`IG screen recon (FEED via tab-selected)`) a
+  žádné "story" id v něm není, takže appka je vždycky v degradovaném
+  stavu "blok přes celou obrazovku pořád" (bezpečné, ale ne ten hezčí
+  malý/velký přepínací režim z v1.34). Appka teď (v1.35) místo hádání
+  nového id loguje (`dumpTopOfScreenCandidates`, max 1x/5s) id, třídu a
+  souřadnice všeho v horní pětině obrazovky -- z prvního logu pořízeného
+  chvíli po otevření Feedu (se zapnutým blokováním) půjde přesně vidět,
+  jak se historky doopravdy jmenují, a doplnit správné id do
+  STORIES_TRAY_RESOURCE_ID_CANDIDATES.
 - **Inbox (seznam DM konverzací) se v grafu/badge chybně hlásí jako
   FEED**, ne DMS. Otevřená DM konverzace (thread) se detekuje správně
   (`thread_fragment_container`/`message_list`), ale samotný seznam

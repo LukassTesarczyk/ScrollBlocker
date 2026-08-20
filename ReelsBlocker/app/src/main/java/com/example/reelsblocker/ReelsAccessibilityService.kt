@@ -1171,6 +1171,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             if (now - lastFeedOverlayFullLogAt > 5000L) {
                 lastFeedOverlayFullLogAt = now
                 AppLog.d(this, TAG, "Feed overlay: stories_tray not found -- covering full screen")
+                dumpTopOfScreenCandidates(root)
             }
             morphFeedOverlayTo(Rect(0, 0, metrics.widthPixels, metrics.heightPixels))
         }
@@ -1507,6 +1508,54 @@ class ReelsAccessibilityService : AccessibilityService() {
         for (i in 0 until node.childCount) {
             val child = node.getChild(i) ?: continue
             collectBottomNavCandidates(child, screenHeight, out, depth + 1)
+            child.recycle()
+        }
+    }
+
+    // v1.34 follow-up: the user's log showed the feed-block overlay always
+    // covering the full screen, never shrinking to just the post area --
+    // and the "IG screen recon (FEED via tab-selected)" dump from that same
+    // log confirmed why: STORIES_TRAY_RESOURCE_ID_CANDIDATES never matches
+    // on their Instagram build, there's no story-related id in it at all.
+    // Guessing a replacement id would be exactly what CLAUDE.md rule 5
+    // warns against. Unlike collectBottomNavCandidates above, this doesn't
+    // filter to isClickable -- the stories row's own container may not be
+    // clickable even though the avatars inside it are -- so it dumps every
+    // node (with its class, since Compose-based views often carry no
+    // resource id at all) sitting in the top 20% of the screen instead. The
+    // next log taken right at the top of the feed should show exactly what
+    // to match on.
+    private fun dumpTopOfScreenCandidates(root: AccessibilityNodeInfo) {
+        try {
+            val screenHeight = resources.displayMetrics.heightPixels
+            val found = mutableListOf<String>()
+            collectTopOfScreenCandidates(root, screenHeight, found, depth = 0)
+            if (found.isEmpty()) {
+                AppLog.d(this, TAG, "Top-of-screen dump: no nodes found in top 20% of screen")
+            } else {
+                AppLog.d(this, TAG, "Top-of-screen dump: ${found.joinToString(" | ")}")
+            }
+        } catch (e: Exception) {
+            AppLog.w(this, TAG, "Top-of-screen dump failed: ${e.message}")
+        }
+    }
+
+    private fun collectTopOfScreenCandidates(
+        node: AccessibilityNodeInfo,
+        screenHeight: Int,
+        out: MutableList<String>,
+        depth: Int
+    ) {
+        if (depth > 20 || out.size >= 20) return
+        val bounds = Rect()
+        node.getBoundsInScreen(bounds)
+        if (bounds.height() > 0 && bounds.top in 0 until (screenHeight * 0.20).toInt()) {
+            val id = node.viewIdResourceName ?: "(no id)"
+            out.add("id=$id class=${node.className} bounds=$bounds")
+        }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            collectTopOfScreenCandidates(child, screenHeight, out, depth + 1)
             child.recycle()
         }
     }
