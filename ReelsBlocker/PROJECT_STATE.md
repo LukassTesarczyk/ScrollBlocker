@@ -40,14 +40,14 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    scroll samotného přehrávače/pageru (kontrola zdroje události, od
    v1.30) -- scrollování komentářů apod. blokování nespustí.
 3. **Volitelně blokovat i scrollování feedu** (přepínač na Home záložce,
-   jen Instagram, od v1.30, přepracováno v1.33, v1.34 a v1.36): jakmile je
+   jen Instagram, od v1.30, přepracováno v1.33, v1.34, v1.36 a v1.37): jakmile je
    uživatel na Home tabu s feedem a přepínač je zapnutý, appka zakrývá
    plochu neprůhledným overlayem (samostatné okno, ne to samé jako
    overlay na ikonce Reels) -- ale **okno je "click-through"
    (`FLAG_NOT_TOUCHABLE`), takže dotyky propadají do Instagramu pod ním a
    feed se pod blokem doopravdy scrolluje** (nic se necítí zaseklé).
-   Velikost bloku se **plynule animuje (~220ms)** mezi dvěma stavy podle
-   toho, jestli appka aktuálně vidí historky v UI stromu. Historky nemají
+   Velikost bloku se **plynule animuje (~160 ms, zrychleno v v1.37)** mezi
+   dvěma stavy podle toho, jestli appka aktuálně vidí historky v UI stromu. Historky nemají
    žádné vlastní id (zjištěno z logu v v1.35/v1.36) -- appka je pozná
    strukturálně: **2+ prvků `outer_container` vedle sebe se stejnou
    horní hranicí v horní čtvrtině obrazovky** (`STORIES_ITEM_RESOURCE_ID`
@@ -60,10 +60,21 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
      ikonce).
    - Nevidí historky (uživatel odscrolloval pryč, nebo strukturální shoda
      selhala) -> blok přes **celou obrazovku**.
-   Technicky je to jedno pevné okno přes celou obrazovku (jako vnitřní
-   "exit pill" overlay), uvnitř kterého se `ValueAnimator` mění výška
-   neprůhledného obdélníku -- žádné opakované volání WindowManageru za
-   běhu animace. Počítá se do statistik jedním započítáním při každém
+   Technicky je to jedno pevné okno přes **celou fyzickou obrazovku**
+   (od v1.37 s `FLAG_LAYOUT_IN_SCREEN` + `FLAG_LAYOUT_NO_LIMITS` +
+   `LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS`; bez nich okno začínalo až pod
+   stavovou lištou, zatímco souřadnice z Instagramu jsou absolutní, takže
+   byl celý blok posunutý o výšku stavové lišty dolů -- odtud nezakrytý
+   proužek nahoře a vykukující spodní lišta). Uvnitř okna je jednoduchá
+   `View` s plnou barvou přes celou plochu, která se animuje jen přes
+   `translationY` + `scaleY` (`pivotY = 0`) -- žádný layout pass za
+   snímek, takže je to plynulé; popisek je jejím sourozencem (ne
+   potomkem), aby ho škálování nedeformovalo. Od v1.37 navíc **watchdog**
+   (`feedOverlayRecheck`, každých 250 ms po dobu, co je blok vidět) sám
+   ověřuje přes `rootInActiveWindow`, co je doopravdy na obrazovce, a
+   schová blok hned, jak to přestane být feed -- dřív se schovával jen
+   při další události z Instagramu, což ho někdy nechalo viset dlouho
+   nebo napořád. Počítá se do statistik jedním započítáním při každém
    zobrazení bloku (ne opakovaně). Stejně jako v1.31 se před zobrazením
    ověřuje, že Home tab je opravdu `isSelected` -- bez toho by se blok
    mylně zobrazoval i v DMs (Inbox se klasifikuje jako FEED, známá mezera

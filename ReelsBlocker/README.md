@@ -122,6 +122,35 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.37 -- blok už nenechává proužky, přepíná se rychleji a mizí hned
+
+Reakce na tvůj test v1.36 -- čtyři věci, které jsi vytkl:
+
+- **Nezakrytý pruh nahoře (jméno prvního postu) je pryč.** Tohle byla
+  skutečná chyba a log ji odhalil přesně: okno bloku nezačínalo na
+  vrcholu obrazovky, ale až **pod stavovou lištou** -- zatímco souřadnice,
+  které appka čte z Instagramu, jsou počítané od skutečného vrcholu. Celý
+  blok tak byl posunutý o výšku stavové lišty (u tebe 130 px) dolů, takže
+  nahoře vždycky zůstal nezakrytý proužek zhruba na jeden řádek -- právě
+  to jméno prvního postu.
+- **Ze stejného důvodu vykukovala spodní lišta.** Okno kvůli tomu končilo
+  nad navigační lištou, takže ani režim "přes celou obrazovku" ve
+  skutečnosti celou obrazovku nepokrýval. Teď je okno opravdu přes celý
+  displej (včetně stavové lišty i výřezu na kameru), takže "celá
+  obrazovka" znamená celá.
+- **Přepínání malý/velký je rychlejší a plynulejší.** Zkrátil jsem ho z
+  220 ms na 160 ms a hlavně jsem změnil způsob, jakým se blok zvětšuje --
+  dřív se při každém snímku animace přepočítávalo rozvržení okna, teď se
+  jen posouvá a natahuje hotová plocha (což zvládá rovnou grafický čip).
+  Nemělo by to už "skákat" po krocích.
+- **Blok teď mizí okamžitě, když odejdeš jinam.** Předtím se schovával
+  jen ve chvíli, kdy dorazila nějaká další událost z Instagramu -- a
+  když žádná nepřišla (nebo appka zrovna dostala událost od systému
+  místo od Instagramu), blok tam mohl viset dlouho, někdy i "napořád".
+  Teď se appka po celou dobu, co je blok vidět, sama několikrát za
+  vteřinu ptá, co je doopravdy na obrazovce, a jakmile to přestane být
+  feed, blok zmizí.
+
 ## v1.36 -- opravené rozpoznání historiček (malý/velký blok konečně funguje)
 
 Z logu, co jsi poslal (appka nahoře u historek), vyšlo najevo přesně to,

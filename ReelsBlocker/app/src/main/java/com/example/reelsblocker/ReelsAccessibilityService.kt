@@ -1,7 +1,6 @@
 package com.example.reelsblocker
 
 import android.accessibilityservice.AccessibilityService
-import android.animation.ValueAnimator
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -133,11 +132,18 @@ class ReelsAccessibilityService : AccessibilityService() {
         // used safely (only counted when 2+ of them share the same top).
         private const val STORIES_ITEM_RESOURCE_ID = "outer_container"
 
-        // v1.34: how long the feed-block overlay takes to grow/shrink
-        // between covering just the post area and covering the whole
-        // screen. Matches the app's established drawer/panel timing
-        // (CLAUDE.md: "translationX/translationY animace ~160-220ms").
-        private const val FEED_OVERLAY_MORPH_MS = 220L
+        // How long the feed-block overlay takes to grow/shrink between
+        // covering just the post area and covering the whole screen. Sits
+        // at the fast end of the app's established drawer/panel timing
+        // (CLAUDE.md: "translationX/translationY animace ~160-220ms") --
+        // v1.37 dropped it from 220ms because the morph read as sluggish.
+        private const val FEED_OVERLAY_MORPH_MS = 160L
+
+        // v1.37: while the block is on screen, how often to re-ask the
+        // system what's actually in front of the user, so it disappears
+        // promptly on leaving the feed instead of waiting for whatever
+        // accessibility event happens to come next -- see feedOverlayRecheck.
+        private const val FEED_OVERLAY_RECHECK_MS = 250L
     }
 
     private var inReelsViewer = false
@@ -168,8 +174,10 @@ class ReelsAccessibilityService : AccessibilityService() {
     // post area and covering the whole screen -- see handleFeedBlockOverlay.
     private var feedOverlayRoot: FrameLayout? = null
     private var feedOverlayBlock: View? = null
-    private var feedOverlayAnimator: ValueAnimator? = null
-    // null = not currently shown at all.
+    private var feedOverlayLabel: TextView? = null
+    // null = not currently shown at all. Top/bottom are absolute screen
+    // coordinates; left/right are unused (the block always spans the full
+    // width) and kept only so this reads as the covered band.
     private var feedOverlayCurrentRect: Rect? = null
     private var feedOverlayShown = false
     private var lastFeedOverlayFullLogAt = 0L
@@ -277,10 +285,10 @@ class ReelsAccessibilityService : AccessibilityService() {
         } catch (_: Exception) {
         }
         overlayView = null
-        feedOverlayAnimator?.cancel()
-        feedOverlayAnimator = null
+        mainHandler.removeCallbacks(feedOverlayRecheck)
         feedOverlayRoot = null
         feedOverlayBlock = null
+        feedOverlayLabel = null
         feedOverlayCurrentRect = null
         feedOverlayShown = false
         transitionRoot = null
@@ -364,23 +372,31 @@ class ReelsAccessibilityService : AccessibilityService() {
         try {
             val wm = windowManager ?: (getSystemService(WINDOW_SERVICE) as WindowManager)
             windowManager = wm
-            val metrics = resources.displayMetrics
-            val density = metrics.density
+            val density = resources.displayMetrics.density
 
             val root = FrameLayout(this)
 
-            val block = FrameLayout(this).apply {
-                // Fully opaque -- unlike the color-sampled icon overlay,
-                // this one's whole point is to hide what's under it.
+            // A plain View, not a container: it's a flat solid colour, so it
+            // can be grown/shrunk with scaleY (a GPU transform, no layout
+            // pass per frame) instead of by re-assigning layout params --
+            // that's what makes the morph actually smooth. pivotY = 0 keeps
+            // its top edge anchored where translationY puts it, so
+            // [translationY, translationY + height*scaleY] is the covered
+            // band. The label lives beside it (below) rather than inside,
+            // so it doesn't get stretched by that same scale.
+            val block = View(this).apply {
                 setBackgroundColor(Color.parseColor("#121212"))
                 visibility = View.GONE
                 alpha = 0f
+                pivotX = 0f
+                pivotY = 0f
             }
             root.addView(
                 block,
-                FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 0).apply {
-                    topMargin = 0
-                }
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
             )
 
             val label = TextView(this).apply {
@@ -389,32 +405,72 @@ class ReelsAccessibilityService : AccessibilityService() {
                 textSize = 15f
                 gravity = Gravity.CENTER
                 setPadding((32 * density).toInt(), 0, (32 * density).toInt(), 0)
+                visibility = View.GONE
+                alpha = 0f
             }
-            block.addView(
+            root.addView(
                 label,
                 FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT
                 ).apply { gravity = Gravity.CENTER }
             )
 
+            // v1.37: FLAG_LAYOUT_IN_SCREEN + FLAG_LAYOUT_NO_LIMITS (and the
+            // cutout mode below) are what make this window's y=0 mean the
+            // real top of the display. Without them the window starts BELOW
+            // the status bar, while every bound read out of Instagram's tree
+            // is an absolute screen coordinate -- so the whole block sat
+            // statusBarHeightPx too low, which is exactly the "first post's
+            // username stays uncovered at the top" and "the bottom bar is
+            // still visible" the user reported (the log's own dump shows
+            // Instagram's content starting at y=130, i.e. one status bar
+            // down). With these flags absolute coordinates can be used
+            // as-is, and full-screen really means full screen.
             val params = WindowManager.LayoutParams(
-                metrics.widthPixels,
-                metrics.heightPixels,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
                 0, 0,
                 WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT
             ).apply {
                 gravity = Gravity.TOP or Gravity.START
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    layoutInDisplayCutoutMode =
+                        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                }
             }
 
             wm.addView(root, params)
             feedOverlayRoot = root
             feedOverlayBlock = block
+            feedOverlayLabel = label
         } catch (e: Exception) {
             AppLog.w(this, TAG, "Feed overlay setup failed: ${e.message}")
+        }
+    }
+
+    // resources.displayMetrics excludes the system bars, which would make
+    // "full screen" stop short of the navigation bar -- the overlay window
+    // itself is now genuinely full-screen (see setupFeedOverlay), so it
+    // needs the real display size to match.
+    private fun realScreenHeightPx(): Int {
+        return try {
+            val wm = windowManager ?: (getSystemService(WINDOW_SERVICE) as WindowManager)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                wm.maximumWindowMetrics.bounds.height()
+            } else {
+                val dm = android.util.DisplayMetrics()
+                @Suppress("DEPRECATION")
+                wm.defaultDisplay.getRealMetrics(dm)
+                dm.heightPixels
+            }
+        } catch (_: Exception) {
+            resources.displayMetrics.heightPixels
         }
     }
 
@@ -1126,6 +1182,14 @@ class ReelsAccessibilityService : AccessibilityService() {
             hideFeedBlockOverlay()
             return
         }
+        applyFeedOverlaySizing(root)
+    }
+
+    // Split out of handleFeedBlockOverlay so the recheck watchdog below can
+    // reuse it against a freshly fetched root without depending on
+    // lastTimeCategory (which is only updated from the event pipeline).
+    // Returns false when the overlay should not be showing at all.
+    private fun applyFeedOverlaySizing(root: AccessibilityNodeInfo): Boolean {
         // classifyScreen's FEED verdict isn't enough on its own: the DM
         // inbox (and possibly other overlaid screens) can still classify
         // as FEED (known gap -- Home tab underneath keeps reporting
@@ -1139,10 +1203,10 @@ class ReelsAccessibilityService : AccessibilityService() {
         homeNode?.recycle()
         if (!homeSelected) {
             hideFeedBlockOverlay()
-            return
+            return false
         }
 
-        val metrics = resources.displayMetrics
+        val screenHeight = realScreenHeightPx()
         val storiesBounds = findStoriesTrayBounds(root)
         if (storiesBounds != null) {
             // Only trust the Home tab's own bounds as the bottom edge when
@@ -1151,13 +1215,13 @@ class ReelsAccessibilityService : AccessibilityService() {
             // falls back to the full screen height instead of covering the
             // nav bar or clipping short.
             val top = storiesBounds.bottom
-            val bottom = if (isPlausibleTabIconBounds(homeBounds)) homeBounds.top else metrics.heightPixels
-            if (bottom - top < metrics.density * 40) {
+            val bottom = if (isPlausibleTabIconBounds(homeBounds)) homeBounds.top else screenHeight
+            if (bottom - top < resources.displayMetrics.density * 40) {
                 // Bounds don't make sense (e.g. a transient layout pass) --
                 // skip this tick rather than morph to a near-zero rect.
-                return
+                return true
             }
-            morphFeedOverlayTo(Rect(0, top, metrics.widthPixels, bottom))
+            morphFeedOverlayTo(top, bottom)
         } else {
             // No stories row detected -- either the user has genuinely
             // scrolled it off screen (the normal case this is meant to
@@ -1175,8 +1239,59 @@ class ReelsAccessibilityService : AccessibilityService() {
                 AppLog.d(this, TAG, "Feed overlay: no stories row detected -- covering full screen")
                 dumpTopOfScreenCandidates(root)
             }
-            morphFeedOverlayTo(Rect(0, 0, metrics.widthPixels, metrics.heightPixels))
+            morphFeedOverlayTo(0, screenHeight)
         }
+        return true
+    }
+
+    // v1.37: the overlay used to linger long after leaving the feed (and
+    // sometimes never went away) because hiding it only ever happened on
+    // the next accessibility event that reached the Instagram branch --
+    // and several paths return before that (a root that briefly belongs to
+    // systemui, the content-event throttle, or simply no events arriving
+    // at all once a screen goes idle). While the block is on screen this
+    // re-asks the system what's actually in front of the user a few times
+    // a second and hides it the moment that stops being the feed, so
+    // disappearing no longer depends on Instagram happening to emit an
+    // event.
+    private val feedOverlayRecheck = object : Runnable {
+        override fun run() {
+            if (!feedOverlayShown) return
+            var keepShowing = false
+            try {
+                val enabled = ::prefs.isInitialized &&
+                    prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false) &&
+                    prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)
+                if (enabled) {
+                    val liveRoot = rootInActiveWindow
+                    if (liveRoot != null) {
+                        try {
+                            if (liveRoot.packageName?.toString() == INSTAGRAM_PACKAGE) {
+                                keepShowing = applyFeedOverlaySizing(liveRoot)
+                            }
+                        } finally {
+                            liveRoot.recycle()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                AppLog.w(this@ReelsAccessibilityService, TAG, "Feed overlay recheck failed: ${e.message}")
+            }
+            if (!keepShowing) {
+                hideFeedBlockOverlay()
+            } else {
+                // Via the helper, not postDelayed directly: this run may
+                // itself have gone through morphFeedOverlayTo (which also
+                // re-arms), and two pending callbacks would compound into
+                // an ever-faster poll.
+                scheduleFeedOverlayRecheck()
+            }
+        }
+    }
+
+    private fun scheduleFeedOverlayRecheck() {
+        mainHandler.removeCallbacks(feedOverlayRecheck)
+        mainHandler.postDelayed(feedOverlayRecheck, FEED_OVERLAY_RECHECK_MS)
     }
 
     // v1.36: measured from the 2026-08-21 log's "Top-of-screen dump" (see
@@ -1187,7 +1302,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     // showing up as a single unrelated container elsewhere (e.g. the
     // Reels-dismiss screen in that same log).
     private fun findStoriesTrayBounds(root: AccessibilityNodeInfo): Rect? {
-        val topLimit = (resources.displayMetrics.heightPixels * 0.25).toInt()
+        val topLimit = (realScreenHeightPx() * 0.25).toInt()
         val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$STORIES_ITEM_RESOURCE_ID")
         try {
             val candidates = mutableListOf<Rect>()
@@ -1202,85 +1317,100 @@ class ReelsAccessibilityService : AccessibilityService() {
             val top = candidates.minOf { it.top }
             val row = candidates.filter { Math.abs(it.top - top) <= REPOSITION_THRESHOLD_PX }
             if (row.size < 2) return null
-            return Rect(0, top, resources.displayMetrics.widthPixels, row.maxOf { it.bottom })
+            return Rect(0, top, 0, row.maxOf { it.bottom })
         } finally {
             matches.forEach { it.recycle() }
         }
     }
 
-    // Smoothly resizes feedOverlayBlock's top/bottom edges to `target`.
-    // First appearance (nothing shown yet) snaps straight to the right
-    // size and fades in instead -- morphing a size from nothing wouldn't
-    // mean anything, and this matches how the rest of the app's overlays
-    // introduce themselves (fade in, see showOverlayAt).
-    private fun morphFeedOverlayTo(target: Rect) {
+    // Smoothly moves the covered band to [top, bottom] (absolute screen
+    // coordinates). The block view is permanently full-screen, so this is
+    // a pure translationY + scaleY transform -- the GPU interpolates it
+    // without a single layout pass, which is what makes it feel smooth
+    // instead of stepping. Scaling is safe here precisely because the block
+    // is a flat solid colour; the label is a sibling (not a child), so it
+    // slides into place rather than getting stretched.
+    //
+    // First appearance (nothing shown yet) snaps straight to the right size
+    // and fades in instead -- morphing a size out of nothing wouldn't mean
+    // anything, and this matches how the app's other overlays introduce
+    // themselves (see showOverlayAt).
+    private fun morphFeedOverlayTo(top: Int, bottom: Int) {
         val block = feedOverlayBlock ?: return
+        val label = feedOverlayLabel
         val current = feedOverlayCurrentRect
 
         if (current != null &&
-            Math.abs(current.top - target.top) <= REPOSITION_THRESHOLD_PX &&
-            Math.abs(current.bottom - target.bottom) <= REPOSITION_THRESHOLD_PX
+            Math.abs(current.top - top) <= REPOSITION_THRESHOLD_PX &&
+            Math.abs(current.bottom - bottom) <= REPOSITION_THRESHOLD_PX
         ) {
+            // Already where it should be -- but keep the watchdog alive, so
+            // a long stretch of "nothing changed" ticks can't leave the
+            // block on screen with nothing left to take it down.
+            scheduleFeedOverlayRecheck()
             return
         }
 
+        val firstShow = current == null
         if (!feedOverlayShown) {
             feedOverlayShown = true
             Stats.recordBlock(this, "instagram")
             updateDebugBadge("FEED■BLOCKED", "#FF5252")
         }
+        feedOverlayCurrentRect = Rect(0, top, 0, bottom)
 
-        if (current == null) {
-            feedOverlayAnimator?.cancel()
-            applyFeedOverlayRect(target)
-            feedOverlayCurrentRect = Rect(target)
-            block.animate().cancel()
+        val screenHeight = realScreenHeightPx().coerceAtLeast(1)
+        val scale = ((bottom - top).toFloat() / screenHeight).coerceAtLeast(0f)
+        val labelOffset = ((top + bottom) / 2f) - (screenHeight / 2f)
+
+        block.animate().cancel()
+        label?.animate()?.cancel()
+
+        if (firstShow) {
+            block.translationY = top.toFloat()
+            block.scaleY = scale
             block.visibility = View.VISIBLE
             block.alpha = 0f
             block.animate().alpha(1f).setDuration(FADE_MS).start()
-            return
-        }
-
-        feedOverlayAnimator?.cancel()
-        val startTop = current.top
-        val startBottom = current.bottom
-        val endTop = target.top
-        val endBottom = target.bottom
-        feedOverlayCurrentRect = Rect(target)
-        feedOverlayAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = FEED_OVERLAY_MORPH_MS
-            interpolator = DecelerateInterpolator()
-            addUpdateListener { anim ->
-                val f = anim.animatedValue as Float
-                val top = startTop + ((endTop - startTop) * f).toInt()
-                val bottom = startBottom + ((endBottom - startBottom) * f).toInt()
-                applyFeedOverlayRect(Rect(0, top, resources.displayMetrics.widthPixels, bottom))
+            label?.let {
+                it.translationY = labelOffset
+                it.visibility = View.VISIBLE
+                it.alpha = 0f
+                it.animate().alpha(1f).setDuration(FADE_MS).start()
             }
-            start()
+        } else {
+            block.animate()
+                .translationY(top.toFloat())
+                .scaleY(scale)
+                .setDuration(FEED_OVERLAY_MORPH_MS)
+                .setInterpolator(DecelerateInterpolator())
+                .start()
+            label?.animate()
+                ?.translationY(labelOffset)
+                ?.setDuration(FEED_OVERLAY_MORPH_MS)
+                ?.setInterpolator(DecelerateInterpolator())
+                ?.start()
         }
-    }
 
-    private fun applyFeedOverlayRect(rect: Rect) {
-        val block = feedOverlayBlock ?: return
-        val params = block.layoutParams as? FrameLayout.LayoutParams ?: return
-        params.topMargin = rect.top
-        params.height = (rect.bottom - rect.top).coerceAtLeast(0)
-        block.layoutParams = params
+        scheduleFeedOverlayRecheck()
     }
 
     // Not animated for the same reason hideOverlay() isn't -- disappearing
-    // should feel immediate, not lingering. Only the SMALL<->FULL morph
-    // (while still in the feed) is meant to be smooth.
+    // should feel immediate, not lingering. Only the morph between the two
+    // sizes (while still in the feed) is meant to be smooth.
     private fun hideFeedBlockOverlay() {
-        feedOverlayAnimator?.cancel()
-        feedOverlayAnimator = null
+        mainHandler.removeCallbacks(feedOverlayRecheck)
         feedOverlayCurrentRect = null
         feedOverlayShown = false
         val block = feedOverlayBlock ?: return
-        if (block.visibility == View.GONE) return
+        val label = feedOverlayLabel
         block.animate().cancel()
+        label?.animate()?.cancel()
+        if (block.visibility == View.GONE) return
         block.alpha = 0f
         block.visibility = View.GONE
+        label?.alpha = 0f
+        label?.visibility = View.GONE
     }
 
     // ---- TikTok: one video per session ----
