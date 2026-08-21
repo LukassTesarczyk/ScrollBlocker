@@ -122,6 +122,30 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.36 -- opravené rozpoznání historiček (malý/velký blok konečně funguje)
+
+Z logu, co jsi poslal (appka nahoře u historek), vyšlo najevo přesně to,
+co se hledalo:
+
+- **`stories_tray` (id, který appka hledala od v1.33) v tvém Instagramu
+  vůbec neexistuje** -- řádek historiček totiž nemá žádné vlastní id.
+  Skládá se ale ze čtyř `outer_container` prvků vedle sebe (jeden na
+  historku), hned pod horní lištou -- to appka v logu jasně viděla.
+- **Problém:** `outer_container` je ale příliš obecné jméno -- používá
+  ho Instagram na spoustě míst (třeba i na obrazovce, kde se zavírá
+  Reel). Kdyby appka brala každý výskyt, mohla by si splést historky s
+  něčím úplně jiným.
+- **Řešení:** appka teď historky pozná podle vzoru, ne podle jednoho id
+  -- hledá **aspoň dva** `outer_container` prvky vedle sebe se stejnou
+  horní hranicí v horní čtvrtině obrazovky. To je totiž přesně to, co
+  historky dělá historkami (řada avatarů vedle sebe) a co je odlišuje od
+  náhodného jednoho prvku někde jinde v appce.
+- Výsledek: **malý/velký blok z v1.34 (zmenší se nahoře u historek,
+  zvětší se přes celou obrazovku při scrollování) by teď měl konečně
+  fungovat tak, jak měl od začátku.**
+- Diagnostický výpis z v1.35 (`Top-of-screen dump`) v appce zůstává --
+  pro případ, že Instagram v budoucnu vzhled historiček zase změní.
+
 ## v1.35 -- diagnostika pro "blok je pořád přes celou obrazovku"
 
 Reakce na tvůj log a hlášení "teď to je přes celou obrazovku" (po v1.34):

@@ -121,16 +121,17 @@ class ReelsAccessibilityService : AccessibilityService() {
         // always processed.
         private const val CONTENT_EVENT_MIN_INTERVAL_MS = 200L
 
-        // "stories_tray" is Instagram's long-standing id for the stories
-        // row at the top of the feed -- unlike the ids in classifyScreen
-        // it hasn't been confirmed from this user's own recon logs yet, so
-        // handleFeedBlockOverlay logs when it can't find it. If the id is
-        // wrong for the current Instagram build, the feed-block overlay
-        // just degrades to always covering the full screen (see
-        // handleFeedBlockOverlay) instead of breaking outright.
-        private val STORIES_TRAY_RESOURCE_ID_CANDIDATES = listOf(
-            "stories_tray"
-        )
+        // v1.36: "stories_tray" (the id v1.33-1.35 looked for) never
+        // matched -- the 2026-08-21 log's "Top-of-screen dump" showed why:
+        // on this Instagram build the stories row's own container carries
+        // no resource id at all. What's actually there is several
+        // "outer_container" LinearLayouts (STORIES_ITEM_RESOURCE_ID) laid
+        // out side by side right under the top app bar, one per avatar.
+        // "outer_container" alone is too generic to trust anywhere else in
+        // the tree (the same log shows it reused on an unrelated
+        // Reels-dismiss screen) -- see findStoriesTrayBounds for how it's
+        // used safely (only counted when 2+ of them share the same top).
+        private const val STORIES_ITEM_RESOURCE_ID = "outer_container"
 
         // v1.34: how long the feed-block overlay takes to grow/shrink
         // between covering just the post area and covering the whole
@@ -1158,38 +1159,53 @@ class ReelsAccessibilityService : AccessibilityService() {
             }
             morphFeedOverlayTo(Rect(0, top, metrics.widthPixels, bottom))
         } else {
-            // stories_tray not found -- either the user has scrolled it
-            // off screen (the normal case this is meant to catch) or the
-            // id is wrong for this Instagram build (unmeasured, see
-            // STORIES_TRAY_RESOURCE_ID_CANDIDATES). Either way, covering
-            // the full screen is the safe degrade. Logged (throttled --
-            // this branch is the expected path for as long as someone is
-            // genuinely scrolled down, not just a failure case) so a wrong
-            // id still shows up as "always full screen, never shrinks"
-            // in a log instead of silently misbehaving.
+            // No stories row detected -- either the user has genuinely
+            // scrolled it off screen (the normal case this is meant to
+            // catch) or the structural match in findStoriesTrayBounds
+            // failed to find it (e.g. a future Instagram layout change).
+            // Either way, covering the full screen is the safe degrade.
+            // Logged (throttled -- this branch is the expected path for as
+            // long as someone is genuinely scrolled down, not just a
+            // failure case) so a bad match still shows up as "always full
+            // screen, never shrinks" in a log instead of silently
+            // misbehaving.
             val now = System.currentTimeMillis()
             if (now - lastFeedOverlayFullLogAt > 5000L) {
                 lastFeedOverlayFullLogAt = now
-                AppLog.d(this, TAG, "Feed overlay: stories_tray not found -- covering full screen")
+                AppLog.d(this, TAG, "Feed overlay: no stories row detected -- covering full screen")
                 dumpTopOfScreenCandidates(root)
             }
             morphFeedOverlayTo(Rect(0, 0, metrics.widthPixels, metrics.heightPixels))
         }
     }
 
+    // v1.36: measured from the 2026-08-21 log's "Top-of-screen dump" (see
+    // STORIES_ITEM_RESOURCE_ID above) -- the stories row is several
+    // "outer_container" nodes side by side, all sharing the same top, in
+    // the top quarter of the screen. Requiring at least two at a matching
+    // top is what keeps this from false-matching the same generic id
+    // showing up as a single unrelated container elsewhere (e.g. the
+    // Reels-dismiss screen in that same log).
     private fun findStoriesTrayBounds(root: AccessibilityNodeInfo): Rect? {
-        for (id in STORIES_TRAY_RESOURCE_ID_CANDIDATES) {
-            val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$id")
-            var result: Rect? = null
+        val topLimit = (resources.displayMetrics.heightPixels * 0.25).toInt()
+        val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$STORIES_ITEM_RESOURCE_ID")
+        try {
+            val candidates = mutableListOf<Rect>()
             for (m in matches) {
                 val bounds = Rect()
                 m.getBoundsInScreen(bounds)
-                if (bounds.width() > 0 && bounds.height() > 0) result = bounds
+                if (bounds.width() > 0 && bounds.height() > 0 && bounds.top < topLimit) {
+                    candidates.add(bounds)
+                }
             }
+            if (candidates.size < 2) return null
+            val top = candidates.minOf { it.top }
+            val row = candidates.filter { Math.abs(it.top - top) <= REPOSITION_THRESHOLD_PX }
+            if (row.size < 2) return null
+            return Rect(0, top, resources.displayMetrics.widthPixels, row.maxOf { it.bottom })
+        } finally {
             matches.forEach { it.recycle() }
-            if (result != null) return result
         }
-        return null
     }
 
     // Smoothly resizes feedOverlayBlock's top/bottom edges to `target`.
@@ -1512,19 +1528,18 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
-    // v1.34 follow-up: the user's log showed the feed-block overlay always
-    // covering the full screen, never shrinking to just the post area --
-    // and the "IG screen recon (FEED via tab-selected)" dump from that same
-    // log confirmed why: STORIES_TRAY_RESOURCE_ID_CANDIDATES never matches
-    // on their Instagram build, there's no story-related id in it at all.
-    // Guessing a replacement id would be exactly what CLAUDE.md rule 5
-    // warns against. Unlike collectBottomNavCandidates above, this doesn't
-    // filter to isClickable -- the stories row's own container may not be
+    // v1.34/v1.35 follow-up: this is what found STORIES_ITEM_RESOURCE_ID in
+    // the first place -- a 2026-08-21 "Top-of-screen dump" showed the old
+    // "stories_tray" id never matched at all, but did show several
+    // "outer_container" nodes side by side under the top app bar (see
+    // findStoriesTrayBounds). Kept in place (not just a one-off diagnostic)
+    // as the fallback path for whenever findStoriesTrayBounds itself comes
+    // up empty -- a future Instagram layout change would show up here the
+    // same way. Unlike collectBottomNavCandidates above, this doesn't
+    // filter to isClickable -- a stories-row-like container may not be
     // clickable even though the avatars inside it are -- so it dumps every
     // node (with its class, since Compose-based views often carry no
-    // resource id at all) sitting in the top 20% of the screen instead. The
-    // next log taken right at the top of the feed should show exactly what
-    // to match on.
+    // resource id at all) sitting in the top 20% of the screen instead.
     private fun dumpTopOfScreenCandidates(root: AccessibilityNodeInfo) {
         try {
             val screenHeight = resources.displayMetrics.heightPixels

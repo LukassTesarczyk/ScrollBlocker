@@ -11,8 +11,8 @@ android {
         applicationId "com.example.reelsblocker"
         minSdk 26
         targetSdk 34
-        versionCode 36
-        versionName "1.35"
+        versionCode 37
+        versionName "1.36"
     }
 
     // CI runners don't have a persistent ~/.android/debug.keystore, so

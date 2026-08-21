@@ -40,22 +40,26 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    scroll samotného přehrávače/pageru (kontrola zdroje události, od
    v1.30) -- scrollování komentářů apod. blokování nespustí.
 3. **Volitelně blokovat i scrollování feedu** (přepínač na Home záložce,
-   jen Instagram, od v1.30, přepracováno v1.33 a znovu v1.34): jakmile je
+   jen Instagram, od v1.30, přepracováno v1.33, v1.34 a v1.36): jakmile je
    uživatel na Home tabu s feedem a přepínač je zapnutý, appka zakrývá
    plochu neprůhledným overlayem (samostatné okno, ne to samé jako
    overlay na ikonce Reels) -- ale **okno je "click-through"
    (`FLAG_NOT_TOUCHABLE`), takže dotyky propadají do Instagramu pod ním a
    feed se pod blokem doopravdy scrolluje** (nic se necítí zaseklé).
    Velikost bloku se **plynule animuje (~220ms)** mezi dvěma stavy podle
-   toho, jestli appka aktuálně vidí `stories_tray` v UI stromu -- id je
-   ale od v1.35 potvrzené jako ŠPATNÉ pro tohohle uživatele (viz "Otevřené
-   resty" níž), takže appka je prozatím prakticky pořád ve stavu "blok
-   přes celou obrazovku":
-   - Vidí historky -> blok jen přes plochu s příspěvky (horní hranice =
-     spodní okraj historek, dolní hranice = horní okraj Home tab ikonky,
-     stejná jako u overlaye na Reels ikonce).
-   - Nevidí historky (uživatel odscrolloval pryč, nebo se `stories_tray`
-     id netrefilo -- degraduje stejně) -> blok přes **celou obrazovku**.
+   toho, jestli appka aktuálně vidí historky v UI stromu. Historky nemají
+   žádné vlastní id (zjištěno z logu v v1.35/v1.36) -- appka je pozná
+   strukturálně: **2+ prvků `outer_container` vedle sebe se stejnou
+   horní hranicí v horní čtvrtině obrazovky** (`STORIES_ITEM_RESOURCE_ID`
+   + `findStoriesTrayBounds`) -- jeden `outer_container` samotný se
+   nepočítá (id je obecné, používá se i jinde v appce, např. na
+   Reels-dismiss obrazovce).
+   - Vidí historky (2+ `outer_container` v řadě) -> blok jen přes plochu
+     s příspěvky (horní hranice = spodní okraj historek, dolní hranice =
+     horní okraj Home tab ikonky, stejná jako u overlaye na Reels
+     ikonce).
+   - Nevidí historky (uživatel odscrolloval pryč, nebo strukturální shoda
+     selhala) -> blok přes **celou obrazovku**.
    Technicky je to jedno pevné okno přes celou obrazovku (jako vnitřní
    "exit pill" overlay), uvnitř kterého se `ValueAnimator` mění výška
    neprůhledného obdélníku -- žádné opakované volání WindowManageru za
@@ -178,17 +182,14 @@ neškrtá. Aktuální verze appky je vidět v appce vpravo nahoře.
   proto pořád loguje každý zahozený zdroj ("Ignoring scroll from non-swipe
   view: ..."), takže z prvního logu, kde by k tomu došlo, půjde komentáře
   odfiltrovat cíleně. Bez logu se nehádá (pravidlo 5).
-- **Id řádku s historkami (`stories_tray`) je od v1.35 potvrzené jako
-  ŠPATNÉ pro uživatelův Instagram build** -- log ukázal kompletní výpis
-  id z Feed obrazovky (`IG screen recon (FEED via tab-selected)`) a
-  žádné "story" id v něm není, takže appka je vždycky v degradovaném
-  stavu "blok přes celou obrazovku pořád" (bezpečné, ale ne ten hezčí
-  malý/velký přepínací režim z v1.34). Appka teď (v1.35) místo hádání
-  nového id loguje (`dumpTopOfScreenCandidates`, max 1x/5s) id, třídu a
-  souřadnice všeho v horní pětině obrazovky -- z prvního logu pořízeného
-  chvíli po otevření Feedu (se zapnutým blokováním) půjde přesně vidět,
-  jak se historky doopravdy jmenují, a doplnit správné id do
-  STORIES_TRAY_RESOURCE_ID_CANDIDATES.
+- ~~Id řádku s historkami (`stories_tray`) potvrzené jako špatné~~ --
+  **vyřešeno v1.36.** Log z 2026-08-21 (`Top-of-screen dump` z v1.35)
+  ukázal, že historky žádné vlastní id nemají -- appka teď detekuje
+  strukturálně (2+ `outer_container` v řadě, viz bod 3 výše a
+  `STORIES_ITEM_RESOURCE_ID`/`findStoriesTrayBounds`). Zatím
+  nepotvrzené uživatelem naostro po v1.36 -- pokud by malý/velký blok
+  pořád nefungoval podle očekávání, další log s `Top-of-screen dump`
+  ukáže přesně proč (diagnostika z v1.35 zůstává jako fallback).
 - **Inbox (seznam DM konverzací) se v grafu/badge chybně hlásí jako
   FEED**, ne DMS. Otevřená DM konverzace (thread) se detekuje správně
   (`thread_fragment_container`/`message_list`), ale samotný seznam
