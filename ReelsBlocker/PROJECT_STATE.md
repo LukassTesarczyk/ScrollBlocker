@@ -95,10 +95,31 @@ se vzorkují na max. 1 za 200 ms (přetížené hlavní vlákno byl druhý
 kandidát na "Nefunguje"). Window-state a scroll události se zpracovávají
 vždy.
 
-Detekce Instagramu je založená na resource-id změřených ze skutečných
-logů (ne z dokumentace -- ta neexistuje). TikTok detekce je založená na
-`viewpager` + `long_press_layout` (For You feed), ostatní id jsou
-per-build obfuskovaná.
+**Klasifikace obrazovky Instagramu jede od v1.38 primárně podle
+zvýrazněné (`isSelected`) záložky ve spodní liště** (`classifyScreen` ->
+`findSelectedBottomTab` + `categoryForBottomTab`): svítící domeček =
+FEED, vlaštovka = DM, Reels záložka = REELS atd. Důvod: Instagram drží
+v UI stromu i podstromy *sousedních* záložek, jen s bounds odsunutými
+mimo obrazovku, takže "existuje někde prvek typický pro feed" bylo
+skoro vždycky pravda bez ohledu na to, co uživatel doopravdy vidí --
+odtud nespolehlivá detekce feedu i starý bug "Inbox se hlásí jako FEED".
+Zvýrazněná je vždy právě jedna záložka, takže je to jednoznačný signál.
+Mapované napevno jsou jen změřené id (`feed_tab`/`home_tab`,
+`clips_tab`); ostatní záložky se zkoušejí rozpoznat tolerantním
+vzorem v id/contentDescription a **nerozpoznaná záložka se nehádá, ale
+zaloguje** ("Selected bottom tab not mapped: id=... desc=...") -- pak jde
+doplnit napevno z dat (pravidlo 5).
+
+Celoobrazovkové případy (Reels přehrávač, historky, otevřená DM
+konverzace) se řeší před záložkami, protože lištu překrývají -- a od
+v1.38 se u nich (i u feed fallbacku) kontroluje, že prvek je **opravdu
+vidět na obrazovce** (`hasVisibleNodeById`), ne že jen existuje v
+odsunuté sousední záložce.
+
+Zbytek detekce Instagramu je založený na resource-id změřených ze
+skutečných logů (ne z dokumentace -- ta neexistuje). TikTok detekce je
+založená na `viewpager` + `long_press_layout` (For You feed), ostatní id
+jsou per-build obfuskovaná.
 
 **TikTok detekce má dvě úrovně (od v1.29):** vstup do feedu vyžaduje
 přísnou shodu (`viewpager` + `long_press_layout`), ale jakmile je session
@@ -201,19 +222,17 @@ neškrtá. Aktuální verze appky je vidět v appce vpravo nahoře.
   nepotvrzené uživatelem naostro po v1.36 -- pokud by malý/velký blok
   pořád nefungoval podle očekávání, další log s `Top-of-screen dump`
   ukáže přesně proč (diagnostika z v1.35 zůstává jako fallback).
-- **Inbox (seznam DM konverzací) se v grafu/badge chybně hlásí jako
-  FEED**, ne DMS. Otevřená DM konverzace (thread) se detekuje správně
-  (`thread_fragment_container`/`message_list`), ale samotný seznam
-  konverzací (Inbox) žádné změřené id nemá -- Home tab pod ním zůstává
-  "selected", takže to propadne do FEED větve. Přidané diagnostické
-  logování (`classifyScreen`, v1.28) zachytí view-id na obrazovce,
-  až se pošle čerstvý log z Debug tabu pořízený přímo na Inbox
-  obrazovce -- pak půjde dodat přesnou podmínku. Bez logu se nehádá
-  (CLAUDE.md pravidlo 5).
-- **Debug badge zatím neumí rozlišit Profile / Videos / Camera** uvnitř
-  Instagramu -- žádná id pro tyhle obrazovky nebyla nikdy změřena.
-  Potřeba čerstvý log z každé z nich (s zapnutým Debug overlay), než se
-  přidá klasifikace.
+- ~~Inbox se hlásí jako FEED~~ -- **řešeno v1.38** přechodem na
+  klasifikaci podle zvýrazněné spodní záložky (viz výše). Zatím ale
+  neověřeno uživatelem naostro.
+- **Záložky mimo domeček a Reels nejsou změřené.** Vlaštovka (DM), lupa
+  a profil se rozpoznávají jen tolerantním vzorem v id/desc, ne
+  potvrzeným id. Když se záložka nerozpozná, spadne to do OTHER a appka
+  zaloguje "Selected bottom tab not mapped: id=... desc=..." -- z prvního
+  takového logu jde mapování doplnit napevno.
+- **Debug badge nerozlišuje Profile / Search / Camera zvlášť** -- všechny
+  spadají do OTHER (TimeCategory nemá pro ně vlastní kategorii a přidání
+  by zasáhlo statistiky, widgety i překlady).
 - TikTok a Snapchat: Snapchat nemá žádnou detekční logiku, jen UI.
 - Reorder hubu je "Move v action sheetu -> klepni kam přesunout", ne
   fyzické tažení prstem.

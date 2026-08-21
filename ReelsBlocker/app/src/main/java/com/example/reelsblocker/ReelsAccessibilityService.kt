@@ -181,6 +181,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var feedOverlayCurrentRect: Rect? = null
     private var feedOverlayShown = false
     private var lastFeedOverlayFullLogAt = 0L
+    private var lastUnknownTabSignature = ""
     @Volatile private var sampledColor: Int? = null
     private var lastColorSampleTime = 0L
     @Volatile private var colorSampleInFlight = false
@@ -842,39 +843,147 @@ class ReelsAccessibilityService : AccessibilityService() {
     // matters: a reel opened from inside a DM thread has both the clips
     // viewer AND the thread ids in the tree, and it should count as Reels.
     private fun classifyScreen(root: AccessibilityNodeInfo): TimeCategory {
+        // Full-screen viewers first: they cover the tab bar completely, so
+        // there is no highlighted tab to read. Both are matched on their own
+        // on-screen bounds, not mere presence in the tree.
         if (matchedReelsViewerId(root) != null) return TimeCategory.REELS
-        if (hasAnyNodeById(root, "reel_viewer_root")) return TimeCategory.STORY
-        if (hasAnyNodeById(root, "thread_fragment_container") || hasAnyNodeById(root, "message_list")) {
+        if (hasVisibleNodeById(root, "reel_viewer_root")) return TimeCategory.STORY
+        // An open DM conversation is pushed on top of the tab bar, which
+        // keeps whatever tab was highlighted underneath -- so this has to be
+        // decided before the tab check below, not after.
+        if (hasVisibleNodeById(root, "thread_fragment_container") ||
+            hasVisibleNodeById(root, "message_list")
+        ) {
             return TimeCategory.DM
         }
-        val homeNode = findHomeTabNode(root)
-        val isFeedTabSelected = homeNode?.isSelected == true
-        homeNode?.recycle()
-        if (isFeedTabSelected) {
-            // The Direct Inbox (DM list) is opened as a screen on top of
-            // the feed rather than through the bottom tab bar, so the Home
-            // tab underneath can still report isSelected=true while it's
-            // open -- reported by the user as Inbox showing up as FEED in
-            // the chart/badge. No id for the Inbox list itself has been
-            // measured yet (unlike an open thread, which DM above already
-            // catches), so per CLAUDE.md rule 5 this only logs what's
-            // actually on screen here instead of guessing a new id -- a
-            // fresh log captured while sitting on Inbox will show exactly
-            // what to match on.
-            reconDumpScreenIds(root, "IG screen recon (FEED via tab-selected)")
-            return TimeCategory.FEED
+
+        // v1.38, per the user's own suggestion: which bottom-nav tab is
+        // highlighted IS the answer to "what screen am I on" -- home lit up
+        // means the feed, the paper plane means DMs, and so on.
+        val selectedTab = findSelectedBottomTab(root)
+        if (selectedTab != null) {
+            val mapped = categoryForBottomTab(selectedTab.first, selectedTab.second)
+            if (mapped != null) return mapped
+            // A highlighted tab this doesn't recognise yet: log it (throttled,
+            // and only when it changes) rather than guess -- CLAUDE.md rule 5.
+            // The next log then says exactly which id/description to map.
+            val signature = "${selectedTab.first}|${selectedTab.second}"
+            if (signature != lastUnknownTabSignature) {
+                lastUnknownTabSignature = signature
+                AppLog.d(this, TAG, "Selected bottom tab not mapped: id=${selectedTab.first} desc=${selectedTab.second}")
+            }
         }
-        if (hasAnyNodeById(root, "row_feed_photo_imageview") || hasAnyNodeById(root, "row_feed_profile_header")) {
+
+        // No tab bar visible (or its highlighted tab is unknown) -- fall back
+        // to what's actually drawn on screen.
+        if (hasVisibleNodeById(root, "row_feed_photo_imageview") ||
+            hasVisibleNodeById(root, "row_feed_profile_header")
+        ) {
             return TimeCategory.FEED
         }
         return TimeCategory.OTHER
     }
 
-    private fun hasAnyNodeById(root: AccessibilityNodeInfo, id: String): Boolean {
+    // Maps a highlighted bottom-nav tab to a category. "feed_tab"/"home_tab"
+    // and "clips_tab" are measured (they're the same ids findHomeTabNode and
+    // findTabIconNode already rely on, and the 2026-08-21 log confirms
+    // feed_tab on this build). The rest are tolerant substring patterns, not
+    // asserted ids: an unrecognised tab returns null and gets logged by the
+    // caller instead of being guessed into the wrong bucket.
+    private fun categoryForBottomTab(idSuffix: String, desc: String): TimeCategory? {
+        val id = idSuffix.lowercase()
+        val d = desc.lowercase()
+        return when {
+            id.contains("feed") || id.contains("home") || d == "home" -> TimeCategory.FEED
+            id.contains("clips") || id.contains("reels") || d.contains("reels") -> TimeCategory.REELS
+            id.contains("direct") || id.contains("inbox") || id.contains("messag") ||
+                d.contains("direct") || d.contains("messag") -> TimeCategory.DM
+            id.contains("profile") || id.contains("avatar") || d.contains("profile") ->
+                TimeCategory.OTHER
+            id.contains("search") || id.contains("explore") || id.contains("discover") ||
+                d.contains("search") || d.contains("explore") -> TimeCategory.OTHER
+            id.contains("camera") || id.contains("creat") || d.contains("creat") ->
+                TimeCategory.OTHER
+            else -> null
+        }
+    }
+
+    // Returns (resource-id suffix, content description) of the highlighted
+    // bottom-nav tab, or null when no tab bar is on screen.
+    //
+    // Why this beats matching content ids: Instagram's swipeable_tab_view_pager
+    // keeps the ADJACENT tabs' whole subtrees in the node tree, and the logs
+    // show them parked off screen (bounds starting at x >= the screen width).
+    // So "an inbox/feed id exists somewhere in the tree" never meant that
+    // screen was actually in front of the user -- which is exactly why feed
+    // detection kept misfiring, and why the DM inbox used to be reported as
+    // FEED. One highlighted tab is an unambiguous signal where a pile of ids
+    // was not.
+    private fun findSelectedBottomTab(root: AccessibilityNodeInfo): Pair<String, String>? {
+        val out = mutableListOf<Pair<String, String>>()
+        collectSelectedBottomTab(root, out, depth = 0)
+        return out.firstOrNull()
+    }
+
+    private fun collectSelectedBottomTab(
+        node: AccessibilityNodeInfo,
+        out: MutableList<Pair<String, String>>,
+        depth: Int
+    ) {
+        if (depth > 25 || out.isNotEmpty()) return
+        val bounds = Rect()
+        node.getBoundsInScreen(bounds)
+        // Pre-order walk, so the outermost selected node wins -- that's the
+        // tab container carrying the id (feed_tab, clips_tab...), rather than
+        // the icon nested inside it.
+        if (node.isSelected && isPlausibleBottomTabBounds(bounds)) {
+            out.add(
+                (node.viewIdResourceName?.substringAfterLast('/') ?: "") to
+                    (node.contentDescription?.toString() ?: "")
+            )
+            return
+        }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            collectSelectedBottomTab(child, out, depth + 1)
+            child.recycle()
+        }
+    }
+
+    // Deliberately looser than isPlausibleTabIconBounds (which sizes the
+    // Reels-icon overlay and so has to match the icon itself): a tab's
+    // selectable container can be taller than the icon. Still has to sit in
+    // the bottom strip, be narrower than half the screen (a tab, not a
+    // full-width row), and actually be on screen horizontally -- that last
+    // check is what rejects the off-screen adjacent pages described above.
+    private fun isPlausibleBottomTabBounds(bounds: Rect): Boolean {
+        if (bounds.width() <= 0 || bounds.height() <= 0) return false
+        val metrics = resources.displayMetrics
+        if (bounds.left < 0 || bounds.left >= metrics.widthPixels) return false
+        if (bounds.width() > metrics.widthPixels * 0.5) return false
+        if (bounds.top < metrics.heightPixels * 0.70) return false
+        return true
+    }
+
+    // Presence in the tree is not the same as being on screen (see
+    // findSelectedBottomTab): the adjacent tab pages sit in the tree with
+    // bounds parked outside the display. Every id check that decides what the
+    // user is looking at goes through this rather than mere id presence.
+    private fun hasVisibleNodeById(root: AccessibilityNodeInfo, id: String): Boolean {
+        val metrics = resources.displayMetrics
         val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$id")
-        val found = matches.isNotEmpty()
+        var visible = false
+        for (m in matches) {
+            val bounds = Rect()
+            m.getBoundsInScreen(bounds)
+            if (bounds.width() > 0 && bounds.height() > 0 &&
+                bounds.left < metrics.widthPixels && bounds.right > 0
+            ) {
+                visible = true
+            }
+        }
         matches.forEach { it.recycle() }
-        return found
+        return visible
     }
 
     private fun categoryBadge(category: TimeCategory) {

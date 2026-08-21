@@ -122,6 +122,35 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.38 -- rozpoznávání obrazovky podle zvýrazněné záložky dole
+
+Podle tvého návrhu -- appka teď pozná, na jaké jsi obrazovce, hlavně
+podle toho, **která ikonka ve spodní liště svítí**: rozsvícený domeček =
+feed, rozsvícená vlaštovka = zprávy, a tak dál.
+
+- **Proč byla detekce feedu nespolehlivá:** Instagram si v paměti drží
+  i obsah *sousedních* záložek, jen je odsune mimo obrazovku. Appka
+  přitom jen kontrolovala, jestli někde v té struktuře existuje prvek
+  typický pro feed -- a ten tam existoval prakticky pořád, i když ses
+  díval úplně jinam. Odtud "nespolehlivá detekce feedu" a i ten starý
+  problém, že se seznam zpráv hlásil jako feed.
+- **Co se změnilo:** zvýrazněná záložka je jednoznačný signál -- svítí
+  vždycky právě jedna a přesně ta, na které jsi. Appka ji teď hledá jako
+  první a řídí se jí.
+- **Navíc: kde appka pořád kouká na jednotlivé prvky** (celoobrazovkový
+  přehrávač Reels, historky, otevřená konverzace), tam si nově ověřuje,
+  že jsou ty prvky **opravdu vidět na obrazovce** -- ne že jen existují
+  někde v odsunuté sousední záložce. To byla stejná chyba, jen na jiném
+  místě.
+- **Na co dát pozor:** domeček (feed) a Reels mám ověřené z tvých logů.
+  U ostatních záložek (vlaštovka, lupa, profil) appka zkouší rozpoznat
+  jméno prvku podle vzoru -- a **když nějakou záložku nepozná, nehádá,
+  ale zapíše si do logu, jak se doopravdy jmenuje**. Takže kdyby ti
+  něco spadlo do "ostatní" místo do správné kategorie, pošli log a
+  doplním to napevno.
+- Spodní lišty ani velikosti bloku jsem se nedotkl -- ta zůstává přesně
+  tak, jak se ti líbí od v1.37.
+
 ## v1.37 -- blok už nenechává proužky, přepíná se rychleji a mizí hned
 
 Reakce na tvůj test v1.36 -- čtyři věci, které jsi vytkl:
