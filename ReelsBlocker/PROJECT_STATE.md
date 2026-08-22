@@ -40,12 +40,24 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    scroll samotného přehrávače/pageru (kontrola zdroje události, od
    v1.30) -- scrollování komentářů apod. blokování nespustí.
 3. **Volitelně blokovat i scrollování feedu** (přepínač na Home záložce,
-   jen Instagram, od v1.30, přepracováno v1.33, v1.34, v1.36, v1.37, v1.39 a v1.40): jakmile je
+   jen Instagram, od v1.30, přepracováno v1.33, v1.34, v1.36, v1.37, v1.39, v1.40 a v1.41): jakmile je
    uživatel na Home tabu s feedem a přepínač je zapnutý, appka zakrývá
    plochu neprůhledným overlayem (samostatné okno, ne to samé jako
-   overlay na ikonce Reels) -- ale **okno je "click-through"
-   (`FLAG_NOT_TOUCHABLE`), takže dotyky propadají do Instagramu pod ním a
-   feed se pod blokem doopravdy scrolluje** (nic se necítí zaseklé).
+   overlay na ikonce Reels). **Od v1.41 přes blok nejde scrollovat
+   vůbec** (na výslovnou žádost uživatele; v1.34-v1.40 dotyky
+   propadaly). Vizuální blok samotný ale musí zůstat
+   `FLAG_NOT_TOUCHABLE` -- jen tak jde animovat GPU transformací místo
+   relayoutu okna za snímek -- a celoobrazovkové okno neumí pohlcovat
+   dotyky selektivně (dotyk, který jeho hierarchie nesní, se zahodí, ne
+   předá pod něj, takže by to zabilo i historky). Proto je blokování
+   dotyků **druhé, neviditelné okno** (`feedTouchBlockerView`,
+   `setupFeedTouchBlocker`) velikosti přesně rovné ploše bloku: okno
+   dostává dotyky jen ve své vlastní ploše, takže historky nad ním a
+   lišta pod ním jdou do Instagramu netknuté. Neanimuje se, jen skáče --
+   je průhledné, nikdo to nepozná. Pozor: `hideFeedTouchBlocker()` musí
+   běžet **před** všemi předčasnými návraty v `hideFeedBlockOverlay`,
+   jinak by neviditelné okno zůstalo viset a jedlo dotyky, když už blok
+   dávno není vidět.
    Velikost bloku se **plynule animuje (~160 ms, zrychleno v v1.37)** mezi
    dvěma stavy podle toho, jestli appka aktuálně vidí historky v UI stromu. Historky nemají
    žádné vlastní id (zjištěno z logu v v1.35/v1.36) -- appka je pozná
@@ -72,7 +84,15 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    `View` s plnou barvou přes celou plochu, která se animuje jen přes
    `translationY` + `scaleY` (`pivotY = 0`) -- žádný layout pass za
    snímek, takže je to plynulé; popisek je jejím sourozencem (ne
-   potomkem), aby ho škálování nedeformovalo. Od v1.37 navíc **watchdog**
+   potomkem), aby ho škálování nedeformovalo. **Pozor na alpha
+   (opraveno v1.41):** `morphFeedOverlayTo` volá na začátku
+   `block.animate().cancel()`, což ruší *všechny* běžící animace včetně
+   nástupního prolnutí (`FADE_MS`). Když další změna velikosti dorazila
+   uvnitř těch 140 ms -- typicky když se rozvržení ustaluje po návratu z
+   přepínače aplikací -- alpha zamrzla u nuly a nic ji nevrátilo, takže
+   blok byl "zobrazený" (i v logu) ale průhledný. To byla nahlášená
+   chyba "overlay po minimalizaci a vrácení do apky nefungoval". Větev
+   pro už zobrazený blok proto teď alphu vždycky natvrdo nastaví na 1. Od v1.37 navíc **watchdog**
    (`feedOverlayRecheck`, každých 250 ms po dobu, co je blok vidět) sám
    ověřuje přes `rootInActiveWindow`, co je doopravdy na obrazovce, a
    schová blok hned, jak to přestane být feed -- dřív se schovával jen

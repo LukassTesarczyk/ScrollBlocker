@@ -191,6 +191,10 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var feedOverlayRoot: FrameLayout? = null
     private var feedOverlayBlock: View? = null
     private var feedOverlayLabel: TextView? = null
+    // v1.41: a second, invisible window sized to exactly the block's rect,
+    // whose only job is to swallow touches -- see setupFeedTouchBlocker.
+    private var feedTouchBlockerView: View? = null
+    private var feedTouchBlockerParams: WindowManager.LayoutParams? = null
     // null = not currently shown at all. Top/bottom are absolute screen
     // coordinates; left/right are unused (the block always spans the full
     // width) and kept only so this reads as the covered band.
@@ -234,6 +238,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         teardownOverlays()
         setupOverlay()
         setupFeedOverlay()
+        setupFeedTouchBlocker()
         setupTransitionOverlay()
         setupNotificationChannel()
         prefs.registerOnSharedPreferenceChangeListener(prefsListener)
@@ -300,6 +305,10 @@ class ReelsAccessibilityService : AccessibilityService() {
         } catch (_: Exception) {
         }
         try {
+            feedTouchBlockerView?.let { windowManager?.removeView(it) }
+        } catch (_: Exception) {
+        }
+        try {
             transitionRoot?.let { windowManager?.removeView(it) }
         } catch (_: Exception) {
         }
@@ -308,6 +317,8 @@ class ReelsAccessibilityService : AccessibilityService() {
         feedOverlayRoot = null
         feedOverlayBlock = null
         feedOverlayLabel = null
+        feedTouchBlockerView = null
+        feedTouchBlockerParams = null
         feedOverlayCurrentRect = null
         feedOverlayShown = false
         transitionRoot = null
@@ -470,6 +481,94 @@ class ReelsAccessibilityService : AccessibilityService() {
             feedOverlayLabel = label
         } catch (e: Exception) {
             AppLog.w(this, TAG, "Feed overlay setup failed: ${e.message}")
+        }
+    }
+
+    // v1.41, answering "can the feed be made genuinely unscrollable, while
+    // the stories strip still scrolls?" -- yes, and this is how.
+    //
+    // The visual block (setupFeedOverlay) has to stay FLAG_NOT_TOUCHABLE and
+    // full-screen: that's what lets it be resized with a GPU transform
+    // instead of a window relayout per frame, which is what makes the morph
+    // smooth. A full-screen window can't selectively swallow touches either
+    // -- a touch its view hierarchy doesn't consume is dropped, not handed
+    // to the app underneath, so making it touchable would kill the stories
+    // strip too.
+    //
+    // So touch blocking is a SEPARATE window, invisible, sized to exactly
+    // the block's rect. Windows only receive touches inside their own
+    // bounds, so everything outside it -- the stories row above, the tab bar
+    // below -- keeps reaching Instagram untouched. It doesn't animate; it
+    // just jumps to the new rect, which nobody can see because it's
+    // transparent.
+    private fun setupFeedTouchBlocker() {
+        try {
+            val wm = windowManager ?: (getSystemService(WINDOW_SERVICE) as WindowManager)
+            windowManager = wm
+            val view = View(this).apply {
+                visibility = View.GONE
+                // A plain View returns false from onTouchEvent and would let
+                // the gesture fall through; being clickable is what makes it
+                // actually consume one (same reasoning as the icon overlay).
+                isClickable = true
+                isLongClickable = true
+                setOnClickListener { }
+            }
+            val params = WindowManager.LayoutParams(
+                0, 0, 0, 0,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    layoutInDisplayCutoutMode =
+                        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                }
+            }
+            wm.addView(view, params)
+            feedTouchBlockerView = view
+            feedTouchBlockerParams = params
+        } catch (e: Exception) {
+            AppLog.w(this, TAG, "Feed touch blocker setup failed: ${e.message}")
+        }
+    }
+
+    private fun moveFeedTouchBlockerTo(top: Int, bottom: Int) {
+        val wm = windowManager ?: return
+        val view = feedTouchBlockerView ?: return
+        val params = feedTouchBlockerParams ?: return
+        val height = (bottom - top).coerceAtLeast(0)
+        if (height <= 0) {
+            hideFeedTouchBlocker()
+            return
+        }
+        params.x = 0
+        params.y = top
+        params.width = WindowManager.LayoutParams.MATCH_PARENT
+        params.height = height
+        try {
+            if (view.visibility != View.VISIBLE) view.visibility = View.VISIBLE
+            wm.updateViewLayout(view, params)
+        } catch (e: Exception) {
+            AppLog.w(this, TAG, "Feed touch blocker update failed: ${e.message}")
+        }
+    }
+
+    private fun hideFeedTouchBlocker() {
+        val wm = windowManager ?: return
+        val view = feedTouchBlockerView ?: return
+        val params = feedTouchBlockerParams ?: return
+        if (view.visibility == View.GONE) return
+        view.visibility = View.GONE
+        params.width = 0
+        params.height = 0
+        try {
+            wm.updateViewLayout(view, params)
+        } catch (_: Exception) {
         }
     }
 
@@ -1567,6 +1666,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             scheduleFeedOverlayRecheck()
             return
         }
+        moveFeedTouchBlockerTo(top, bottom)
 
         val firstShow = current == null
         feedOverlayMissCount = 0
@@ -1598,6 +1698,17 @@ class ReelsAccessibilityService : AccessibilityService() {
                 it.animate().alpha(1f).setDuration(FADE_MS).start()
             }
         } else {
+            // v1.41: the cancel() above kills EVERY property currently
+            // animating, the fade-in included. A morph landing inside the
+            // 140ms fade -- which is exactly what happens when the layout
+            // is still settling, e.g. right after returning from the app
+            // switcher -- used to freeze alpha wherever it had got to and
+            // never restore it, leaving the block "shown" (it logs as such)
+            // but transparent. That is the reported "the overlay didn't
+            // work after minimising and coming back". Whenever the block is
+            // meant to be up, it is fully opaque, full stop.
+            block.alpha = 1f
+            label?.alpha = 1f
             block.animate()
                 .translationY(top.toFloat())
                 .scaleY(scale)
@@ -1623,6 +1734,10 @@ class ReelsAccessibilityService : AccessibilityService() {
         feedOverlayMissCount = 0
         val wasShown = feedOverlayShown
         feedOverlayShown = false
+        // Before any early return below: an invisible window still eating
+        // touches after the block is gone would be the worst possible
+        // failure -- nothing on screen, nothing responding.
+        hideFeedTouchBlocker()
         val block = feedOverlayBlock ?: return
         val label = feedOverlayLabel
         block.animate().cancel()

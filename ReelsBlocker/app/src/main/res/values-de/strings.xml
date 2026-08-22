@@ -63,6 +63,6 @@
     <string name="pill_feed_top">↑ Zurück nach oben</string>
     <string name="block_feed_on">Feed-Scrollen blockieren: AN</string>
     <string name="block_feed_off">Feed-Scrollen blockieren: AUS</string>
-    <string name="block_feed_hint">Wenn aktiviert, wird der Beitragsbereich verdeckt, sobald du den Home-Tab öffnest. Scrollen funktioniert weiterhin normal, aber der Block wächst dabei über den ganzen Bildschirm -- es gibt einfach nichts zu sehen. Scrollst du zurück zur Story-Leiste, zieht er sich wieder zusammen. Storys und die untere Leiste bleiben immer sichtbar und nutzbar.</string>
-    <string name="feed_block_overlay_message">Feed-Scrollen ist blockiert.\nSchau dir Storys an oder wechsle den Tab.</string>
+    <string name="block_feed_hint">Wenn aktiviert, wird der Beitragsbereich verdeckt, sobald du den Home-Tab öffnest, und das Scrollen darin ist komplett deaktiviert -- Wischgesten über dem Block bewirken nichts. Die Story-Leiste und die untere Leiste bleiben voll nutzbar, dort kannst du weiterhin wischen, eine Story öffnen oder den Tab wechseln. Tippe auf Home, um den Feed wieder nach oben zu springen.</string>
+    <string name="feed_block_overlay_message">Feed-Scrollen ist blockiert.\nTippe auf Home, um nach oben zu springen.</string>
 </resources>

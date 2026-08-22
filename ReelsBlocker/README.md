@@ -122,6 +122,35 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.41 -- feed už opravdu nejde scrollovat + oprava neviditelného bloku
+
+- **Oprava: blok byl po minimalizaci a návratu do appky neviditelný.**
+  Log ukázal, že si appka myslela, že blok kreslí (`Feed overlay shown:
+  top=688 bottom=2520`), ale tys nic neviděl. Příčina byla v mém kódu:
+  když se blok zobrazuje, prolne se během 140 ms z průhledna do plné
+  barvy -- jenže každá další změna velikosti tohle prolnutí **zrušila** a
+  už ho nikdy nevrátila na plnou barvu. Po návratu do appky se rozvržení
+  chvíli ustaluje, takže ta další změna přišla skoro vždycky uprostřed
+  prolnutí, průhlednost zamrzla u nuly a blok zůstal „zobrazený", ale
+  neviditelný. Teď je blok vždycky, když má být nahoře, plně
+  neprůhledný -- bez výjimky.
+- **Odpověď na tvůj dotaz: ano, jde to -- a je to hotové.** Přes blok už
+  **nejde scrollovat vůbec**: tahy prstem přes zakrytou plochu nic
+  neudělají, feed se pod ním nehne. **Oblast s historkami a spodní lišta
+  zůstávají plně funkční** -- tam pořád můžeš táhnout prstem, otevřít
+  historku nebo přepnout záložku, přesně jak jsi to popsal.
+  Technicky: samotný blok musí zůstat „průchozí", aby šel plynule
+  animovat, takže dotyky pohlcuje **druhé, neviditelné okno** položené
+  přesně přes plochu bloku. Okno dostává dotyky jen ve své vlastní ploše,
+  takže všechno kolem něj (historky nahoře, lišta dole) jde do
+  Instagramu netknuté.
+- **Když jsi odscrollovaný dolů** (historky nejsou vidět), blok kryje
+  celou plochu až k liště, takže není kde táhnout prstem -- **klepnutím
+  na domeček** skočí feed zpátky na začátek, historky se objeví a blok se
+  zase stáhne. Píše to i text uvnitř bloku.
+- Kdyby ti úplné zablokování dotyků nesedlo, řekni -- vrátit se to dá
+  jedním řádkem, nebo z toho udělám zvlášť přepínač.
+
 ## v1.40 -- blok už nikdy nezakryje spodní lištu, detekce feedu sjednocená
 
 - **Blok už nezakrývá spodní lištu, ani když odscrolluješ pryč od

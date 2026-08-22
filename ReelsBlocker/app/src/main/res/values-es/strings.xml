@@ -63,6 +63,6 @@
     <string name="pill_feed_top">↑ Volver arriba</string>
     <string name="block_feed_on">Bloquear scroll del feed: ACTIVADO</string>
     <string name="block_feed_off">Bloquear scroll del feed: DESACTIVADO</string>
-    <string name="block_feed_hint">Cuando está activado, el área de publicaciones se cubre en cuanto abres la pestaña Home. Seguir haciendo scroll funciona con normalidad, pero mientras lo haces el bloque crece hasta cubrir toda la pantalla, así que no hay nada que ver. Vuelve a subir hasta las historias y el bloque se encoge de nuevo. Las historias y la barra inferior siempre quedan visibles y funcionan.</string>
-    <string name="feed_block_overlay_message">El scroll del feed está bloqueado.\nMira las historias o cambia de pestaña.</string>
+    <string name="block_feed_hint">Cuando está activado, el área de publicaciones se cubre en cuanto abres la pestaña Inicio y el scroll queda desactivado por completo: los deslizamientos sobre el bloque no hacen nada. La fila de historias y la barra inferior siguen funcionando, así que puedes deslizar ahí, abrir una historia o cambiar de pestaña. Toca Inicio para volver al principio del feed.</string>
+    <string name="feed_block_overlay_message">El scroll del feed está bloqueado.\nToca Inicio para volver arriba.</string>
 </resources>
