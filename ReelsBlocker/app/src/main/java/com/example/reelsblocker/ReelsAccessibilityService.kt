@@ -902,12 +902,14 @@ class ReelsAccessibilityService : AccessibilityService() {
         return TimeCategory.OTHER
     }
 
-    // Maps a highlighted bottom-nav tab to a category. "feed_tab"/"home_tab"
-    // and "clips_tab" are measured (they're the same ids findHomeTabNode and
-    // findTabIconNode already rely on, and the 2026-08-21 log confirms
-    // feed_tab on this build). The rest are tolerant substring patterns, not
-    // asserted ids: an unrecognised tab returns null and gets logged by the
-    // caller instead of being guessed into the wrong bucket.
+    // Maps a highlighted bottom-nav tab to a category. The whole bar is now
+    // measured -- the 2026-08-22 log's "Bottom tabs" line reads, in order:
+    //   feed_tab/Home, clips_tab/Reels, direct_tab/Message,
+    //   search_tab/"Search and explore", profile_tab/Profile
+    // and every one of them lands in the right bucket below. The matching
+    // stays substring-based rather than an exact-id table so a renamed or
+    // added tab degrades to a log line instead of a wrong bucket: anything
+    // unrecognised returns null and the caller records what it saw.
     private fun categoryForBottomTab(idSuffix: String, desc: String): TimeCategory? {
         val id = idSuffix.lowercase()
         val d = desc.lowercase()
@@ -1362,6 +1364,10 @@ class ReelsAccessibilityService : AccessibilityService() {
             hideFeedBlockOverlay("feed blocking toggle off")
             return
         }
+        // lastTimeCategory was just set from this same root by the caller,
+        // so this is only a cheap early-out; applyFeedOverlaySizing does the
+        // authoritative check itself (it also runs from the watchdog, where
+        // lastTimeCategory would be stale).
         if (lastTimeCategory != TimeCategory.FEED) {
             hideFeedBlockOverlay("not on the feed tab")
             return
@@ -1374,57 +1380,57 @@ class ReelsAccessibilityService : AccessibilityService() {
     // lastTimeCategory (which is only updated from the event pipeline).
     // Returns false when the overlay should not be showing at all.
     private fun applyFeedOverlaySizing(root: AccessibilityNodeInfo): Boolean {
-        // classifyScreen's FEED verdict isn't enough on its own: the DM
-        // inbox (and possibly other overlaid screens) can still classify
-        // as FEED (known gap -- Home tab underneath keeps reporting
-        // selected in some states, list ids unmeasured). Ask the Home tab
-        // node directly, right now, and stand down unless it's genuinely
-        // the selected tab -- same guard the old mechanic used.
-        val homeNode = findHomeTabNode(root)
-        val homeBounds = Rect()
-        val homeSelected = homeNode?.isSelected == true
-        if (homeNode != null) homeNode.getBoundsInScreen(homeBounds)
-        homeNode?.recycle()
-        if (!homeSelected) {
-            hideFeedBlockOverlay("home tab not selected")
+        // v1.40: this used to run its own "is the Home tab selected?" check,
+        // separate from what the badge/stats classifier decided. The two
+        // could disagree -- the 2026-08-22 log has a stretch where NO tab
+        // reported selected, so classifyScreen fell through to its content
+        // check and said FEED (the badge showed feed) while this refused to
+        // draw anything. That's the reported "at first it detected the feed,
+        // then not at all". One classification, one answer.
+        if (classifyScreen(root) != TimeCategory.FEED) {
+            hideFeedBlockOverlay("not on the feed")
             return false
         }
 
+        // The bottom edge stays above the tab bar in BOTH sizes -- the tab
+        // bar is the way out of the feed, so covering it would trap the
+        // user, and it's what they explicitly asked to keep visible. Only
+        // the TOP edge moves: down to the stories row while it's on screen,
+        // up to the top of the display once it isn't.
+        val homeNode = findHomeTabNode(root)
+        val homeBounds = Rect()
+        if (homeNode != null) homeNode.getBoundsInScreen(homeBounds)
+        homeNode?.recycle()
         val screenHeight = realScreenHeightPx()
+        // Only trust the Home tab's own bounds as the bottom edge when they
+        // look like an actual bottom-nav icon (same sanity check the
+        // Reels-icon overlay applies); an implausible read falls back to the
+        // full height rather than clipping the block to nothing.
+        val bottom = if (isPlausibleTabIconBounds(homeBounds)) homeBounds.top else screenHeight
+
         val storiesBounds = findStoriesTrayBounds(root)
-        if (storiesBounds != null) {
-            // Only trust the Home tab's own bounds as the bottom edge when
-            // they look like an actual bottom-nav icon (same sanity check
-            // the Reels-icon overlay applies) -- an unplausible bounds read
-            // falls back to the full screen height instead of covering the
-            // nav bar or clipping short.
-            val top = storiesBounds.bottom
-            val bottom = if (isPlausibleTabIconBounds(homeBounds)) homeBounds.top else screenHeight
-            if (bottom - top < resources.displayMetrics.density * 40) {
-                // Bounds don't make sense (e.g. a transient layout pass) --
-                // skip this tick rather than morph to a near-zero rect.
-                return true
-            }
-            morphFeedOverlayTo(top, bottom)
+        val top = if (storiesBounds != null) {
+            storiesBounds.bottom
         } else {
-            // No stories row detected -- either the user has genuinely
-            // scrolled it off screen (the normal case this is meant to
-            // catch) or the structural match in findStoriesTrayBounds
-            // failed to find it (e.g. a future Instagram layout change).
-            // Either way, covering the full screen is the safe degrade.
-            // Logged (throttled -- this branch is the expected path for as
-            // long as someone is genuinely scrolled down, not just a
-            // failure case) so a bad match still shows up as "always full
-            // screen, never shrinks" in a log instead of silently
-            // misbehaving.
+            // No stories row on screen -- either scrolled past it (the
+            // normal case) or the structural match failed. Logged, throttled,
+            // so a broken match still shows up as "always full height" in a
+            // log instead of silently misbehaving.
             val now = System.currentTimeMillis()
             if (now - lastFeedOverlayFullLogAt > 5000L) {
                 lastFeedOverlayFullLogAt = now
-                AppLog.d(this, TAG, "Feed overlay: no stories row detected -- covering full screen")
+                AppLog.d(this, TAG, "Feed overlay: no stories row detected -- covering down from the top")
                 dumpTopOfScreenCandidates(root)
             }
-            morphFeedOverlayTo(0, screenHeight)
+            0
         }
+
+        if (bottom - top < resources.displayMetrics.density * 40) {
+            // Bounds don't make sense (e.g. a transient layout pass) --
+            // skip this tick rather than morph to a near-zero rect.
+            return true
+        }
+        morphFeedOverlayTo(top, bottom)
         return true
     }
 

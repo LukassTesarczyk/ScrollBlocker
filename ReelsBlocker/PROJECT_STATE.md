@@ -40,7 +40,7 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    scroll samotného přehrávače/pageru (kontrola zdroje události, od
    v1.30) -- scrollování komentářů apod. blokování nespustí.
 3. **Volitelně blokovat i scrollování feedu** (přepínač na Home záložce,
-   jen Instagram, od v1.30, přepracováno v1.33, v1.34, v1.36, v1.37 a v1.39): jakmile je
+   jen Instagram, od v1.30, přepracováno v1.33, v1.34, v1.36, v1.37, v1.39 a v1.40): jakmile je
    uživatel na Home tabu s feedem a přepínač je zapnutý, appka zakrývá
    plochu neprůhledným overlayem (samostatné okno, ne to samé jako
    overlay na ikonce Reels) -- ale **okno je "click-through"
@@ -54,12 +54,15 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    + `findStoriesTrayBounds`) -- jeden `outer_container` samotný se
    nepočítá (id je obecné, používá se i jinde v appce, např. na
    Reels-dismiss obrazovce).
-   - Vidí historky (2+ `outer_container` v řadě) -> blok jen přes plochu
-     s příspěvky (horní hranice = spodní okraj historek, dolní hranice =
-     horní okraj Home tab ikonky, stejná jako u overlaye na Reels
-     ikonce).
+   **Od v1.40 se hýbe jen HORNÍ hrana; dolní je vždycky horní okraj Home
+   tab ikonky, takže blok nikdy nezakryje spodní lištu** (uživatel si ji
+   výslovně přál nechat viditelnou -- a je to jediná cesta z feedu pryč,
+   takže její zakrytí by uživatele uvěznilo; do v1.39 ji "celoobrazovkový"
+   režim přejížděl):
+   - Vidí historky (2+ `outer_container` v řadě) -> horní hrana = spodní
+     okraj historek.
    - Nevidí historky (uživatel odscrolloval pryč, nebo strukturální shoda
-     selhala) -> blok přes **celou obrazovku**.
+     selhala) -> horní hrana = horní okraj displeje (0).
    Technicky je to jedno pevné okno přes **celou fyzickou obrazovku**
    (od v1.37 s `FLAG_LAYOUT_IN_SCREEN` + `FLAG_LAYOUT_NO_LIMITS` +
    `LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS`; bez nich okno začínalo až pod
@@ -84,10 +87,14 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    dřív, takže rychlost mizení se nezhoršila. Každé schování se loguje
    i s důvodem ("Feed overlay hidden (...)") a zobrazení taky ("Feed
    overlay shown: top=... bottom=..."). Počítá se do statistik jedním započítáním při každém
-   zobrazení bloku (ne opakovaně). Stejně jako v1.31 se před zobrazením
-   ověřuje, že Home tab je opravdu `isSelected` -- bez toho by se blok
-   mylně zobrazoval i v DMs (Inbox se klasifikuje jako FEED, známá mezera
-   níž). Starý mechanismus "počkej 5s po zmizení historek, pak tě příští
+   zobrazení bloku (ne opakovaně). **Od v1.40 se blok řídí přesně tou
+   samou klasifikací jako štítek/statistiky** (`applyFeedOverlaySizing`
+   volá `classifyScreen(root)`): do v1.39 měl vlastní zvláštní kontrolu
+   "je Home tab `isSelected`?", což se s klasifikací mohlo rozejít --
+   v logu z 2026-08-22 je úsek, kde Instagram nehlásil jako zvýrazněnou
+   žádnou záložku, klasifikace tedy spadla na obsahový fallback a
+   ukazovala FEED, ale blok se odmítal zobrazit ("ze začátku detekovalo,
+   pak vůbec"). Starý mechanismus "počkej 5s po zmizení historek, pak tě příští
    scroll pošle nahoru" (v1.30) byl v1.33 nahrazen, ne doplněn.
 4. **Zakrýt ikonku Reels** v Instagramu barevným overlayem (barva se
    vzorkuje ze skutečného screenshotu obrazovky, aby splynula s
@@ -113,11 +120,13 @@ mimo obrazovku, takže "existuje někde prvek typický pro feed" bylo
 skoro vždycky pravda bez ohledu na to, co uživatel doopravdy vidí --
 odtud nespolehlivá detekce feedu i starý bug "Inbox se hlásí jako FEED".
 Zvýrazněná je vždy právě jedna záložka, takže je to jednoznačný signál.
-Mapované napevno jsou jen změřené id (`feed_tab`/`home_tab`,
-`clips_tab`); ostatní záložky se zkoušejí rozpoznat tolerantním
-vzorem v id/contentDescription a **nerozpoznaná záložka se nehádá, ale
-zaloguje** ("Selected bottom tab not mapped: id=... desc=...") -- pak jde
-doplnit napevno z dat (pravidlo 5).
+**Celá lišta je změřená z logu 2026-08-22** (v1.40): `feed_tab`/Home ->
+FEED, `clips_tab`/Reels -> REELS, `direct_tab`/Message -> DM,
+`search_tab`/"Search and explore" -> OTHER, `profile_tab`/Profile ->
+OTHER. Matching zůstává substringový (ne tabulka přesných id) schválně,
+ať se přejmenovaná nebo přidaná záložka degraduje na log místo špatné
+kategorie -- **nerozpoznaná záložka se nehádá, ale zaloguje**
+("Selected bottom tab not mapped: id=... desc=...", pravidlo 5).
 
 **Jak se appka k liště dostane (v1.39):** NE procházením stromu s
 limitem hloubky -- to byla chyba v1.38, lišta Instagramu je hlouběji než
@@ -248,11 +257,13 @@ neškrtá. Aktuální verze appky je vidět v appce vpravo nahoře.
 - ~~Inbox se hlásí jako FEED~~ -- **řešeno v1.38** přechodem na
   klasifikaci podle zvýrazněné spodní záložky (viz výše). Zatím ale
   neověřeno uživatelem naostro.
-- **Záložky mimo domeček a Reels nejsou změřené.** Vlaštovka (DM), lupa
-  a profil se rozpoznávají jen tolerantním vzorem v id/desc, ne
-  potvrzeným id. Když se záložka nerozpozná, spadne to do OTHER a appka
-  zaloguje "Selected bottom tab not mapped: id=... desc=..." -- z prvního
-  takového logu jde mapování doplnit napevno.
+- ~~Záložky mimo domeček a Reels nejsou změřené~~ -- **změřeno v1.40.**
+  Log z 2026-08-22 dal celou lištu: `feed_tab`/Home, `clips_tab`/Reels,
+  `direct_tab`/Message, `search_tab`/"Search and explore",
+  `profile_tab`/Profile. Všech pět padá do správné kategorie. Matching
+  zůstává substringový (ne tabulka přesných id) schválně, ať se
+  přejmenovaná/přidaná záložka degraduje na log místo špatné kategorie --
+  "Selected bottom tab not mapped: ..." pořád existuje.
 - **Debug badge nerozlišuje Profile / Search / Camera zvlášť** -- všechny
   spadají do OTHER (TimeCategory nemá pro ně vlastní kategorii a přidání
   by zasáhlo statistiky, widgety i překlady).

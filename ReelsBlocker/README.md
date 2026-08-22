@@ -122,6 +122,29 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.40 -- blok už nikdy nezakryje spodní lištu, detekce feedu sjednocená
+
+- **Blok už nezakrývá spodní lištu, ani když odscrolluješ pryč od
+  historek.** Tohle byla hlavní věc, cos chtěl opravit. Dřív měl blok dvě
+  velikosti: "jen plocha s příspěvky" a "úplně celá obrazovka" -- a to
+  druhé přejelo i přes lištu s ikonkami. Teď se hýbe **jenom horní
+  hrana**: když jsou vidět historky, blok začíná pod nimi; když
+  odscrolluješ dál, roztáhne se až k hornímu okraji displeje. **Spodní
+  hrana zůstává vždycky nad lištou**, takže se z feedu vždycky dostaneš
+  pryč.
+- **Detekce feedu byla rozdvojená -- teď je jedna.** Štítek a blok se
+  rozhodovaly každý zvlášť: štítek podle celkové klasifikace obrazovky,
+  blok podle vlastní zvláštní kontroly domečku. V logu je vidět úsek, kde
+  Instagram chvíli nehlásil jako zvýrazněnou **žádnou** záložku -- štítek
+  tehdy spadl na náhradní rozpoznávání a ukazoval feed, ale blok se
+  odmítl zobrazit. Přesně to je ten tvůj popis "ze začátku detekovalo,
+  pak vůbec". Teď obojí používá jednu a tu samou odpověď.
+- **Celá spodní lišta je konečně změřená.** Z tvého logu:
+  `feed_tab` (Home), `clips_tab` (Reels), `direct_tab` (Message),
+  `search_tab` (Search and explore), `profile_tab` (Profile) -- všech pět
+  padá do správné kategorie, takže rozpoznávání DMs, Reels, profilu i
+  vyhledávání je teď postavené na skutečných datech, ne na odhadu.
+
 ## v1.39 -- oprava obojího: hledání záložky i mizejícího bloku
 
 Z tvého logu vyšly najevo dvě samostatné chyby, obě moje z minulých verzí:
