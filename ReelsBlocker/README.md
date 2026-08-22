@@ -122,6 +122,38 @@ which in practice behaves exactly the way you'd want: friend sends a
 reel, you watch it, and the instant you try to swipe to whatever comes
 next, you're back out.
 
+## v1.39 -- oprava obojího: hledání záložky i mizejícího bloku
+
+Z tvého logu vyšly najevo dvě samostatné chyby, obě moje z minulých verzí:
+
+- **Proč štítek ukazoval feed, i když svítila vlaštovka:** appka
+  zvýrazněnou záložku **vůbec nenašla**. Prohledávala strukturu obrazovky
+  jen do 25 úrovní do hloubky a spodní lišta Instagramu je hlouběji.
+  Poznal jsem to podle toho, že se v celém logu ani jednou neobjevil
+  záznam "nerozpoznaná záložka", který jsem tam přesně pro tenhle případ
+  dával. Klasifikace tak propadla na staré (nespolehlivé) ověřování
+  prvků a hlásila feed.
+  **Oprava:** appka se teď k liště dostane jinak -- najde si v ní
+  záložku, jejíž jméno má ověřené z tvých logů (domeček nebo Reels),
+  vyleze o úroveň výš na samotnou lištu a přečte si všechny záložky
+  vedle sebe. Žádný limit hloubky, žádné hádání.
+- **Proč se overlay vůbec neukázal:** hlídač, kterého jsem přidal ve
+  v1.37 (aby blok rychle zmizel, když odejdeš jinam), se každých 250 ms
+  ptal, co je na obrazovce -- a když zrovna odpověď nepatřila Instagramu,
+  blok hned schoval. Jenže v tvém logu se systémová vrstva prostřídává s
+  Instagramem pořád dokola (stačí letmé zobrazení stavové lišty), takže
+  hlídač blok zabíjel do čtvrt vteřiny po každém zobrazení.
+  **Oprava:** hlídač teď potřebuje **tři takové odpovědi po sobě**, než
+  něco schová -- a když naopak jasně vidí, že jsi v Instagramu mimo feed,
+  schová blok okamžitě jako dřív. Takže rychlé mizení zůstává, jen se
+  přestal nechat zmást.
+- **Navíc: appka si teď zapisuje, kdy a proč blok schovala** ("Feed
+  overlay hidden (...)") a kdy ho zobrazila. Kdyby zase zlobil, z logu
+  hned uvidím, jestli se neukázal, nebo ho něco shodilo.
+- **A zapisuje si celou spodní lištu** -- jména a stav všech záložek,
+  vždycky když se to změní. Z toho doplním napevno vlaštovku, lupu a
+  profil (zatím mám ověřené jen domeček a Reels).
+
 ## v1.38 -- rozpoznávání obrazovky podle zvýrazněné záložky dole
 
 Podle tvého návrhu -- appka teď pozná, na jaké jsi obrazovce, hlavně

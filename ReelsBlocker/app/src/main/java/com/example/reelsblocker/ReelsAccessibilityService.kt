@@ -71,6 +71,18 @@ class ReelsAccessibilityService : AccessibilityService() {
             "home_tab"
         )
 
+        // Tabs whose ids are actually measured from this user's logs. Used as
+        // an anchor to locate the bottom tab bar itself (see
+        // findSelectedBottomTab) -- the bar and the remaining tabs carry no
+        // ids that have been confirmed, so they're reached structurally,
+        // through this anchor's parent, rather than guessed at.
+        private val BOTTOM_TAB_ANCHOR_IDS = listOf(
+            "clips_tab",
+            "feed_tab",
+            "home_tab",
+            "reels_tab"
+        )
+
         private const val COOLDOWN_MS = 800L
         private const val COLOR_RESAMPLE_MS = 4000L
         // Tab icon lookup can transiently miss for a single frame while
@@ -144,6 +156,10 @@ class ReelsAccessibilityService : AccessibilityService() {
         // promptly on leaving the feed instead of waiting for whatever
         // accessibility event happens to come next -- see feedOverlayRecheck.
         private const val FEED_OVERLAY_RECHECK_MS = 250L
+
+        // How many consecutive rechecks that can't confirm Instagram is in
+        // front before the block comes down -- see feedOverlayRecheck.
+        private const val FEED_OVERLAY_MISS_TOLERANCE = 3
     }
 
     private var inReelsViewer = false
@@ -182,6 +198,8 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var feedOverlayShown = false
     private var lastFeedOverlayFullLogAt = 0L
     private var lastUnknownTabSignature = ""
+    private var lastBottomTabsSignature = ""
+    private var feedOverlayMissCount = 0
     @Volatile private var sampledColor: Int? = null
     private var lastColorSampleTime = 0L
     @Volatile private var colorSampleInFlight = false
@@ -777,7 +795,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             // the next resumed session doesn't count the gap as usage time.
             lastTimeTickAt = 0L
             hideOverlay()
-            hideFeedBlockOverlay()
+            hideFeedBlockOverlay("left Instagram")
             inTikTokFeed = false
             updateDebugBadge("not IG", "#808080")
             return
@@ -815,7 +833,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
             if (!::prefs.isInitialized || !prefs.getBoolean(PrefsKeys.enabledKeyFor("instagram"), false)) {
                 hideOverlay()
-                hideFeedBlockOverlay()
+                hideFeedBlockOverlay("blocking off")
                 updateDebugBadge("IG (blocking off)", "#808080")
                 return
             }
@@ -911,43 +929,100 @@ class ReelsAccessibilityService : AccessibilityService() {
     // Returns (resource-id suffix, content description) of the highlighted
     // bottom-nav tab, or null when no tab bar is on screen.
     //
-    // Why this beats matching content ids: Instagram's swipeable_tab_view_pager
-    // keeps the ADJACENT tabs' whole subtrees in the node tree, and the logs
-    // show them parked off screen (bounds starting at x >= the screen width).
-    // So "an inbox/feed id exists somewhere in the tree" never meant that
-    // screen was actually in front of the user -- which is exactly why feed
-    // detection kept misfiring, and why the DM inbox used to be reported as
-    // FEED. One highlighted tab is an unambiguous signal where a pile of ids
-    // was not.
+    // v1.39 rewrite. The v1.38 version walked the tree looking for any
+    // selected node in the bottom strip and capped the walk at 25 levels --
+    // Instagram's tab bar sits deeper than that, so it found nothing at all
+    // (the user's 2026-08-22 log contains not one "Selected bottom tab not
+    // mapped" line, which is what that failure looks like) and classification
+    // silently fell back to the old content check, reporting FEED while the
+    // paper plane was lit.
+    //
+    // This instead anchors on a tab whose id IS measured (clips_tab /
+    // feed_tab, the same ones findTabIconNode and findHomeTabNode already
+    // use) via findAccessibilityNodeInfosByViewId, which has no depth limit,
+    // then walks UP one level to the tab bar and reads its children -- the
+    // sibling tabs. No guessing about depth, and no guessing about the other
+    // tabs' ids either: they get logged whenever the row changes, so the
+    // paper plane / search / profile ids can be mapped from real data.
     private fun findSelectedBottomTab(root: AccessibilityNodeInfo): Pair<String, String>? {
-        val out = mutableListOf<Pair<String, String>>()
-        collectSelectedBottomTab(root, out, depth = 0)
-        return out.firstOrNull()
+        for (anchorId in BOTTOM_TAB_ANCHOR_IDS) {
+            val matches = root.findAccessibilityNodeInfosByViewId("$INSTAGRAM_PACKAGE:id/$anchorId")
+            try {
+                for (anchor in matches) {
+                    val anchorBounds = Rect()
+                    anchor.getBoundsInScreen(anchorBounds)
+                    if (!isPlausibleBottomTabBounds(anchorBounds)) continue
+                    val bar = anchor.parent ?: continue
+                    try {
+                        val tabs = readBottomTabs(bar)
+                        if (tabs.isEmpty()) continue
+                        logBottomTabsIfChanged(tabs)
+                        val selected = tabs.firstOrNull { it.third } ?: continue
+                        return selected.first to selected.second
+                    } finally {
+                        bar.recycle()
+                    }
+                }
+            } finally {
+                matches.forEach { it.recycle() }
+            }
+        }
+        return null
     }
 
-    private fun collectSelectedBottomTab(
-        node: AccessibilityNodeInfo,
-        out: MutableList<Pair<String, String>>,
-        depth: Int
-    ) {
-        if (depth > 25 || out.isNotEmpty()) return
-        val bounds = Rect()
-        node.getBoundsInScreen(bounds)
-        // Pre-order walk, so the outermost selected node wins -- that's the
-        // tab container carrying the id (feed_tab, clips_tab...), rather than
-        // the icon nested inside it.
-        if (node.isSelected && isPlausibleBottomTabBounds(bounds)) {
-            out.add(
-                (node.viewIdResourceName?.substringAfterLast('/') ?: "") to
-                    (node.contentDescription?.toString() ?: "")
-            )
-            return
+    // (id suffix, content description, isSelected) for each tab in the bar.
+    private fun readBottomTabs(bar: AccessibilityNodeInfo): List<Triple<String, String, Boolean>> {
+        val tabs = mutableListOf<Triple<String, String, Boolean>>()
+        for (i in 0 until bar.childCount) {
+            val child = bar.getChild(i) ?: continue
+            try {
+                val bounds = Rect()
+                child.getBoundsInScreen(bounds)
+                if (!isPlausibleBottomTabBounds(bounds)) continue
+                tabs.add(
+                    Triple(
+                        child.viewIdResourceName?.substringAfterLast('/') ?: "",
+                        child.contentDescription?.toString() ?: "",
+                        isSelectedWithin(child, depth = 0)
+                    )
+                )
+            } finally {
+                child.recycle()
+            }
         }
+        return tabs
+    }
+
+    // Instagram puts the highlight on the tab container on some builds and on
+    // the icon inside it on others, so a couple of levels down still counts.
+    private fun isSelectedWithin(node: AccessibilityNodeInfo, depth: Int): Boolean {
+        if (node.isSelected) return true
+        if (depth >= 2) return false
         for (i in 0 until node.childCount) {
             val child = node.getChild(i) ?: continue
-            collectSelectedBottomTab(child, out, depth + 1)
-            child.recycle()
+            try {
+                if (isSelectedWithin(child, depth + 1)) return true
+            } finally {
+                child.recycle()
+            }
         }
+        return false
+    }
+
+    // Logged only when the row actually changes, so this is a handful of
+    // lines per session rather than a flood -- and it is the measurement that
+    // lets the remaining tabs (paper plane, search, profile) be mapped from
+    // data instead of guessed at (CLAUDE.md rule 5).
+    private fun logBottomTabsIfChanged(tabs: List<Triple<String, String, Boolean>>) {
+        val signature = tabs.joinToString(",") { "${it.first}/${it.second}/${it.third}" }
+        if (signature == lastBottomTabsSignature) return
+        lastBottomTabsSignature = signature
+        AppLog.d(
+            this, TAG,
+            "Bottom tabs: " + tabs.joinToString(" | ") {
+                "id=${it.first.ifEmpty { "(none)" }} desc=${it.second.ifEmpty { "(none)" }} selected=${it.third}"
+            }
+        )
     }
 
     // Deliberately looser than isPlausibleTabIconBounds (which sizes the
@@ -1284,11 +1359,11 @@ class ReelsAccessibilityService : AccessibilityService() {
     // request, not a log-driven change.
     private fun handleFeedBlockOverlay(root: AccessibilityNodeInfo) {
         if (!prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false)) {
-            hideFeedBlockOverlay()
+            hideFeedBlockOverlay("feed blocking toggle off")
             return
         }
         if (lastTimeCategory != TimeCategory.FEED) {
-            hideFeedBlockOverlay()
+            hideFeedBlockOverlay("not on the feed tab")
             return
         }
         applyFeedOverlaySizing(root)
@@ -1311,7 +1386,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         if (homeNode != null) homeNode.getBoundsInScreen(homeBounds)
         homeNode?.recycle()
         if (!homeSelected) {
-            hideFeedBlockOverlay()
+            hideFeedBlockOverlay("home tab not selected")
             return false
         }
 
@@ -1360,13 +1435,26 @@ class ReelsAccessibilityService : AccessibilityService() {
     // systemui, the content-event throttle, or simply no events arriving
     // at all once a screen goes idle). While the block is on screen this
     // re-asks the system what's actually in front of the user a few times
-    // a second and hides it the moment that stops being the feed, so
-    // disappearing no longer depends on Instagram happening to emit an
-    // event.
+    // a second and hides it the moment that stops being the feed.
+    //
+    // v1.39: it now takes FEED_OVERLAY_MISS_TOLERANCE consecutive negative
+    // reads to actually hide, because a single one proved worthless as
+    // evidence -- the 2026-08-22 log has systemui trading places with
+    // Instagram constantly (a status-bar peek is enough), so
+    // rootInActiveWindow regularly belongs to someone else for one tick
+    // while the user is still sitting in the feed. Hiding on the first such
+    // read tore the block down within 250ms of every single show, which is
+    // exactly the reported "the overlay didn't appear at all". The same
+    // consecutive-miss shape VIEWER_MISS_TOLERANCE already uses for the
+    // Reels session, and for the same reason. Three misses still puts the
+    // block away well under a second after really leaving -- and a read that
+    // positively shows Instagram but not the feed still hides immediately,
+    // so only genuinely inconclusive reads cost anything.
     private val feedOverlayRecheck = object : Runnable {
         override fun run() {
             if (!feedOverlayShown) return
-            var keepShowing = false
+            var confirmed = false
+            var sawInstagram = false
             try {
                 val enabled = ::prefs.isInitialized &&
                     prefs.getBoolean(PrefsKeys.KEY_BLOCK_FEED, false) &&
@@ -1376,23 +1464,37 @@ class ReelsAccessibilityService : AccessibilityService() {
                     if (liveRoot != null) {
                         try {
                             if (liveRoot.packageName?.toString() == INSTAGRAM_PACKAGE) {
-                                keepShowing = applyFeedOverlaySizing(liveRoot)
+                                sawInstagram = true
+                                confirmed = applyFeedOverlaySizing(liveRoot)
                             }
                         } finally {
                             liveRoot.recycle()
                         }
                     }
+                } else {
+                    // An explicitly flipped-off toggle is not a transient
+                    // read -- take it down immediately.
+                    feedOverlayMissCount = FEED_OVERLAY_MISS_TOLERANCE
                 }
             } catch (e: Exception) {
                 AppLog.w(this@ReelsAccessibilityService, TAG, "Feed overlay recheck failed: ${e.message}")
             }
-            if (!keepShowing) {
-                hideFeedBlockOverlay()
+
+            if (confirmed) {
+                feedOverlayMissCount = 0
+                scheduleFeedOverlayRecheck()
+                return
+            }
+            // applyFeedOverlaySizing hides on its own when it can see the
+            // user is genuinely off the feed, so only count-and-wait here.
+            if (sawInstagram) {
+                hideFeedBlockOverlay("recheck: not on the feed")
+                return
+            }
+            feedOverlayMissCount++
+            if (feedOverlayMissCount >= FEED_OVERLAY_MISS_TOLERANCE) {
+                hideFeedBlockOverlay("recheck: ${feedOverlayMissCount} misses")
             } else {
-                // Via the helper, not postDelayed directly: this run may
-                // itself have gone through morphFeedOverlayTo (which also
-                // re-arms), and two pending callbacks would compound into
-                // an ever-faster poll.
                 scheduleFeedOverlayRecheck()
             }
         }
@@ -1461,10 +1563,12 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
 
         val firstShow = current == null
+        feedOverlayMissCount = 0
         if (!feedOverlayShown) {
             feedOverlayShown = true
             Stats.recordBlock(this, "instagram")
             updateDebugBadge("FEED■BLOCKED", "#FF5252")
+            AppLog.d(this, TAG, "Feed overlay shown: top=$top bottom=$bottom")
         }
         feedOverlayCurrentRect = Rect(0, top, 0, bottom)
 
@@ -1507,9 +1611,11 @@ class ReelsAccessibilityService : AccessibilityService() {
     // Not animated for the same reason hideOverlay() isn't -- disappearing
     // should feel immediate, not lingering. Only the morph between the two
     // sizes (while still in the feed) is meant to be smooth.
-    private fun hideFeedBlockOverlay() {
+    private fun hideFeedBlockOverlay(reason: String) {
         mainHandler.removeCallbacks(feedOverlayRecheck)
         feedOverlayCurrentRect = null
+        feedOverlayMissCount = 0
+        val wasShown = feedOverlayShown
         feedOverlayShown = false
         val block = feedOverlayBlock ?: return
         val label = feedOverlayLabel
@@ -1520,6 +1626,12 @@ class ReelsAccessibilityService : AccessibilityService() {
         block.visibility = View.GONE
         label?.alpha = 0f
         label?.visibility = View.GONE
+        if (wasShown) {
+            // v1.39: every teardown says who ordered it. The block going
+            // missing was reported twice without any way to tell from a log
+            // whether it never showed or was being killed right after.
+            AppLog.d(this, TAG, "Feed overlay hidden ($reason)")
+        }
     }
 
     // ---- TikTok: one video per session ----

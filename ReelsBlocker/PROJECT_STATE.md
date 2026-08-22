@@ -40,7 +40,7 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    scroll samotného přehrávače/pageru (kontrola zdroje události, od
    v1.30) -- scrollování komentářů apod. blokování nespustí.
 3. **Volitelně blokovat i scrollování feedu** (přepínač na Home záložce,
-   jen Instagram, od v1.30, přepracováno v1.33, v1.34, v1.36 a v1.37): jakmile je
+   jen Instagram, od v1.30, přepracováno v1.33, v1.34, v1.36, v1.37 a v1.39): jakmile je
    uživatel na Home tabu s feedem a přepínač je zapnutý, appka zakrývá
    plochu neprůhledným overlayem (samostatné okno, ne to samé jako
    overlay na ikonce Reels) -- ale **okno je "click-through"
@@ -74,7 +74,16 @@ screenshoty ani citlivá data) a simulovat kliknutí/gesta. Díky tomu umí:
    ověřuje přes `rootInActiveWindow`, co je doopravdy na obrazovce, a
    schová blok hned, jak to přestane být feed -- dřív se schovával jen
    při další události z Instagramu, což ho někdy nechalo viset dlouho
-   nebo napořád. Počítá se do statistik jedním započítáním při každém
+   nebo napořád. **Od v1.39 hlídač potřebuje
+   `FEED_OVERLAY_MISS_TOLERANCE` (3) neprůkazných čtení po sobě**, než
+   něco schová: ve v1.37/v1.38 stačilo jedno čtení, kde root nepatřil
+   Instagramu, a protože se systemui s Instagramem střídá pořád dokola
+   (stačí letmá stavová lišta), hlídač blok zabíjel do 250 ms po každém
+   zobrazení -- to byla nahlášená chyba "overlay se vůbec neukázal".
+   Čtení, které pozitivně ukáže Instagram mimo feed, schovává hned jako
+   dřív, takže rychlost mizení se nezhoršila. Každé schování se loguje
+   i s důvodem ("Feed overlay hidden (...)") a zobrazení taky ("Feed
+   overlay shown: top=... bottom=..."). Počítá se do statistik jedním započítáním při každém
    zobrazení bloku (ne opakovaně). Stejně jako v1.31 se před zobrazením
    ověřuje, že Home tab je opravdu `isSelected` -- bez toho by se blok
    mylně zobrazoval i v DMs (Inbox se klasifikuje jako FEED, známá mezera
@@ -109,6 +118,20 @@ Mapované napevno jsou jen změřené id (`feed_tab`/`home_tab`,
 vzorem v id/contentDescription a **nerozpoznaná záložka se nehádá, ale
 zaloguje** ("Selected bottom tab not mapped: id=... desc=...") -- pak jde
 doplnit napevno z dat (pravidlo 5).
+
+**Jak se appka k liště dostane (v1.39):** NE procházením stromu s
+limitem hloubky -- to byla chyba v1.38, lišta Instagramu je hlouběji než
+25 úrovní, takže se nenašla vůbec nic a klasifikace tiše propadala na
+starý (nespolehlivý) fallback; poznávacím znamením je, že se v logu
+nikdy neobjevilo "Selected bottom tab not mapped". Místo toho se
+`findAccessibilityNodeInfosByViewId` (bez limitu hloubky) najde
+**kotva** -- záložka se změřeným id (`BOTTOM_TAB_ANCHOR_IDS`:
+`clips_tab`/`feed_tab`/...) -- z ní se jde `parent` na samotnou lištu a
+přečtou se její děti = sousední záložky. `isSelectedWithin` bere v úvahu
+i to, že highlight může sedět na ikonce uvnitř záložky, ne na kontejneru.
+`logBottomTabsIfChanged` zapíše celou lištu (id/desc/selected) vždycky,
+když se složení nebo výběr změní -- odtud půjde doplnit vlaštovku, lupu
+a profil.
 
 Celoobrazovkové případy (Reels přehrávač, historky, otevřená DM
 konverzace) se řeší před záložkami, protože lištu překrývají -- a od
